@@ -16,7 +16,7 @@ library(viridis)
 
 
 # Load the normalized and imputed data set
-hm <- read.csv("output_data/2.imputed_MICE_data_set.csv")
+hm <- read.csv("Data/Data_output/2.imputed_MICE_data_set.csv")
 
 
 # Vectors for selecting the relevant immune genes

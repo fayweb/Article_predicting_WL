@@ -4,6 +4,8 @@ library(scales)
 library(cowplot)
 library(ggthemes)
 library(grid)
+library(ggplot2)
+library(ggpmisc)
 
 
 # read the lab data with pca vectors
@@ -14,7 +16,7 @@ lab <- lab %>%
   dplyr::rename(PC1 = "pc1", PC2 = "pc2")
 
 # read the variance explained by each gene for the pca 
-vpg <- read.csv("output_data/variance_contr_gene_lab")
+vpg <- read.csv("Data/Data_output/variance_contr_gene_lab.csv")
 
 # Change the first column of the variance contribution of variables to the gene
 # names
@@ -105,6 +107,42 @@ ggplot(vpg, aes(x = PC1, y = PC2, color = T_activ, shape = T_activ)) +
          size = "none",
          alpha = "none") +
   theme(legend.position = c(-0.4, 0.5)) 
+
+
+#################################################
+########### Linear models
+model_1_pc1_pc2 <- lm(WL_max ~ PC1 + PC2, data = lab)
+
+
+# Predicted values from the linear model
+lab$predicted <- predict(model_1_pc1_pc2)
+
+# Scatter plot with regression line and equation
+ggplot(lab, aes(x = predicted, y = WL_max)) +
+  geom_point(color = "#336699", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "#990000", size = 1.2) +
+  labs(x = "Predicted", y = "Observed") +
+  ggtitle("Linear Model Visualization") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        legend.position = "none") +
+  geom_label(
+    x = 0.5, y = 20, 
+    label = paste("Equation: WL_max =", round(coef(model_1_pc1_pc2)[1], 2),
+                  "+", round(coef(model_1_pc1_pc2)[2], 2), "pc1",
+                  round(coef(model_1_pc1_pc2)[3], 2), "pc2", sep = " "),
+    hjust = 0.5, vjust = 0.5, 
+    fill = "white", color = "black", size = 4
+  ) +
+  stat_poly_eq(
+    aes(label = paste("R^2 =", round(summary(model_1_pc1_pc2)$r.squared, 2))),
+    label.y = 18, formula = "y~x",
+    parse = TRUE, size = 4, hjust = 0.5, vjust = 0.5
+  )
+
+
 
 
 
