@@ -6,6 +6,11 @@ library(ggthemes)
 library(grid)
 library(ggplot2)
 library(ggpmisc)
+library(broom)
+library(knitr)
+library(kableExtra)
+library(webshot)
+library(RColorBrewer)
 
 
 # read the lab data with pca vectors
@@ -80,33 +85,30 @@ shapes_t <-  c("positive regulation of T cell activation" = 22,
                "negative regulation of T cell activation" = 23,
                "positive / negative regulation of T cell activation" =  24)
 
-ggplot(vpg, aes(x = PC1, y = PC2, color = T_activ, shape = T_activ)) +
-  geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-  geom_point(aes(size = 2.5, alpha = 0.8, fill = T_activ)) +
-  scale_shape_manual(values = shapes_t) +
-  scale_fill_manual(values = colours_t) +
-  geom_point(data = vpg %>% filter(
-    Pro_infl == "positive regulation of inflammatory response"),
-    pch = 21, size = 6, colour = "red") +
-  coord_equal() +
-  xlab("PC1") +
-  ylab("PC2") +
-  ggtitle("PCA Plot of Variables") +
-  theme_minimal() +
-  theme(plot.title = element_text(size = 18),
-        legend.position = "none") +
-  geom_label_repel(aes(label = Variable, color = Cytokine_response), size = 3, 
-                   box.padding = 0.5, max.overlaps = Inf) +
-  scale_color_manual(values = colours_c) +
-  annotate("text", x = 0, y = -0.4, label = "red circles: 
+ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    geom_point(aes(size = 2.5, alpha = 0.8, fill = T_activ, shape = T_activ)) +
+    scale_shape_manual(values = shapes_t) +
+    scale_fill_manual(values = colours_t) +
+    geom_point(data = vpg %>% filter(
+        Pro_infl == "positive regulation of inflammatory response"),
+        pch = 21, size = 6, colour = "red") +
+    coord_equal() +
+    xlab("PC1") +
+    ylab("PC2") +
+    ggtitle("PCA Plot of Variables") +
+    theme_minimal() +
+    theme(plot.title = element_text(size = 18),
+          legend.position = "right") +
+    geom_label_repel(aes(label = Variable, color = Cytokine_response), size = 3, 
+                     box.padding = 0.5, max.overlaps = Inf) +
+    #scale_color_manual(values = colours_c) +
+    annotate("text", x = 0, y = -0.4, label = "red circles: 
            positive regulation of inflammatory response", 
-           colour = "red", size = 2.7) +
-  guides(color = guide_legend(title = "Cytokine Response"),
-         shape = guide_legend(title = "T Cell Activation"),
-         fill = guide_legend(title = "T Cell Activation"),
-         size = "none",
-         alpha = "none") +
-  theme(legend.position = c(-0.4, 0.5)) 
+             colour = "red", size = 2.7) +
+    theme(legend.position = c(-0.4, 0.5)) +
+    guides(alpha  = "none", size = "none") 
+
 
 
 #################################################
@@ -128,11 +130,11 @@ r_squared_text <- paste("R-squared =", round(r_squared, 2))
 
 # Plot the data with the equation and R-squared
 ggplot(lab, aes(x = predicted, y = WL_max)) +
-    geom_point(color = "#336699", size = 3, alpha = 0.7) +
+    geom_point(color = "#336699", size = 3, alpha = 0.6) +
     geom_smooth(method = "lm", formula = y ~ x, se = TRUE, color = "#990000", 
                 size = 0.8) +
     labs(x = "Predicted", y = "Observed") +
-    ggtitle("Linear Model PC1 and PC2 predicting weight loss") +
+    ggtitle("PC1 and PC2 predicting weight loss") +
     theme_minimal() +
     theme(plot.title = element_text(size = 14, face = "bold"),
           axis.title = element_text(size = 12),
@@ -154,34 +156,89 @@ ggplot(lab, aes(x = predicted, y = WL_max)) +
     )
 
 
+# Tidy model summary
+tidy_model <- tidy(model)
+# Create a table of model coefficients
+coef_table <- tidy_model %>%
+    mutate(
+        term = ifelse(term == "(Intercept)", "Intercept", term),
+        Estimate = round(estimate, 2),
+        `Std. Error` = round(std.error, 2),
+        `t value` = round(statistic, 2),
+        `Pr(>|t|)` = p.value
+    ) %>%
+    select(term, Estimate, `Std. Error`, `t value`, `Pr(>|t|)`) %>%
+    rename(`Pr(>|t|)` = `Pr(>|t|)`)
 
-#################################
-# pc1 predicting weight loss
-ggplot(lab, aes(x = PC1, y = WL_max)) +
-  geom_point(aes(color = infection, alpha = 0.8, 
-                 shape = infection, size = 2)) +
-  geom_smooth(method = "lm",formula = y ~ x, 
-              se = T, color = "black",
-              size = 0.5) +
-  labs(x = "PC1", y = "Maximum weight loss", title = 
-         "First principal compenonent predicting maximum weight loss during an infection") +
-  theme_bw()
-
-
-
-
-
-# for the model with pc2 and infection
-ggplot(lab, aes(x = pc2, y = WL_max)) +
-  geom_point(aes(color = infection, alpha = 0.5, 
-                 shape = infection, size = 2)) +
-  geom_smooth(method = "lm",formula = y ~ x, se = T, 
-              color = "black",
-              size = 0.5) +
-  labs(x = "PC1", y = "Maximum Weight Loss") +
-  theme_bw()
+# Print the coefficient table
+coef_table
 
 
+
+
+#########################################################################
+#### PC1 + PC2 + heter/hom infections predicting WL
+# create a new variable that shows if an infection is primary or homologous
+# or heterologous
+lab <- lab %>% 
+    dplyr::mutate(
+        infection_type = 
+                      case_when(
+                          infection_history == "falciformis_ferrisi" ~ "heterologous_fal_fer",
+                          infection_history == "ferrisi_falciformis" ~ "heterologous_fer_fal",
+                          infection_history == "falciformis_uninfected" ~ "uninfected",
+                          infection_history == "ferrisi_uninfected" ~ "uninfected",
+                          infection_history == "ferrisi_ferrisi" ~ "homologous_fer",
+                          infection_history == "falciformis_falciformis" ~ "homologous_fal",
+                          infection_history == "uninfected_falciformis" ~ "primary_falciformis",
+                          infection_history == "uninfected_ferrisi" ~ "primary_ferrisi",
+                          infection_history == "uninfected" ~ "uninfected",
+                          TRUE ~ "NA"
+                          ))
+
+# Perform linear regression
+model <- lm(WL_max ~ PC1 + PC2 + infection_type, data = lab)
+
+# Generate equation text
+eq_text <- paste("WL_max =", round(coef(model)[1], 2),
+                 "+", round(coef(model)[2], 2), "PC1",
+                 "+", round(coef(model)[3], 2), "PC2")
+
+# Calculate R-squared
+predicted <- predict(model)
+r_squared <- summary(model)$r.squared
+r_squared_text <- paste("R-squared =", round(r_squared, 2))
+
+# Plot the data with the equation and R-squared
+ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
+    geom_point(size = 3, alpha = 0.5) +
+    geom_smooth(method = "lm", formula = y ~ x, se = TRUE, color = "#990000",
+                size = 0.8) +
+    labs(x = "Predicted", y = "Observed") +
+    ggtitle("PC1, PC2, and Infection Type predicting weight loss") +
+    theme_minimal() +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 10),
+          legend.position = "right") +
+    annotate("text", x = max(predicted), y = min(lab$WL_max),
+             label = eq_text, hjust = 1, vjust = -0.2,
+             color = "black", size = 4, fontface = "bold") +
+    annotate("text", x = max(predicted), y = min(lab$WL_max) - 2,
+             label = r_squared_text, hjust = 1, vjust = -0.2,
+             color = "black", size = 4, fontface = "bold") +
+    stat_poly_eq(
+        formula = y ~ x,
+        label.x.npc = "right", label.y.npc = "top",
+        label = paste("R^2 =", round(r_squared, 2)),
+        parse = TRUE,
+        size = 4,
+        family = "serif",
+        fontface = "bold"
+    ) +
+    scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
+
+        
 ### Residual Plots
 
 # calculate residuals for the model with pc1 and pc2
