@@ -2,12 +2,8 @@
 ## ---------------------------------------------------------------------------------------------------
 library(mice)
 library(tidyr)
-library(tidyverse)
 library(VIM)
-library(fitdistrplus)
-library(fitur)
-library(visdat)
-library(DESeq2)
+
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -116,7 +112,8 @@ sapply(hm_genes, function(x) sum(is.na(x)))
 #genes <- genes %>% dplyr::select(-origin)
 
 
-#had to remove as they were disturbing the imputation: Worms_presence, MC.Eimeria.FEC,  Heligmosomoides_polygurus, Zfy2, Y,  MpiC,
+#had to remove as they were disturbing the imputation: Worms_presence, 
+#MC.Eimeria.FEC,  Heligmosomoides_polygurus, Zfy2, Y,  MpiC,
 #vis_miss(field)
 # The frequency distribution of the missing cases per variable can be obtained 
 # as:
@@ -126,7 +123,9 @@ meth <- init$method
 
 
 ## ---------------------------------------------------------------------------------------------------
-aggr_plot <- aggr(hm_genes, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(hm_genes), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+aggr_plot <- aggr(hm_genes, col=c('navyblue','red'), numbers=TRUE, 
+                  sortVars=TRUE, labels=names(hm_genes), cex.axis=.7, gap=3, 
+                  ylab=c("Histogram of missing data","Pattern"))
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -257,7 +256,8 @@ setdiff(facs_data$Mouse_ID, hm_selection_g$Mouse_ID)
 
 ## ---------------------------------------------------------------------------------------------------
 facs_data <- facs_data %>%
-  dplyr::filter(Mouse_ID %in% setdiff(facs_data$Mouse_ID, hm_selection_g$Mouse_ID))
+  dplyr::filter(Mouse_ID %in% setdiff(facs_data$Mouse_ID, 
+                                      hm_selection_g$Mouse_ID))
 
 
 # We expect 477 mice in the new data frame 
@@ -273,5 +273,6 @@ hm_select <- unique(hm_select)
 
 ## ---------------------------------------------------------------------------------------------------
  ##save the imputed data 
-write.csv(hm_select, "Data/Data_output/2.imputed_MICE_data_set.csv", row.names = FALSE)
+write.csv(hm_select, "Data/Data_output/2.imputed_MICE_data_set.csv", 
+          row.names = FALSE)
 

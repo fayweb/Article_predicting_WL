@@ -3,12 +3,11 @@
 ## ---------------------------------------------------------------------------------------------------
 library(mice)
 library(tidyr)
-library(tidyverse)
-library(VIM)
-library(fitdistrplus)
-library(fitur)
-library(visdat)
-library(DESeq2)
+library(dplyr)
+library(stringr)
+#library(fitdistrplus)
+#library(fitur)
+#library(visdat)
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -30,13 +29,6 @@ Genes_wild   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
                   "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                   "TICAM1", "TNF") #, "IL.12", "IRG6")
 
-Facs_lab <- c("CD4", "Treg", "Div_Treg", "Treg17", "Th1", 
-                    "Div_Th1", "Th17", "Div_Th17", "CD8", "Act_CD8", 
-                    "Div_Act_CD8", "IFNy_CD4", "IFNy_CD8","Treg_prop", 
-                    "IL17A_CD4")  
-
-Facs_wild <- c( "Treg", "CD4", "Treg17", "Th1", "Th17", "CD8",
-                     "Act_CD8", "IFNy_CD4", "IL17A_CD4", "IFNy_CD8")
 
 
 ## ----imputing_mice----------------------------------------------------------------------------------
@@ -69,7 +61,10 @@ lab <- hm %>%
 # duplicates
 lab <- unique(lab)
 gene_lab_mouse <- lab %>%
-  dplyr::select(c(Mouse_ID, "IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",                 "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO",                  "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1",                  "TICAM1", "TNF", PPIB)) 
+  dplyr::select(c(Mouse_ID, "IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",                 
+                  "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO",                  
+                  "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1",                  
+                  "TICAM1", "TNF", PPIB)) 
 
 gene_lab_mouse <- unique(gene_lab_mouse)
 
@@ -104,7 +99,10 @@ sapply(field %>%
                       function(x) sum(is.na(x)))
 
 sapply(lab %>%
-         dplyr::select(c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",                 "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO",                  "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1",                  "TICAM1", "TNF", "PPIB", "GAPDH")), 
+         dplyr::select(c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",                 
+                         "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO",                  
+                         "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", 
+                         "SOCS1", "TICAM1", "TNF", "PPIB", "GAPDH")), 
                       function(x) sum(is.na(x)))
          
 
@@ -564,7 +562,7 @@ dct_mean <- mean(df_lab$TNF_dct, na.rm = TRUE)
 df_lab <- df_lab %>% 
  dplyr::select(-c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10", "IL1RN","CASP1", 
                   "CXCL9", "IDO1", "IRGM1", "MPO", "MUC2", "MUC5AC", "MYD88", 
-                  "NCR1", "PRF1", "RETNLB", "SOCS1",  "TICAM1", "TNF", PPIB, 
+                  "NCR1", "PRF1", "RETNLB", "SOCS1",  "TICAM1", "TNF", "PPIB", 
                   contains("_N")))
 
 # remove ending _dct
@@ -574,7 +572,7 @@ df_lab <- df_lab %>%
 df_field <- df_field %>% 
   dplyr::select(-c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10", "IL1RN","CASP1", 
                   "CXCL9", "IDO1", "IRGM1", "MPO", "MUC2", "MUC5AC", "MYD88", 
-                  "NCR1", "PRF1", "RETNLB", "SOCS1",  "TICAM1", "TNF", GAPDH, 
+                  "NCR1", "PRF1", "RETNLB", "SOCS1",  "TICAM1", "TNF", "GAPDH", 
                   contains("_N")))
 
 # remove ending
