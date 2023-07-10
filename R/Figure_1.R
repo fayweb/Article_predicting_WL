@@ -36,7 +36,7 @@ color_palette <- c("E_ferrisi" = "#66C2A5", "uninfected" = "#8DA0CB",
                    "E_falciformis" = "#FC8D62")
 
 # PCA graph of individuals
-ggplot(lab, aes(x = PC1, y = PC2, color = infection, shape = infection)) +
+pca_individuals <- ggplot(lab, aes(x = PC1, y = PC2, color = infection, shape = infection)) +
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") + 
   geom_vline(xintercept = 0, linetype = "dotted", color = "gray50") +
   geom_point(size = 3, alpha = 0.8) +
@@ -52,6 +52,9 @@ ggplot(lab, aes(x = PC1, y = PC2, color = infection, shape = infection)) +
   scale_color_manual(values = color_palette) +
   scale_shape_manual(values = c("E_ferrisi" = 17, "uninfected" = 16, "E_falciformis" = 18)) +
   guides(color = guide_legend(override.aes = list(size = 4)))
+
+ggsave(filename = "figures/pca_individuals.jpeg", plot = pca_individuals, 
+       width = 6, height = 4, dpi = 300)
 
 
 ####### PCA graph of variables
@@ -86,7 +89,7 @@ shapes_t <-  c("positive regulation of T cell activation" = 22,
                "negative regulation of T cell activation" = 23,
                "positive / negative regulation of T cell activation" =  24)
 
-ggplot(vpg, aes(x = PC1, y = PC2)) +
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
     geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
     geom_point(aes(size = 2.5, alpha = 0.8, fill = T_activ, shape = T_activ)) +
     scale_shape_manual(values = shapes_t) +
@@ -104,13 +107,14 @@ ggplot(vpg, aes(x = PC1, y = PC2)) +
     geom_label_repel(aes(label = Variable, color = Cytokine_response), size = 3, 
                      box.padding = 0.5, max.overlaps = Inf) +
     #scale_color_manual(values = colours_c) +
-    annotate("text", x = 0, y = -0.4, label = "red circles: 
+    annotate("text", x = 0.1, y = -0.4, label = "red circles: 
            positive regulation of inflammatory response", 
              colour = "red", size = 2.7) +
     theme(legend.position = c(-0.4, 0.5)) +
     guides(alpha  = "none", size = "none") 
 
-
+ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
 
 #################################################
 # Load the required packages
@@ -152,7 +156,7 @@ ggplot(lab, aes(x = predicted, y = WL_max)) +
         fontface = "bold",
         aes(label = paste("R^2 =", round(summary(model)$r.squared, 2))),
         label.x.npc = 0.70, label.y.npc = 0.4
-    )
+    ) -> linear_pc1_pc2_WL
 
 
 # Tidy model summary
@@ -174,6 +178,9 @@ coef_table <- tidy_model %>%
 write.csv(coef_table, "tables/coefficient_table_pc1_pc2_linear.csv", 
           row.names = FALSE)
 
+ggsave(filename = "figures/linear_pc1_pc2_WL.jpeg", plot = linear_pc1_pc2_WL, 
+       width = 6, height = 4, dpi = 300)
+
 # Calculate residuals
 residuals <- lab$WL_max - predicted
 
@@ -183,7 +190,8 @@ eq_text_residuals <- paste("Residuals =", round(coef(model)[1], 2),
                            "+", round(coef(model)[3], 2), "PC2")
 
 # Plot the residuals
-ggplot(lab, aes(x = predicted, y = residuals)) +
+residuals_pc1_pc2_WL <-
+    ggplot(lab, aes(x = predicted, y = residuals)) +
     geom_point(color = "#336699", size = 3, alpha = 0.6) +
     geom_hline(yintercept=0, color = "#990000", 
                size = 0.8) +
@@ -199,6 +207,8 @@ ggplot(lab, aes(x = predicted, y = residuals)) +
              color = "black", size = 4, fontface = "bold") 
 
 
+ggsave(filename = "figures/residuals_pc1_pc2_WL.jpeg", plot = residuals_pc1_pc2_WL, 
+       width = 12, height = 6, dpi = 600)
 
 #########################################################################
 #### PC1 + PC2 + heter/hom infections predicting WL
@@ -234,7 +244,8 @@ r_squared <- summary(model)$r.squared
 r_squared_text <- paste("R-squared =", round(r_squared, 2))
 
 # Plot the data with the equation and R-squared
-ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
+linear_pc1_pc2_infection_type <-
+    ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
     geom_point(size = 3, alpha = 0.5) +
     geom_smooth(method = "lm", formula = y ~ x, se = TRUE, color = "#990000",
                 size = 0.8) +
@@ -253,6 +264,10 @@ ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
              color = "black", size = 4, fontface = "bold") +
     scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
 
+ggsave(filename = "figures/linear_pc1_pc2_infection_type.jpeg", 
+       plot = linear_pc1_pc2_infection_type, 
+       width = 12, height = 6, dpi = 600)
+
 # Calculate residuals
 residuals <- lab$WL_max - predicted
 
@@ -262,7 +277,8 @@ eq_text_residuals <- paste("Residuals =", round(coef(model)[1], 2),
                            "+", round(coef(model)[3], 2), "PC2")
 
 # Plot the residuals
-ggplot(lab, aes(x = predicted, y = residuals, color = infection_type)) +
+residuals_pc1_pc2_infection_type <-
+    ggplot(lab, aes(x = predicted, y = residuals, color = infection_type)) +
     geom_point(size = 3, alpha = 0.5) +
     geom_hline(yintercept=0, color = "#990000", 
                size = 0.8) +
@@ -280,6 +296,9 @@ ggplot(lab, aes(x = predicted, y = residuals, color = infection_type)) +
 
 
 
+ggsave(filename = "figures/residuals_pc1_pc2_infection_type.jpeg", 
+       plot = residuals_pc1_pc2_infection_type, 
+       width = 12, height = 6, dpi = 600)
 
 ######################################## just infection_type
 model_infection_type <- lm(WL_max ~ infection_type, data = lab)
@@ -294,7 +313,8 @@ r_squared <- summary(model_infection_type)$r.squared
 r_squared_text <- paste("R-squared =", round(r_squared, 2))
 
 # Plot the data with the equation and R-squared
-ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
+linear_infection_type <-
+    ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
     geom_point(size = 3, alpha = 0.5) +
     geom_smooth(method = "lm", formula = y ~ x, se = TRUE, color = "#990000",
                 size = 0.8) +
@@ -313,6 +333,10 @@ ggplot(lab, aes(x = predicted, y = WL_max, color = infection_type)) +
              color = "black", size = 4, fontface = "bold") +
     scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
 
+ggsave(filename = "figures/linear_infection_type.jpeg", 
+       plot = residuals_pc1_pc2_infection_type, 
+       width = 12, height = 6, dpi = 600)
+
 # Calculate residuals
 residuals <- lab$WL_max - predicted
 
@@ -321,7 +345,8 @@ eq_text_residuals <- paste("Residuals =", round(coef(model_infection_type)[1], 2
                            "infection_type")
 
 # Plot the residuals
-ggplot(lab, aes(x = predicted, y = residuals, color = infection_type)) +
+residuals_infection_type <-
+    ggplot(lab, aes(x = predicted, y = residuals, color = infection_type)) +
     geom_point(size = 3, alpha = 0.5) +
     geom_hline(yintercept=0, color = "#990000", 
                size = 0.8) +
@@ -337,6 +362,10 @@ ggplot(lab, aes(x = predicted, y = residuals, color = infection_type)) +
              color = "black", size = 4, fontface = "bold") +
     scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
 
+
+ggsave(filename = "figures/residuals_infection_type.jpeg", 
+       plot = residuals_infection_type, 
+       width = 12, height = 6, dpi = 600)
 
 ##################################### interaction of infection type 
 model_interaction <- lm(WL_max ~ PC1*infection_type + PC2*infection_type, data = lab)
@@ -476,7 +505,7 @@ ggplot(lab, aes(x = predicted, y = WL_max, color = hybrid_status)) +
     scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
 
 
-
+#######################################################hybrids
 # Define the model
 model_hybrid_only <- lm(WL_max ~ hybrid_status, data = lab)
 
@@ -509,6 +538,29 @@ ggplot(lab, aes(x = predicted, y = WL_max, color = hybrid_status)) +
              color = "black", size = 4, fontface = "bold") +
     scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
 
+# Calculate residuals
+residuals <- lab$WL_max - predicted
+
+# Generate equation text for residuals
+eq_text_residuals <- paste("Residuals =", round(coef(model_hybrid_only)[1], 2), " + ", 
+                           round(coef(model_hybrid_only)[2], 2), "*hybrid_status")
+
+# Plot the residuals
+ggplot(lab, aes(x = predicted, y = residuals, color = hybrid_status)) +
+    geom_point(size = 3, alpha = 0.5) +
+    geom_hline(yintercept=0, color = "#990000", 
+               size = 0.8) +
+    labs(x = "Predicted", y = "Residuals") +
+    ggtitle("Residual plot of Hybrid Status predicting weight loss") +
+    theme_minimal() +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 10),
+          legend.position = "right") +
+    annotate("text", x = max(predicted), y = min(residuals),
+             label = eq_text_residuals, hjust = 1, vjust = -0.2,
+             color = "black", size = 4, fontface = "bold") +
+    scale_color_brewer(palette = "Set1")  # Use a color palette from RColorBrewer
 
 
 ############### Parasite model + pc1 / pc2
@@ -583,74 +635,3 @@ ggplot(lab, aes(x = predicted, y = WL_max, color = Parasite_challenge)) +
     scale_color_manual(values = color_palette)  # Use the defined color palette
 
 
-
-
-
-
-### Residual Plots
-
-# calculate residuals for the model with pc1 and pc2
-lab$residuals_pc1_pc2 <- resid(model_1_pc1_pc2)
-
-ggplot(lab, aes(x = pc1, y = residuals_pc1_pc2)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "PC1", y = "Residuals") +
-  theme_bw()
-
-
-ggplot(lab, aes(x = pc2, y = residuals_pc1_pc2)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "PC2", y = "Residuals") +
-  theme_bw()
-
-
-ggplot(lab, aes(x = infection, y = residuals_pc1_pc2)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "Infection group", y = "Residuals") +
-  theme_bw()
-
-
-### 3D plots
-
-
-
-# First, make sure infection is a factor
-lab$infection <- as.factor(lab$infection)
-
-# Then, define the color for each level of infection
-color_mapping <- c("E_falciformis" = "salmon", 
-                   "E_ferrisi" = "green", 
-                   "uninfected" = "blue")
-
-# Now create the scatter plot using this color mapping
-ggplot(lab, aes(x = pc1, y = WL_max, color = infection)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE, aes(color = infection)) +
-  scale_color_manual(values = color_mapping) +
-  labs(x = "PC1", y = "Maximum Weight Loss") +
-  theme_bw()
-
-
-
-# Now create the scatter plot using this color mapping
-ggplot(lab, aes(x = pc2, y = WL_max, color = infection)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE, aes(color = infection)) +
-  scale_color_manual(values = color_mapping) +
-  labs(x = "PC2", y = "Maximum Weight Loss") +
-  theme_bw()
-
-
-
-
-
-
-# Create a new color column in your dataframe by mapping 'infection' to your colors
-lab$color <- color_mapping[lab$infection]
-
-# 3D scatter plot
-scatterplot3d(lab$pc1, lab$pc2, lab$WL_max, pch = 16, color = lab$color,
-              xlab = "PC1", ylab = "PC2", zlab = "Maximum Weight Loss")
