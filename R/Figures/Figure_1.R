@@ -13,6 +13,7 @@ library(webshot)
 library(RColorBrewer)
 library(ggeffects)
 library(pheatmap)
+library(pdp)
 
 
 # read the lab data with pca vectors
@@ -38,13 +39,12 @@ color_palette <- c("E_ferrisi" = "#66C2A5", "uninfected" = "#8DA0CB",
                    "E_falciformis" = "#FC8D62")
 
 # PCA graph of individuals
-#pca_individuals <- 
 pca_individuals <-
   ggplot(lab, aes(x = PC1, y = PC2, color = infection, shape = infection)) +
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") + 
   geom_vline(xintercept = 0, linetype = "dotted", color = "gray50") +
   geom_point(size = 3, alpha = 0.8) +
-  labs(x = "PC1", y = "PC2", title = "PCA graph of individuals",
+  labs(x = "PC1 (52.32%)", y = "PC2 (11.79%)", title = "PCA graph of individuals",
        colour = "Current infection", shape ="Current infection") +
   theme_minimal() +
   theme(plot.title = element_text(size = 12, face = "bold"),
@@ -76,16 +76,16 @@ breaks <- c(0, 50, 100, 150)
 labels <- c("0", "50", "100", "150")
 
 # Plotting the factor map 
-#pca_variables <-
+pca_variables <-
   ggplot(vpg, aes(x = PC1, y = PC2, color = cos2)) +
   geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
   geom_point(size = 3) +
   geom_label_repel(aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
   coord_equal() +
-  xlab("PC1") +
-  ylab("PC2") +
+  xlab("PC1 (52.32%)") +
+  ylab("PC2 (11.79%)") +
   ggtitle("PCA Plot of Variables") +
-  theme_minimal() +
+  theme_minimal() + 
   theme(legend.position = "right") +
   guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
   scale_color_gradientn(colors = gradient_colors, guide = "none")  +
@@ -95,6 +95,7 @@ labels <- c("0", "50", "100", "150")
 ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
        width = 12, height = 6, dpi = 600)
 
+######################## Enriched Terms data frame
 enriched_terms_df <- read.csv("Data/Data_output/enriched_sorted_terms.csv")
 
 
@@ -104,8 +105,8 @@ enriched_terms_df$p_value_log <- -log10(enriched_terms_df$p_value)
 
 # Create the lollipop plot using ggplot2
 enrichment_terms_plot <- 
-ggplot(enriched_terms_df[1:30,], aes(x = reorder(GO_Term, p_value_log), y = p_value_log)) +
-  geom_segment(aes(xend = GO_Term, yend = 0, color = p_value_log), size = 1.5) +
+  ggplot(enriched_terms_df[1:30,], aes(x = reorder(GO_Term, p_value_log), y = p_value_log)) +
+  geom_segment(aes(xend = GO_Term, yend = 0, color = p_value_log), linewidth = 1.5) +
   geom_point(aes(fill = p_value_log), size = 3, shape = 21, color = "mediumvioletred") +
   scale_fill_gradientn(colours = rev(gradient_colors)) +
   scale_color_gradientn(colours = rev(gradient_colors)) +
@@ -113,6 +114,7 @@ ggplot(enriched_terms_df[1:30,], aes(x = reorder(GO_Term, p_value_log), y = p_va
   labs(x = "Enriched GO Terms", y = "-log10(p-value)",
        title = "Gene Ontology Enrichment Analysis") +
   theme_minimal()
+
 
 ggsave(filename = "figures/enrichment_terms_plot.jpeg", plot = enrichment_terms_plot, 
        width = 12, height = 6, dpi = 600)
@@ -126,35 +128,115 @@ model <- lm(WL_max ~ PC1 + PC2, data = lab)
 summary(model)
 ggeffect(model)
 
+# Generate predicted effects
+effects <- ggeffect(model)
 
 # Generate predicted effects
-effects <- ggeffects(model)
+predicted_effects <- ggeffect(model)
 
-# Generate predicted effects
-predicted_effects <- ggeffects(model)
+# create a df with pc1 and pc2 for plotting
+predicted_df <- rbind(predicted_effects$PC1, predicted_effects$PC2)
 
-# Plot for PC1
-plot1 <- ggplot(predicted_effects[["PC1"]], aes(x = PC1, y = predicted)) +
-  geom_line() +
+# Create the plot
+plot1 <- ggplot(predicted_df, aes(x = x, y = predicted, colour = group)) +
+  geom_line(size = 1) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.3) +
-  labs(title = "Predicted Effects of PC1 on WL_max",
-       x = "PC1", y = "Predicted WL_max")
+  scale_color_brewer(palette = "Set1") +
+  labs(title = "Predicted Effects of PC1 and PC2 on WL_max",
+       x = "Principle Component",
+       y = "Predicted WL_max",
+       color = "Group") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
+    legend.position = "bottom"
+  )
 
+ggsave(filename = "figures/PC1_PC2_WL.jpeg", plot = plot1, 
+       width = 12, height = 6, dpi = 600)
+
+# Print the plot
 print(plot1)
 
-# Plot for PC2
-plot2 <- ggplot(predicted_effects[["PC2"]], aes(x = PC2, y = predicted)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.3) +
-  labs(title = "Predicted Effects of PC2 on WL_max",
-       x = "PC2", y = "Predicted WL_max")
+#################################################
+# Load the required packages
+###PC1 PC2 linear regression with current_infection as an additional predictor
+lab$current_infection[lab$current_infection == "infected_eimeria"] <- "E_falciformis"
+model_2 <- lm(WL_max ~ PC1 + PC2 + current_infection, data = lab)
+summary(model_2)
+ggeffect(model_2)
 
+# Generate predicted effects
+effects <- ggeffect(model_2)
+
+# create a df with pc1 and pc2 for plotting
+predicted_df_PC1 <- effects$PC1
+predicted_df_PC2 <- effects$PC2
+predicted_df_current_infection <- effects$current_infection
+
+# Adding a new column "group" to each data frame before merging
+predicted_df_PC1$group <- "PC1"
+predicted_df_PC2$group <- "PC2"
+predicted_df_current_infection$group <- "current_infection"
+
+# Merge the data frames
+predicted_df <- rbind(predicted_df_PC1, predicted_df_PC2, predicted_df_current_infection)
+
+
+# Create partial dependence data for each predictor
+pdp_PC1 <- partial(model_2, pred.var = "PC1", grid.resolution = 20, plot = TRUE)
+pdp_PC2 <- partial(model_2, pred.var = "PC2", grid.resolution = 20, plot = TRUE)
+pdp_current_infection <- partial(model_2, pred.var = "current_infection", grid.resolution = 20, plot = TRUE)
+
+# Interaction plot for current_infection and PC1
+interaction.plot(lab$current_infection, lab$PC1, lab$WL_max, 
+                 trace.label = "Current Infection", xlab = "PC1", ylab = "WL_max")
+
+# Interaction plot for current_infection and PC2
+interaction.plot(lab$current_infection, lab$PC2, lab$WL_max, 
+                 trace.label = "Current Infection", xlab = "PC2", ylab = "WL_max")
+
+
+
+# Create the plot for PC1 and PC2
+plot1 <- ggplot(predicted_df[predicted_df$group != "current_infection",], 
+                aes(x = x, y = predicted, colour = group)) +
+  geom_line(size = 1) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.3) +
+  scale_color_brewer(palette = "Set1") +
+  labs(title = "Predicted Effects of PC1 and PC2 on WL_max",
+       x = "Predictor",
+       y = "Predicted WL_max",
+       color = "Group") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
+    legend.position = "bottom"
+  )
+
+# Visualize the effect of current_infection separately
+plot2 <- ggplot(lab, aes(x = current_infection, y = WL_max)) +
+  geom_boxplot() +
+  labs(title = "Effect of current_infection on WL_max",
+       x = "Current Infection",
+       y = "WL_max") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 12)
+  )
+
+# Print the plots
+print(plot1)
 print(plot2)
 
+# Save the plots
+ggsave(filename = "figures/PC1_PC2_WL.jpeg", plot = plot1, 
+       width = 12, height = 6, dpi = 600)
+ggsave(filename = "figures/CurrentInfection_WL.jpeg", plot = plot2, 
+       width = 12, height = 6, dpi = 600)
 
 
-model_1 <- lm(WL_max ~ PC1 + PC2 + primary_infection * challenge_infection, data = lab)
-summary(model)
+###################################################################################
 
 model_2 <- lm(WL_max ~ PC1 + PC2 + challenge_infection, data = lab)
 summary(model)
@@ -166,13 +248,7 @@ summary(model_3)
 
 anova(model_1, model_2, model_3)
 
-# Load the required packages
-###PC1 PC2 linear regression
-model <- lm(WL_max ~ PC1 + PC2, data = lab)
-summary(model)
-ggeffect(model)
 
-plot(ggeffect(model))
 
 # Generate equation text
 eq_text <- paste("WL_max =", round(coef(model)[1], 2),
@@ -264,25 +340,14 @@ ggsave(filename = "figures/residuals_pc1_pc2_WL.jpeg", plot = residuals_pc1_pc2_
        width = 12, height = 6, dpi = 600)
 
 
+# Create partial dependence data for each predictor
+pdp_PC1 <- partial(model_2, pred.var = "PC1", grid.resolution = 20, plot = TRUE)
+pdp_PC2 <- partial(model_2, pred.var = "PC2", grid.resolution = 20, plot = TRUE)
+pdp_current_infection <- partial(model_2, pred.var = "current_infection", grid.resolution = 20, plot = TRUE)
+
 #########################################################################
 #### PC1 + PC2 + heter/hom infections predicting WL
-# create a new variable that shows if an infection is primary or homologous
-# or heterologous
-lab <- lab %>% 
-    dplyr::mutate(
-        immunization = 
-                      case_when(
-                          infection_history == "falciformis_ferrisi" ~ "heterologous",
-                          infection_history == "ferrisi_falciformis" ~ "heterologous",
-                          infection_history == "falciformis_uninfected" ~ "uninfected",
-                          infection_history == "ferrisi_uninfected" ~ "uninfected",
-                          infection_history == "ferrisi_ferrisi" ~ "homologous",
-                          infection_history == "falciformis_falciformis" ~ "homologous",
-                          infection_history == "uninfected_falciformis" ~ "naive",
-                          infection_history == "uninfected_ferrisi" ~ "naive",
-                          infection_history == "uninfected" ~ "uninfected",
-                          TRUE ~ "NA"
-                          ))
+
 
 # Perform linear regression
 model <- lm(WL_max ~ PC1 + PC2 + immunization, data = lab)

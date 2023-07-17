@@ -137,7 +137,8 @@ circ <- circleFun(c(0,0),2,npoints = 500)
 #It’s possible to use the function corrplot() [corrplot package] to highlight 
 #the most contributing variables for each dimension:
 var.contrib <- as.data.frame(res.pca$var$contrib)
-corrplot(var.contrib, is.corr=FALSE) 
+var.contrib.matrix <- data.matrix(var.contrib)
+corrplot(var.contrib.matrix, is.corr=FALSE) 
 
 
 pca_var <- as.data.frame(pca.vars)
@@ -830,3 +831,4 @@ write.csv(pca_var, "Data/Data_output/variance_contr_gene_lab.csv", row.names = T
 
 # save the lab data frame for figures
 write.csv(lab, "Data/Data_output/lab_pca.csv", row.names = FALSE)
+

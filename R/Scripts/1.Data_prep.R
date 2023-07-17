@@ -152,12 +152,31 @@ Challenge <- Challenge %>%
     infection == "uninfected" & MC.Eimeria == "TRUE" ~ "E_falciformis",
     infection == "uninfected" & MC.Eimeria == "FALSE" ~ "uninfected",
     TRUE ~ ""
+  ), 
+  immunization = case_when(
+    infection_history == "falciformis_ferrisi" ~ "heterologous",
+    infection_history == "ferrisi_falciformis" ~ "heterologous",
+    infection_history == "falciformis_uninfected" ~ "uninfected",
+    infection_history == "ferrisi_uninfected" ~ "uninfected",
+    infection_history == "ferrisi_ferrisi" ~ "homologous",
+    infection_history == "falciformis_falciformis" ~ "homologous",
+    infection_history == "uninfected_falciformis" ~ "naive",
+    infection_history == "uninfected_ferrisi" ~ "naive",
+    infection_history == "uninfected" ~ "uninfected",
+    TRUE ~ "NA"
   ))
-#expected columns:
-37 + 149 #186
+
+
 # now join the two data sets
 data <- full_join(Challenge, SOTA, 
                   by = intersect(colnames(SOTA), colnames(Challenge)))
+
+2742 + 1921
+
+data <- data %>%
+  dplyr::select(-ends_with("_N"))
+  
+
 write.csv(data, "Data/Data_output/1.MICE_cleaned_data.csv", row.names = FALSE)
 
 
