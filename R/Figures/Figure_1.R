@@ -14,6 +14,11 @@ library(RColorBrewer)
 library(ggeffects)
 library(pheatmap)
 library(pdp)
+library(broom)
+library(reshape2)
+library(knitr)
+library(gt)
+library(stargazer)
 
 
 # read the lab data with pca vectors
@@ -57,6 +62,8 @@ pca_individuals <-
   scale_shape_manual(values = c("E_ferrisi" = 17, "uninfected" = 16, "E_falciformis" = 18)) +
   guides(color = guide_legend(override.aes = list(size = 4)))
 
+pca_individuals
+
 ggsave(filename = "figures/pca_individuals.jpeg", plot = pca_individuals, 
        width = 6, height = 4, dpi = 300)
 
@@ -95,6 +102,9 @@ pca_variables <-
 ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
        width = 12, height = 6, dpi = 600)
 
+
+pca_variables
+
 ######################## Enriched Terms data frame
 enriched_terms_df <- read.csv("Data/Data_output/enriched_sorted_terms.csv")
 
@@ -115,55 +125,99 @@ enrichment_terms_plot <-
        title = "Gene Ontology Enrichment Analysis") +
   theme_minimal()
 
+enrichment_terms_plot
 
 ggsave(filename = "figures/enrichment_terms_plot.jpeg", plot = enrichment_terms_plot, 
        width = 12, height = 6, dpi = 600)
 
 
 
+##################################################################################################
 #################################################
+#################################################
+#################################################
+
 # Load the required packages
 ###PC1 PC2 linear regression
-model <- lm(WL_max ~ PC1 + PC2, data = lab)
-summary(model)
-ggeffect(model)
+model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
+                mouse_strain + immunization + 
+                weight_dpi0, data = lab)
+
+summary(model_1)
+
+#see the ggefects
+effects <- ggeffect(model_1)
+
+plot(effects, terms = c("PC1", "PC2", "mouse_strain"))
+
+
+
+
+
+## Please cite as:
+##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
+stargazer(model_1, type = "html", out = "predictors_weightloss.html", 
+          title = "Choosing predictors for weight loss prediction")
+
+# Load the required packages
+###PC1 PC2 linear regression
+model_2 <- lm(WL_max ~ PC1 + PC2, data = lab)
 
 # Generate predicted effects
-effects <- ggeffect(model)
+effects <- ggeffect(model_2)
 
-# Generate predicted effects
-predicted_effects <- ggeffect(model)
+#create a data frame
+df_effects <- rbind(effects$PC1, effects$PC2)
+
+#change the name of the first column
+df_effects <- df_effects %>%
+    rename(PC.values = x)
+
+tidy_effects <- tidy(predicted_effects)
 
 # create a df with pc1 and pc2 for plotting
 predicted_df <- rbind(predicted_effects$PC1, predicted_effects$PC2)
 
 # Create the plot
 plot1 <- ggplot(predicted_df, aes(x = x, y = predicted, colour = group)) +
-  geom_line(size = 1) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.3) +
-  scale_color_brewer(palette = "Set1") +
-  labs(title = "Predicted Effects of PC1 and PC2 on WL_max",
-       x = "Principle Component",
-       y = "Predicted WL_max",
-       color = "Group") +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
-    legend.position = "bottom"
-  )
-
-ggsave(filename = "figures/PC1_PC2_WL.jpeg", plot = plot1, 
-       width = 12, height = 6, dpi = 600)
+    geom_line(size = 1.2) +
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+    labs(title = "Predicted Effects of PC1 and PC2 on WL_max",
+         x = "Principle Component",
+         y = "Predicted WL_max",
+         color = "Principle Component") +
+    theme_light(base_size = 12) +
+    theme(
+        plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+        axis.title.x = element_text(face = "bold", size = 14),
+        axis.title.y = element_text(face = "bold", size = 14),
+        axis.text = element_text(size = 12),
+        legend.position = "bottom",
+        legend.title = element_text(face = "bold", size = 12),
+        legend.text = element_text(size = 12)
+    )
 
 # Print the plot
 print(plot1)
 
-#################################################
-# Load the required packages
+
+ggsave(filename = "figures/PC1_PC2_WL.jpeg", plot = plot1, 
+       width = 12, height = 6, dpi = 600)
+
+
+
+
+
+
+
+
 ###PC1 PC2 linear regression with current_infection as an additional predictor
-lab$current_infection[lab$current_infection == "infected_eimeria"] <- "E_falciformis"
+lab$current_infection[lab$current_infection == "infected_eimeria"] <- 
+    "E_falciformis"
 model_2 <- lm(WL_max ~ PC1 + PC2 + current_infection, data = lab)
 summary(model_2)
+
+
 ggeffect(model_2)
 
 # Generate predicted effects
@@ -180,13 +234,15 @@ predicted_df_PC2$group <- "PC2"
 predicted_df_current_infection$group <- "current_infection"
 
 # Merge the data frames
-predicted_df <- rbind(predicted_df_PC1, predicted_df_PC2, predicted_df_current_infection)
+predicted_df <- rbind(predicted_df_PC1, predicted_df_PC2, 
+                      predicted_df_current_infection)
 
 
 # Create partial dependence data for each predictor
 pdp_PC1 <- partial(model_2, pred.var = "PC1", grid.resolution = 20, plot = TRUE)
 pdp_PC2 <- partial(model_2, pred.var = "PC2", grid.resolution = 20, plot = TRUE)
-pdp_current_infection <- partial(model_2, pred.var = "current_infection", grid.resolution = 20, plot = TRUE)
+pdp_current_infection <- partial(model_2, pred.var = "current_infection", 
+                                 grid.resolution = 20, plot = TRUE)
 
 # Interaction plot for current_infection and PC1
 interaction.plot(lab$current_infection, lab$PC1, lab$WL_max, 
@@ -464,7 +520,7 @@ eq_text_residuals <- paste("Residuals =", round(coef(model_immunization)[1], 2),
                            "immunization")
 
 # Plot the residuals
-residuals_immunization <-
+#residuals_immunization <-
     ggplot(lab, aes(x = predicted, y = residuals, color = immunization)) +
     geom_point(size = 3, alpha = 0.5) +
     geom_hline(yintercept=0, color = "#990000", 
