@@ -18,7 +18,6 @@ library(pdp)
 library(broom)
 library(reshape2)
 library(knitr)
-#library(gt)
 library(stargazer)
 library(kableExtra)
 
@@ -51,10 +50,10 @@ pca_individuals <-
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") + 
   geom_vline(xintercept = 0, linetype = "dotted", color = "gray50") +
   geom_point(size = 3, alpha = 0.8) +
-  labs(x = "PC1 (52.32%)", y = "PC2 (11.79%)", title = "PCA graph of individuals",
+  labs(x = "PC1 (52.32%)", y = "PC2 (11.79%)", #title = "PCA graph of individuals",
        colour = "Current infection", shape ="Current infection") +
   theme_minimal() +
-  theme(plot.title = element_text(size = 12, face = "bold"),
+  theme(#plot.title = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 12),
         axis.text = element_text(size = 12),
         legend.title = element_text(size = 14),
@@ -93,9 +92,10 @@ pca_variables <-
   coord_equal() +
   xlab("PC1 (52.32%)") +
   ylab("PC2 (11.79%)") +
-  ggtitle("PCA Plot of Variables") +
+  #ggtitle("PCA Plot of Variables") +
   theme_minimal() + 
-  theme(legend.position = "right", plot.title = element_text(size = 12, face = "bold")) +
+  #theme(legend.position = "right",
+   #plot.title = element_text(size = 12, face = "bold")) +
   guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
   scale_color_gradientn(colors = gradient_colors, guide = "none")  
 
@@ -151,134 +151,112 @@ lab <- lab %>%
 
 model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
                 mouse_strain + immunization + 
-                weight_dpi0, data = lab)
+                weight_dpi0, data = lab )
 
 summary(model_1)
 
-####
-# 1. full model
-# 2. without infection - delta_ct + current_inf + immu
-# 3. without host mouse strains and the weight0
-# 4. only pc1 pc2
-### Now comparing different models with different variables 
-model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
-                  mouse_strain + immunization + 
-                  weight_dpi0, data = lab)
-summary(model_1)
+# Extract the residuals from the model
+residuals <- resid(model_1)
 
+# Create a data frame with the residuals
+residuals_df <- data.frame(residuals = residuals)
 
-model_2 <- lm(WL_max ~ PC1 + PC2, mouse_strain, weight_dpi0, data = lab)
+# Create the QQ plot
+residuals_1 <-
+    ggplot(residuals_df, aes(sample = residuals)) +
+    stat_qq(color = "blue") +
+    ggtitle("QQ Plot of Residuals") +
+    xlab("Theoretical Quantiles") +
+    ylab("Sample Quantiles")
+
+ggsave(filename = "figures/residuals_model_1.jpeg", 
+       plot = residuals_1, 
+       width = 12, height = 6, dpi = 600)
+
+# Extract the fitted values from the model
+fitted_values <- fitted(model_1)
+
+# Create a data frame with the residuals and the fitted values
+data_df <- data.frame(residuals = residuals, fitted_values = fitted_values)
+
+# Create the scatter plot
+residuals_vs_fitted <-
+    ggplot(data_df, aes(x = fitted_values, y = residuals)) +
+    geom_point(color = "blue") +
+    ggtitle("Residuals vs Fitted Values") +
+    xlab("Fitted Values") +
+    ylab("Residuals")
+
+ggsave(filename = "figures/residuals_vs_fitted.jpeg", 
+       plot = residuals_vs_fitted, 
+       width = 12, height = 6, dpi = 600)
+
+#########
+# without parasite data
+model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab)
 summary(model_2)
 
-model_3 <- lm(WL_max ~ PC1 + PC2 + delta_ct_cewe_MminusE +
-                  mouse_strain, data = lab)
+# without host data
+model_3 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
+                  immunization + weight_dpi0, data = lab)
 
 summary(model_3)
 
-model_4 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
-                  immunization, data = lab)
+# only pc1 + pc2
+model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab)
 
 summary(model_4)
 
-model_5 <- lm(WL_max ~ PC1 + PC2 + delta_ct_cewe_MminusE + weight_dpi0, 
-              data = lab)
-summary(model_5)
-
-model_6 <- lm(WL_max ~ PC1 * PC2 + delta_ct_cewe_MminusE, data = lab)
-summary(model_6)
-
-model_7 <- lm(WL_max ~ PC1 + PC2 + delta_ct_cewe_MminusE, data = lab)
-summary(model_7)
-
-model_8 <- lm(WL_max ~ PC1 * PC2,  data = lab)
-summary(model_8)
-
-model_9 <- lm(WL_max ~ PC1 + PC2,  data = lab)
-summary(model_9)
-
 ## Please cite as:
 ##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
-stargazer(model_1, model_2, model_3, model_4, model_5,
+stargazer(model_1, model_2, model_3, model_4, 
           type = "html", out = "figures/predictors_weightloss.html", 
-          title = "Choosing predictors for weight loss prediction")
+          title = "Linear models - Predicting maximum weight loss")
 
-stargazer(model_6, model_7, model_8, model_9,
-          type = "html", out = "figures/predictors_weightloss_2.html", 
-          title = "Choosing predictors for weight loss prediction")
-
-
-#correcting for nas
-model_8 <- lm(WL_max ~ PC1 * PC2,  data = lab %>%
+#correcting for nas in delta ct
+model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>% 
                   drop_na(delta_ct_cewe_MminusE))
-summary(model_8)
 
-model_9 <- lm(WL_max ~ PC1 + PC2,  data = lab %>%
+model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab %>% 
                   drop_na(delta_ct_cewe_MminusE))
-summary(model_9)
 
 # Anova of different models
-anova_mod <- anova(model_6, model_7, model_8)
-
-kableAnova(anova_mod)
+anova_mod <- anova(model_1, model_2, model_3, model_4)
 
 stargazer(anova_mod, type = "html", out = "figures/anova_model.html", title = 
               "Analysis of Variance Table")
 
-
-
 #see the ggefects
-effects <- ggpredict(model_1)
+effects <- ggpredict(model_4)
 
 pc1_current_infection <- 
-    ggpredict(model_1, terms = c("PC1", "current_infection")) %>% 
-    plot()
+    ggpredict(model_4, terms = c("PC1")) %>% 
+    plot(colors = "blue")
 
 ggsave(filename = "figures/pc1_current_infection.jpeg", 
        plot = pc1_current_infection, 
        width = 12, height = 6, dpi = 600)
 
 pc2_current_infection <- 
-    ggpredict(model_1, terms = c("PC2", "current_infection")) %>%
-    plot()
+    ggpredict(model_4, terms = c("PC2")) %>% 
+    plot(colors = "blue")
 
 ggsave(filename = "figures/pc2_current_infection.jpeg", 
        plot = pc2_current_infection, 
        width = 12, height = 6, dpi = 600)
 
-pc2_immunization <-
-    ggpredict(model_1, terms = c("PC2", "immunization")) %>%
-    plot()
-
-ggsave(filename = "figures/pc2_immunization.jpeg", 
-       plot = pc2_immunization, 
-       width = 12, height = 6, dpi = 600)
-
-pc1_intensity <- 
-    ggpredict(model_1, terms = c("PC1", "delta_ct_cewe_MminusE")) %>%
-    plot()
-
-ggsave(filename = "figures/pc1_intensity.jpeg", 
-       plot = pc1_intensity, 
-       width = 12, height = 6, dpi = 600)
-
-pc2_intensity <-
-    ggpredict(model_1, terms = c("PC2", "delta_ct_cewe_MminusE")) %>%
-    plot()
-
 
 # produce the table without levels (immunization and mouse_strains)
-
-ggsave(filename = "figures/pc2_intensity.jpeg", 
-       plot = pc2_intensity, 
-       width = 12, height = 6, dpi = 600)
+#not possible
 
 
+# Combine the figures
 
-
-
-
-# Combine them vertically
-figure_panel_1 <- plot_grid(top_row, bottom_row, ncol = 1, rel_heights = c(1, 1), labels = c("A", "B", "C"))
+figure_panel_1 <- 
+    plot_grid(pca_variables, pca_individuals, 
+              pc1_current_infection, pc2_current_infection,
+              cols  = 2, rel_heights = c(3, 2), 
+              labels = c("A", "B", "C", "D"))
 
 ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
        width = 16, height = 10, dpi = 300)
