@@ -133,14 +133,9 @@ ggsave(filename = "figures/enrichment_terms_plot.jpeg", plot = enrichment_terms_
        width = 12, height = 6, dpi = 600)
 
 
-figure_panel_1 <- 
-plot_grid(pca_variables, enrichment_terms_plot, pca_individuals, 
-          labels = c("A", "B", "C"),
-          ncol = 2, align = "h", axis = "lr",
-          rel_widths = c(1, 1.2), rel_heights = c(1.2, 1))
+pca_individuals <- pca_individuals + coord_fixed(ratio = 1)
 
-ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
-       width = 16, height = 10, dpi = 300)
+
 
 ##################################################################################################
 #################################################
@@ -160,60 +155,19 @@ model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
 
 summary(model_1)
 
-#see the ggefects
-effects <- ggpredict(model_1)
-
-pc1_current_infection <- 
-    ggpredict(model_1, terms = c("PC1", "current_infection")) %>% 
-    plot()
-
-ggsave(filename = "figures/pc1_current_infection.jpeg", 
-       plot = pc1_current_infection, 
-       width = 12, height = 6, dpi = 600)
-
-pc2_current_infection <- 
-    ggpredict(model_1, terms = c("PC2", "current_infection")) %>%
-    plot()
-
-ggsave(filename = "figures/pc2_current_infection.jpeg", 
-       plot = pc2_current_infection, 
-       width = 12, height = 6, dpi = 600)
-
-pc2_immunization <-
-    ggpredict(model_1, terms = c("PC2", "immunization")) %>%
-    plot()
-
-ggsave(filename = "figures/pc2_immunization.jpeg", 
-       plot = pc2_immunization, 
-       width = 12, height = 6, dpi = 600)
-
-pc1_intensity <- 
-    ggpredict(model_1, terms = c("PC1", "delta_ct_cewe_MminusE")) %>%
-    plot()
-
-ggsave(filename = "figures/pc1_intensity.jpeg", 
-       plot = pc1_intensity, 
-       width = 12, height = 6, dpi = 600)
-
-pc2_intensity <-
-    ggpredict(model_1, terms = c("PC2", "delta_ct_cewe_MminusE")) %>%
-    plot()
-
-
-
-ggsave(filename = "figures/pc2_intensity.jpeg", 
-       plot = pc2_intensity, 
-       width = 12, height = 6, dpi = 600)
-
-
+####
+# 1. full model
+# 2. without infection - delta_ct + current_inf + immu
+# 3. without host mouse strains and the weight0
+# 4. only pc1 pc2
 ### Now comparing different models with different variables 
 model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
-                 mouse_strain + immunization + 
+                  mouse_strain + immunization + 
                   weight_dpi0, data = lab)
+summary(model_1)
 
 
-model_2 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE,
-              data = lab)
+model_2 <- lm(WL_max ~ PC1 + PC2, mouse_strain, weight_dpi0, data = lab)
 summary(model_2)
 
 model_3 <- lm(WL_max ~ PC1 + PC2 + delta_ct_cewe_MminusE +
@@ -272,5 +226,60 @@ stargazer(anova_mod, type = "html", out = "figures/anova_model.html", title =
 
 
 
+#see the ggefects
+effects <- ggpredict(model_1)
 
+pc1_current_infection <- 
+    ggpredict(model_1, terms = c("PC1", "current_infection")) %>% 
+    plot()
+
+ggsave(filename = "figures/pc1_current_infection.jpeg", 
+       plot = pc1_current_infection, 
+       width = 12, height = 6, dpi = 600)
+
+pc2_current_infection <- 
+    ggpredict(model_1, terms = c("PC2", "current_infection")) %>%
+    plot()
+
+ggsave(filename = "figures/pc2_current_infection.jpeg", 
+       plot = pc2_current_infection, 
+       width = 12, height = 6, dpi = 600)
+
+pc2_immunization <-
+    ggpredict(model_1, terms = c("PC2", "immunization")) %>%
+    plot()
+
+ggsave(filename = "figures/pc2_immunization.jpeg", 
+       plot = pc2_immunization, 
+       width = 12, height = 6, dpi = 600)
+
+pc1_intensity <- 
+    ggpredict(model_1, terms = c("PC1", "delta_ct_cewe_MminusE")) %>%
+    plot()
+
+ggsave(filename = "figures/pc1_intensity.jpeg", 
+       plot = pc1_intensity, 
+       width = 12, height = 6, dpi = 600)
+
+pc2_intensity <-
+    ggpredict(model_1, terms = c("PC2", "delta_ct_cewe_MminusE")) %>%
+    plot()
+
+
+# produce the table without levels (immunization and mouse_strains)
+
+ggsave(filename = "figures/pc2_intensity.jpeg", 
+       plot = pc2_intensity, 
+       width = 12, height = 6, dpi = 600)
+
+
+
+
+
+
+# Combine them vertically
+figure_panel_1 <- plot_grid(top_row, bottom_row, ncol = 1, rel_heights = c(1, 1), labels = c("A", "B", "C"))
+
+ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
+       width = 16, height = 10, dpi = 300)
 
