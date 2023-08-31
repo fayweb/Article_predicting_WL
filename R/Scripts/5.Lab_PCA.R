@@ -1,3 +1,9 @@
+#if (!require("BiocManager", quietly = TRUE))
+ #   install.packages("BiocManager")
+#BiocManager::install("org.Mm.eg.db")
+# BiocManager::install("clusterProfiler")
+
+
 library(dplyr)
 library(stringr)
 library(FactoMineR)
@@ -36,6 +42,7 @@ lab <- hm %>%
 ## check for duplicates
 lab <- unique(lab)
 
+
 ## select the mice labels and the immune genes
 gene <- lab %>%
   dplyr::select(c(Mouse_ID, all_of(Gene_lab)))
@@ -56,7 +63,6 @@ genes <- genes[rowSums(is.na(genes)) != ncol(genes), ]
 gene <- gene[row.names(genes), ]
 
 # we need to change the  in challenge infections to a factor
-lab$infection <- as.factor(lab$infection)
 lab$MC.Eimeria <- as.factor(lab$MC.Eimeria)
 
 # Here I create a new column, where we get the actual infection status
@@ -87,7 +93,6 @@ lab <- lab %>%
 # PCA
 ## we can now run a normal pca on the complete data set
 res.pca <- PCA(genes)
-
 
 ## How much does each dimension contribute to variance?
 
@@ -376,9 +381,12 @@ annotation_df <- annotation_df %>% dplyr::select(-Mouse_ID, )
 parasite_colors <- c("E_falciformis" = "coral2",
                      "E_ferrisi" = "chartreuse4",
                      "uninfected" = "cornflowerblue")
+# Define your own colors
+#my_colors <- colorRampPalette(c("red", "white", "blue"))(100)
 
 # Generate the heat map
-pheatmap(heatmap_data, annotation_col = annotation_df,  scale = "row",
+pheatmap(heatmap_data, annotation_col = annotation_df,# color = my_colors,
+         scale = "row",
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean",
          annotation_colors = list(infection = parasite_colors)) # use annotation_colors

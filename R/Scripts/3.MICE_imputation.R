@@ -1,7 +1,5 @@
-
 ## ---------------------------------------------------------------------------------------------------
 library(mice)
-library(tidyr)
 library(VIM)
 
 
@@ -155,6 +153,12 @@ complete_genes <- complete(igf, 1)
 #visualize missingness
 vis_dat(complete_genes)
 
+##transform genes with multiplaction by -1! We want to avoid confusion in the subsequent
+#data analysis 
+#the higher the numbers represent higher fold expression
+complete_genes <- unique(complete_genes)
+complete_genes <- complete_genes %>%
+    mutate_if(is.numeric, funs(.*-1))
 
 ## ---------------------------------------------------------------------------------------------------
 #remove the non imputed genes from our data set
@@ -164,8 +168,10 @@ hm_selection_g <- hm_selection_g %>%
                 "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                 "TICAM1", "TNF", "origin"))
 # add the new imputed genes to the data
-hm_selection_g <- cbind(hm_selection_g, complete_genes)
+hm_selection_g <- hm_selection_g %>%
+    left_join(complete_genes, by = "Mouse_ID")
 
+hm_selection_g <- unique(hm_selection_g)
 
 ## ---------------------------------------------------------------------------------------------------
 plot(igf)
@@ -191,84 +197,8 @@ stripplot(igf, pch = c(20,21), cex = 1.2)
 densityplot(igf)
 
 
-## ---------------------------------------------------------------------------------------------------
-###############lab
-#select the facs and lab muce
-lab <- hm %>%
-  dplyr::filter(origin == "Lab", Position == "mLN") #selecting for mln to avoid
-
-# duplicates
-lab <- unique(lab)
-
-facs_mouse <- lab %>%
-  dplyr::select(c(Mouse_ID, all_of(Facs_lab))) #choosing the same with the wild
-
-facs_mouse <- unique(facs_mouse)
-
-facs_lab <- facs_mouse[, -1]
-
-#remove rows with only nas
-facs_lab <- facs_lab[,colSums(is.na(facs_lab))<nrow(facs_lab)]
-#remove colums with only nas 
-facs_lab <- facs_lab[rowSums(is.na(facs_lab)) != ncol(facs_lab), ]
-
-#select same rows in the first table
-facs_mouse_lab <- facs_mouse[row.names(facs_lab), ]
 
 
-
-
-#########################Field
-###########field
-# somehow the field samples have the origin na,
-# fix that
-field <- hm %>%
-  dplyr::filter(origin == "Field") 
-
-field <- unique(field)
-facs_mouse <- field %>%
-  dplyr::select(c(Mouse_ID, all_of(Facs_wild))) 
-facs_field <- facs_mouse[,-1]
-#remove rows with only nas
-facs_field <- facs_field[,colSums(is.na(facs_field))<nrow(facs_field)]
-#remove colums with only nas 
-facs_field <- facs_field[rowSums(is.na(facs_field)) != ncol(facs_field), ]
-
-#select same rows in the first table
-facs_mouse_field <- facs_mouse[row.names(facs_field), ]
-
-# full join the two tables 
-facs_data <- full_join(facs_mouse_lab, facs_mouse_field)
-
-
-## ---------------------------------------------------------------------------------------------------
-length(intersect(hm_selection_g$Mouse_ID, facs_data$Mouse_ID))
-
-
-## ---------------------------------------------------------------------------------------------------
-facs_data <- facs_data %>%
-  left_join(hm) 
-
-
-## ---------------------------------------------------------------------------------------------------
-setdiff(facs_data$Mouse_ID, hm_selection_g$Mouse_ID)
-
-
-## ---------------------------------------------------------------------------------------------------
-facs_data <- facs_data %>%
-  dplyr::filter(Mouse_ID %in% setdiff(facs_data$Mouse_ID, 
-                                      hm_selection_g$Mouse_ID))
-
-
-# We expect 477 mice in the new data frame 
-472 + 5 
-
-
-## ---------------------------------------------------------------------------------------------------
-#now combine the two data frames
-hm_select <- rbind(hm_selection_g, facs_data)
-
-hm_select <- unique(hm_select)
 
 
 ## ---------------------------------------------------------------------------------------------------

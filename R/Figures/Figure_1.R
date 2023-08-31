@@ -233,6 +233,8 @@ pc1_current_infection <-
     ggpredict(model_4, terms = c("PC1")) %>% 
     plot(colors = "blue")
 
+pc1_current_infection
+
 ggsave(filename = "figures/pc1_current_infection.jpeg", 
        plot = pc1_current_infection, 
        width = 12, height = 6, dpi = 600)
@@ -240,6 +242,8 @@ ggsave(filename = "figures/pc1_current_infection.jpeg",
 pc2_current_infection <- 
     ggpredict(model_4, terms = c("PC2")) %>% 
     plot(colors = "blue")
+
+pc2_current_infection
 
 ggsave(filename = "figures/pc2_current_infection.jpeg", 
        plot = pc2_current_infection, 

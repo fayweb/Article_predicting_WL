@@ -1,13 +1,20 @@
-
+library(tidyverse)
 library(tidyr)
 library(dplyr)
 library(janitor)
 library(visdat)
 
 
-## ---------------------------------------------------------------------------------------------------
-Challenge <- read.csv("Data/Data_input/Challenge_infections.csv")
-SOTA <- read.csv("Data/Data_input/SOTA_Data_Product.csv")
+# Import data 
+
+
+#Challenge = experimental challenge infection data
+
+#SOTA = State of the Art, of wild data
+
+
+Challenge <- read.csv("https://raw.githubusercontent.com/derele/Eimeria_Lab/master/data_products/Challenge_infections.csv")
+SOTA <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv")
 # Vectors for selecting genes
 #Lab genes
 # The measurements of IL.12 and IRG6 are done with an other assay and will 
@@ -21,16 +28,18 @@ Genes_wild   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
                   "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                   "TICAM1", "TNF") #, "IL.12", "IRG6")
 Facs_lab <- c("Position", "CD4", "Treg", "Div_Treg", "Treg17", "Th1", 
-                    "Div_Th1", "Th17", "Div_Th17", "CD8", "Act_CD8", 
-                    "Div_Act_CD8", "IFNy_CD4", "IFNy_CD8","Treg_prop", 
-                    "IL17A_CD4")  
+              "Div_Th1", "Th17", "Div_Th17", "CD8", "Act_CD8", 
+              "Div_Act_CD8", "IFNy_CD4", "IFNy_CD8","Treg_prop", 
+              "IL17A_CD4")  
 Facs_wild <- c( "Treg", "CD4", "Treg17", "Th1", "Th17", "CD8",
-                     "Act_CD8", "IFNy_CD4", "IL17A_CD4", "IFNy_CD8")
+                "Act_CD8", "IFNy_CD4", "IL17A_CD4", "IFNy_CD8")
 
 
 
+# Cleaning
 
-## ---- echo = FALSE----------------------------------------------------------------------------------
+## Challenge
+
 Challenge <- Challenge %>%
     dplyr::mutate(Parasite_primary = case_when(
         primary_infection == "E64" ~ "E_ferrisi",
@@ -48,34 +57,32 @@ Challenge <- Challenge %>%
         challenge_infection == "UNI" ~ "uninfected",
         TRUE ~ ""))
 Challenge <- Challenge %>%
-  dplyr::mutate(infection_history = case_when(
-    Parasite_primary == "uninfected" & 
-        Parasite_challenge == "uninfected" ~ "uninfected",
-    Parasite_primary == "uninfected" & 
-        Parasite_challenge == "E_ferrisi" ~ "uninfected_ferrisi",
-    Parasite_primary == "uninfected" & 
-        Parasite_challenge == "E_falciformis" ~ "uninfected_falciformis",
-    Parasite_primary == "E_falciformis" & 
-        Parasite_challenge == "E_falciformis" ~ "falciformis_falciformis",
-    Parasite_primary == "E_falciformis" & 
-        Parasite_challenge == "E_ferrisi" ~ "falciformis_ferrisi",
-    Parasite_primary == "E_falciformis" & 
-        Parasite_challenge == "uninfected" ~ "falciformis_uninfected",
-    Parasite_primary == "E_ferrisi" & 
-        Parasite_challenge == "E_falciformis" ~ "ferrisi_falciformis",
-    Parasite_primary == "E_ferrisi" & 
-        Parasite_challenge == "E_ferrisi" ~ "ferrisi_ferrisi",
-    Parasite_primary == "E_ferrisi" &
-        Parasite_challenge == "uninfected" ~ "ferrisi_uninfected",
+    dplyr::mutate(infection_history = case_when(
+        Parasite_primary == "uninfected" & 
+            Parasite_challenge == "uninfected" ~ "uninfected",
+        Parasite_primary == "uninfected" & 
+            Parasite_challenge == "E_ferrisi" ~ "uninfected_ferrisi",
+        Parasite_primary == "uninfected" & 
+            Parasite_challenge == "E_falciformis" ~ "uninfected_falciformis",
+        Parasite_primary == "E_falciformis" & 
+            Parasite_challenge == "E_falciformis" ~ "falciformis_falciformis",
+        Parasite_primary == "E_falciformis" & 
+            Parasite_challenge == "E_ferrisi" ~ "falciformis_ferrisi",
+        Parasite_primary == "E_falciformis" & 
+            Parasite_challenge == "uninfected" ~ "falciformis_uninfected",
+        Parasite_primary == "E_ferrisi" & 
+            Parasite_challenge == "E_falciformis" ~ "ferrisi_falciformis",
+        Parasite_primary == "E_ferrisi" & 
+            Parasite_challenge == "E_ferrisi" ~ "ferrisi_ferrisi",
+        Parasite_primary == "E_ferrisi" &
+            Parasite_challenge == "uninfected" ~ "ferrisi_uninfected",
         TRUE ~ ""))
-
-
 ### Add the variable end weight (relative weight at day of sacrifice)
 # start by adding the variable dpi_max which inficates the last day of each mouse
 Challenge <- Challenge %>% 
-  dplyr::filter(!weight == "NA") %>%
-  dplyr::group_by(EH_ID, infection) %>%
-  dplyr::mutate(dpi_max = max(dpi), WL_max = (min(relative_weight) - 100))
+    dplyr::filter(!weight == "NA") %>%
+    dplyr::group_by(EH_ID, infection) %>%
+    dplyr::mutate(dpi_max = max(dpi), WL_max = (min(relative_weight) - 100))
 #somehow case when dplyr ways didn't work for me and this is the only solution 
 #that is functional
 #let's filter for the challenge mice
@@ -93,34 +100,38 @@ prim <- prim[prim$dpi == prim$dpi_max, ]
 #now we can easily add the variable end weight to each mouse (which in now equal
 #to the weight on the dpi = dpi_max)
 prim <- prim %>% 
-  dplyr::mutate(end_rel_weight = (weight/weight_dpi0) * 100)
+    dplyr::mutate(end_rel_weight = (weight/weight_dpi0) * 100)
+
+mice_dead_in_prim <- outersect(chal$EH_ID, prim$EH_ID)
+
+prim <- prim %>%
+    dplyr::filter(EH_ID %in% mice_dead_in_prim)
+
 c <- rbind(chal, prim)
-
-Challenge <- Challenge %>%
-  left_join(c %>%
-              dplyr::select(EH_ID, end_rel_weight), relationship = "many-to-many")
-
-Challenge <- unique(Challenge)
+#now jon it to the challenge infections
+c %>% 
+    dplyr::select(EH_ID, end_rel_weight) %>%
+    right_join(Challenge, relationship = "many-to-many") -> Challenge
 
 
 Challenge <- unique(Challenge)
 #There are two measuremts for CXCR3
 # We want to here keep the CXCR3_bio 
 Challenge <- Challenge %>% 
-  dplyr::select(-CXCR3)
+    dplyr::select(-CXCR3)
 #Now rename the CXCR3_bio to CXCR3
 Challenge <- Challenge %>%
-  dplyr::rename(CXCR3 = CXCR3_bio)
+    dplyr::rename(CXCR3 = CXCR3_bio)
 rm(c, chal, prim)
 
+# Join wild and lab data 
 
-## ---- message = FALSE, echo = FALSE-----------------------------------------------------------------
 length(intersect(colnames(Challenge), colnames(SOTA)))
 #37 intersecting columns
 # create a function that is the opposite of intersect
 outersect <- function(x, y) {
-  sort(c(setdiff(x, y),
-         setdiff(y, x)))
+    sort(c(setdiff(x, y),
+           setdiff(y, x)))
 }
 length(outersect(colnames(Challenge), colnames(SOTA)))
 # 149 dissimilar columns
@@ -132,46 +143,19 @@ SOTA <- SOTA %>%
 # Adjust the parasite names to fit the lab
 SOTA <- SOTA %>%
     dplyr::mutate(eimeriaSpecies = case_when(
-    eimeriaSpecies == "Negative" ~ "uninfected",
-    eimeriaSpecies == "" ~ "NA",
-    TRUE ~ eimeriaSpecies))
-    
+        eimeriaSpecies == "Negative" ~ "uninfected",
+        eimeriaSpecies == "" ~ "NA",
+        TRUE ~ eimeriaSpecies))
+
 # Rename column names to match each other
 Challenge <- Challenge %>% 
     dplyr::rename(Mouse_ID = EH_ID, delta_ct_cewe_MminusE = delta, 
                   MC.Eimeria = Eim_MC, Feces_Weight = feces_weight)
-
-# current_falciformis
-# According to the melting curve for eimeria 
-Challenge <- Challenge %>%
-  dplyr::mutate(current_infection = case_when(
-    infection == "E_ferrisi" & MC.Eimeria == "TRUE" ~ "E_ferrisi",
-    infection == "E_ferrisi" & MC.Eimeria == "FALSE" ~ "uninfected",
-    infection == "E_falciformis" & MC.Eimeria == "TRUE" ~ "E_falciformis",
-    infection == "E_falciformis" & MC.Eimeria == "FALSE" ~ "uninfected",
-    infection == "uninfected" & MC.Eimeria == "TRUE" ~ "E_falciformis",
-    infection == "uninfected" & MC.Eimeria == "FALSE" ~ "uninfected",
-    TRUE ~ ""
-  ), 
-  immunization = case_when(
-    infection_history == "falciformis_ferrisi" ~ "heterologous",
-    infection_history == "ferrisi_falciformis" ~ "heterologous",
-    infection_history == "falciformis_uninfected" ~ "uninfected",
-    infection_history == "ferrisi_uninfected" ~ "uninfected",
-    infection_history == "ferrisi_ferrisi" ~ "homologous",
-    infection_history == "falciformis_falciformis" ~ "homologous",
-    infection_history == "uninfected_falciformis" ~ "naive",
-    infection_history == "uninfected_ferrisi" ~ "naive",
-    infection_history == "uninfected" ~ "uninfected",
-    TRUE ~ "NA"
-  ))
-
-
+#expected columns:
+37 + 149 #186
 # now join the two data sets
 data <- full_join(Challenge, SOTA, 
                   by = intersect(colnames(SOTA), colnames(Challenge)))
-
-2742 + 1921
 
 data <- data %>%
   dplyr::select(-ends_with("_N"))
