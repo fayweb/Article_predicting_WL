@@ -20,21 +20,10 @@ SOTA <- read.csv("Data/Data_input/SOTA_Data_Product.csv")
 #Lab genes
 # The measurements of IL.12 and IRG6 are done with an other assay and will 
 #ignore for now
-Gene_lab   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
+Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
                 "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                 "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                 "TICAM1", "TNF") #"IL.12", "IRG6")
-Genes_wild   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10", 
-                  "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                  "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                  "TICAM1", "TNF") #, "IL.12", "IRG6")
-Facs_lab <- c("Position", "CD4", "Treg", "Div_Treg", "Treg17", "Th1", 
-              "Div_Th1", "Th17", "Div_Th17", "CD8", "Act_CD8", 
-              "Div_Act_CD8", "IFNy_CD4", "IFNy_CD8","Treg_prop", 
-              "IL17A_CD4")  
-Facs_wild <- c( "Treg", "CD4", "Treg17", "Th1", "Th17", "CD8",
-                "Act_CD8", "IFNy_CD4", "IL17A_CD4", "IFNy_CD8")
-
 
 
 # Cleaning
@@ -177,7 +166,7 @@ data <- full_join(Challenge, SOTA,
 data <- data %>%
   dplyr::select(-ends_with("_N"))
   
-rm(Challenge, SOTA)
+rm(Challenge, SOTA, both_ids, missing_ids)
 
 write.csv(data, "Data/Data_output/1.MICE_cleaned_data.csv", row.names = FALSE)
 
