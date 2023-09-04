@@ -3,119 +3,78 @@ source("R/Scripts/1.Data_prep.R")
 
 ## ---------------------------------------------------------------------------------------------------
 library(mice)
-library(tidyr)
-library(dplyr)
 library(stringr)
-#library(fitdistrplus)
-#library(fitur)
-#library(visdat)
+
 
 
 ## ---------------------------------------------------------------------------------------------------
 hm <- data
 
 
-## ---------------------------------------------------------------------------------------------------
-# Vectors for selecting genes
-#Lab genes
-# The measurements of IL.12 and IRG6 are done with an other assay and will 
-#ignore for now
-Gene_lab   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
-                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                "TICAM1", "TNF") #"IL.12", "IRG6")
-
-Genes_wild   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10", 
-                  "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                  "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                  "TICAM1", "TNF") #, "IL.12", "IRG6")
-
-
-
-## ----imputing_mice----------------------------------------------------------------------------------
+## Normalizing 
 hm$Mouse_ID <- str_replace(hm$Mouse_ID, "_", "")
 
 field <- hm %>%
     dplyr::filter(origin == "Field") 
 
-field <- unique(field)
+# select the genes, the mouse identifier and the house keeping gene
+gmf <- field[, c("Mouse_ID", Genes_v, "GAPDH")] 
 
-genes_mouse_field <- field %>%
-    dplyr::select(c(Mouse_ID, all_of(Genes_wild), GAPDH)) 
+# Remove columns with only NA values
+gmf <- gmf %>% select_if(~!all(is.na(.)))
 
-genes_field <- genes_mouse_field  %>%
-    dplyr::select(-Mouse_ID)
+#remove rows with only nas 
+gmf <- gmf[!apply(is.na(gmf[-1]), 1, all), ]
 
-#remove rows with only nas
-genes_field <- genes_field[,colSums(is.na(genes_field))<nrow(genes_field)]
-#remove colums with only nas 
-genes_field <- genes_field[rowSums(is.na(genes_field)) != ncol(genes_field), ]
-genes_mouse_field <- genes_mouse_field[row.names(genes_field), ]
+gf <- gmf[,-1]
 
 ##select same rows in the first table
-field <- field[row.names(genes_field), ]
+field <- field %>% 
+    filter(Mouse_ID %in% gmf$Mouse_ID)
 
 
 ###############lab
-#select the genes and lab muce
+#select the genes and lab mice
 lab <- hm %>%
-    dplyr::filter(origin == "Lab", Position == "mLN") #selecting for mln to avoid
-# duplicates
-lab <- unique(lab)
-gene_lab_mouse <- lab %>%
-    dplyr::select(c(Mouse_ID, "IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",                 
-                    "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO",                  
-                    "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1",                  
-                    "TICAM1", "TNF", PPIB)) 
+    dplyr::filter(origin == "Lab", Position == "mLN") %>%
+    group_by(Mouse_ID, infection) %>%
+    filter(dpi == max_dpi)
+    
 
-gene_lab_mouse <- unique(gene_lab_mouse)
+# select the genes, the mouse identifier and the house keeping gene
+gml <- lab[, c("Mouse_ID", Genes_v, "PPIB")] 
 
-genes_lab <- gene_lab_mouse[, -1]
+gml <- unique(gml)
 
-#remove rows with only nas
-genes_lab <- genes_lab[,colSums(is.na(genes_lab))<nrow(genes_lab)]
+# Remove columns with only NA values
+gml <- gml %>% select_if(~!all(is.na(.)))
 
-#remove colums with only nas 
-genes_lab <- genes_lab[rowSums(is.na(genes_lab)) != ncol(genes_lab), ]
+#remove rows with only nas 
+gml <- gml[!apply(is.na(gml[-1]), 1, all), ]
 
-genes_lab <- unique(genes_lab)
-
-#select same rows in the first table
-gene_lab_mouse <- gene_lab_mouse[row.names(genes_lab), ]
+gl <- gml[,-1]
 
 ##select same rows in the first table
-lab <- lab[row.names(genes_lab), ]
+lab <- lab %>%
+    filter(Mouse_ID %in% gml$Mouse_ID)
 
 
 
 
-
-## ---------------------------------------------------------------------------------------------------
-#glimpse(hm_selection_g)
-
-#dplyr::select(-Mouse_ID)
 # looking at patterns of nas)
 #pattern_na <-as.data.frame(md.pattern(field_genes))
-sapply(field %>%
-           dplyr::select(c(all_of(Genes_wild), "PPIB", "GAPDH")), 
-       function(x) sum(is.na(x)))
+#field 
+sapply(gmf, function(x) sum(is.na(x)))
 
-sapply(lab %>%
-           dplyr::select(c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",                 
-                           "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO",                  
-                           "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", 
-                           "SOCS1", "TICAM1", "TNF", "PPIB", "GAPDH")), 
-       function(x) sum(is.na(x)))
-
+#lab
+sapply(gml, function(x) sum(is.na(x)))
 
 
 ## ---------------------------------------------------------------------------------------------------
 
 
 ####################### field ##########################
-# select first the field samples 
-
-df <- genes_mouse_field
+df <- gmf
 
 ############### IL.13 
 # dct
@@ -341,7 +300,7 @@ df -> df_field
 # select first the field samples 
 
 
-df_lab <- gene_lab_mouse
+df_lab <- gml
 
 ############### IFNy
 df_lab <- df_lab %>%
@@ -568,6 +527,9 @@ df_lab <- df_lab %>%
                      "CXCL9", "IDO1", "IRGM1", "MPO", "MUC2", "MUC5AC", "MYD88", 
                      "NCR1", "PRF1", "RETNLB", "SOCS1",  "TICAM1", "TNF", "PPIB", 
                      contains("_N")))
+Mouse_ID <- gml$Mouse_ID
+
+df_lab <- cbind(Mouse_ID, df_lab)
 
 # remove ending _dct
 df_lab <- df_lab %>%
@@ -586,9 +548,7 @@ df_field <- df_field %>%
 
 # add the new genes to the complete data sets 
 lab <- lab %>%
-    dplyr::select(-c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10", "IL1RN","CASP1", 
-                     "CXCL9", "IDO1", "IRGM1", "MPO",  "MUC2", "MUC5AC", "MYD88", 
-                     "NCR1", "PRF1", "RETNLB", "SOCS1",  "TICAM1", "TNF")) %>%
+    dplyr::select(-all_of(Genes_v)) %>%
     left_join(df_lab, by = "Mouse_ID")
 
 

@@ -166,7 +166,7 @@ data <- full_join(Challenge, SOTA,
 data <- data %>%
   dplyr::select(-ends_with("_N"))
   
-rm(Challenge, SOTA, both_ids, missing_ids)
+rm(Challenge, SOTA)
 
 write.csv(data, "Data/Data_output/1.MICE_cleaned_data.csv", row.names = FALSE)
 
