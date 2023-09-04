@@ -13,8 +13,9 @@ library(visdat)
 #SOTA = State of the Art, of wild data
 
 
-Challenge <- read.csv("https://raw.githubusercontent.com/derele/Eimeria_Lab/master/data_products/Challenge_infections.csv")
-SOTA <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv")
+Challenge <- read.csv("Data/Data_input/Challenge_infections.csv")
+SOTA <- read.csv("Data/Data_input/SOTA_Data_Product.csv")
+
 # Vectors for selecting genes
 #Lab genes
 # The measurements of IL.12 and IRG6 are done with an other assay and will 
@@ -48,6 +49,7 @@ Challenge <- Challenge %>%
         primary_infection == "E139" ~ "E_ferrisi",
         primary_infection == "UNI" ~ "uninfected",
         TRUE ~ ""))
+
 Challenge <- Challenge %>%
     dplyr::mutate(Parasite_challenge = case_when(    
         challenge_infection == "E64" ~ "E_ferrisi",
@@ -56,6 +58,7 @@ Challenge <- Challenge %>%
         challenge_infection == "E139" ~ "E_ferrisi",
         challenge_infection == "UNI" ~ "uninfected",
         TRUE ~ ""))
+
 Challenge <- Challenge %>%
     dplyr::mutate(infection_history = case_when(
         Parasite_primary == "uninfected" & 
@@ -77,69 +80,66 @@ Challenge <- Challenge %>%
         Parasite_primary == "E_ferrisi" &
             Parasite_challenge == "uninfected" ~ "ferrisi_uninfected",
         TRUE ~ ""))
+
+Challenge[sapply(Challenge, is.infinite)] <- NA
+
+
+# IF a mouse dies before the end of the experiment the weight on the dpis after
+# death will be NA. For further analysis I am changing those dpis to NA as well
+# so that I can get the max dpi for each mouse
+
+# replace the 0 with NA (incorrect experimental measurement)
+Challenge$weight[Challenge$weight == 0] <- NA
+Challenge$relative_weight[Challenge$relative_weight == 0] <- NA
+
+# change dpis to NA after death
+Challenge$dpi[is.na(Challenge$weight)] <- NA
+
 ### Add the variable end weight (relative weight at day of sacrifice)
 # start by adding the variable dpi_max which inficates the last day of each mouse
-Challenge <- Challenge %>% 
-    dplyr::filter(!weight == "NA") %>%
+Challenge <- Challenge%>%
+    dplyr::filter(!weight == "NA") %>% 
     dplyr::group_by(EH_ID, infection) %>%
-    dplyr::mutate(dpi_max = max(dpi), WL_max = (min(relative_weight) - 100))
-#somehow case when dplyr ways didn't work for me and this is the only solution 
-#that is functional
-#let's filter for the challenge mice
-chal <- Challenge %>% filter(infection == "challenge")
-#now only select the rows where the dpi is equal to the dpi max for each mouse
-chal <- chal[chal$dpi == chal$dpi_max, ] 
-#now we can easily add the variable end weight to each mouse (which in now equal
-#to the weight on the dpi = dpi_max)
-chal <- chal %>% dplyr::mutate(end_rel_weight = (weight/weight_dpi0) * 100)
-#let'repeat for the prim 
-#let's filter for the challenge mice
-prim <- Challenge %>% filter(infection == "primary")
-#now only select the rows where the dpi is equal to the dpi max for each mouse
-prim <- prim[prim$dpi == prim$dpi_max, ] 
-#now we can easily add the variable end weight to each mouse (which in now equal
-#to the weight on the dpi = dpi_max)
-prim <- prim %>% 
-    dplyr::mutate(end_rel_weight = (weight/weight_dpi0) * 100)
+    dplyr::mutate(max_dpi = max(dpi), WL_max = (100 - min(relative_weight)))
 
-mice_dead_in_prim <- outersect(chal$EH_ID, prim$EH_ID)
+# Creating death variable
+# Identify EH_IDs that exist for both 'primary' and 'challenge'
+both_ids <- intersect(
+    Challenge %>% filter(infection == "primary") %>% pull(EH_ID),
+    Challenge %>% filter(infection == "challenge") %>% pull(EH_ID)
+)
 
-prim <- prim %>%
-    dplyr::filter(EH_ID %in% mice_dead_in_prim)
+# Identify EH_IDs that exist for 'primary' but not for 'challenge'
+missing_ids <- setdiff(
+    Challenge %>% filter(infection == "primary") %>% pull(EH_ID),
+    Challenge %>% filter(infection == "challenge") %>% pull(EH_ID)
+)
 
-c <- rbind(chal, prim)
-#now jon it to the challenge infections
-c %>% 
-    dplyr::select(EH_ID, end_rel_weight) %>%
-    right_join(Challenge, relationship = "many-to-many") -> Challenge
+# Add the 'death' column
+Challenge <- Challenge %>%
+    mutate(
+        death = case_when(
+            EH_ID %in% both_ids  ~ "challenge",
+            EH_ID %in% missing_ids ~ "primary",
+            TRUE ~ ""
+        )
+    )
 
-
-Challenge <- unique(Challenge)
 #There are two measuremts for CXCR3
 # We want to here keep the CXCR3_bio 
 Challenge <- Challenge %>% 
     dplyr::select(-CXCR3)
+
 #Now rename the CXCR3_bio to CXCR3
 Challenge <- Challenge %>%
     dplyr::rename(CXCR3 = CXCR3_bio)
-rm(c, chal, prim)
 
-# Join wild and lab data 
 
-length(intersect(colnames(Challenge), colnames(SOTA)))
-#37 intersecting columns
-# create a function that is the opposite of intersect
-outersect <- function(x, y) {
-    sort(c(setdiff(x, y),
-           setdiff(y, x)))
-}
-length(outersect(colnames(Challenge), colnames(SOTA)))
-# 149 dissimilar columns
-# add a column that indicates where the samples are from 
 Challenge <- Challenge %>%
     dplyr::mutate(origin = "Lab")
 SOTA <- SOTA %>%
     dplyr::mutate(origin = "Field")
+
 # Adjust the parasite names to fit the lab
 SOTA <- SOTA %>%
     dplyr::mutate(eimeriaSpecies = case_when(
@@ -151,8 +151,25 @@ SOTA <- SOTA %>%
 Challenge <- Challenge %>% 
     dplyr::rename(Mouse_ID = EH_ID, delta_ct_cewe_MminusE = delta, 
                   MC.Eimeria = Eim_MC, Feces_Weight = feces_weight)
+
+# Join wild and lab data 
+length(intersect(colnames(Challenge), colnames(SOTA)))
+
+#37 intersecting columns
+
+# create a function that is the opposite of intersect
+outersect <- function(x, y) {
+    sort(c(setdiff(x, y),
+           setdiff(y, x)))
+}
+
+length(outersect(colnames(Challenge), colnames(SOTA)))
+
+# 148 dissimilar columns
+
 #expected columns:
-37 + 149 #186
+37 + 148 #185
+
 # now join the two data sets
 data <- full_join(Challenge, SOTA, 
                   by = intersect(colnames(SOTA), colnames(Challenge)))
@@ -160,6 +177,7 @@ data <- full_join(Challenge, SOTA,
 data <- data %>%
   dplyr::select(-ends_with("_N"))
   
+rm(Challenge, SOTA)
 
 write.csv(data, "Data/Data_output/1.MICE_cleaned_data.csv", row.names = FALSE)
 
