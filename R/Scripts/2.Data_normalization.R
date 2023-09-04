@@ -567,6 +567,8 @@ field <- field %>%
 
 hm_norm <- rbind(lab, field)
 
+rm(data, df_field, df_lab, lab, dct_max, both_ids, missing_ids, 
+   Mouse_ID)
 
 ## ---------------------------------------------------------------------------------------------------
 ##save the imputed data 
