@@ -59,8 +59,6 @@ lab <- lab %>%
     filter(Mouse_ID %in% gml$Mouse_ID)
 
 
-
-
 # looking at patterns of nas)
 #pattern_na <-as.data.frame(md.pattern(field_genes))
 #field 
@@ -69,6 +67,14 @@ sapply(gmf, function(x) sum(is.na(x)))
 #lab
 sapply(gml, function(x) sum(is.na(x)))
 
+#remove duplicates
+lab_prim <- lab %>%
+    filter(death == "primary")
+lab_chal <- lab %>% 
+    filter(death == "challenge", infection == "challenge")
+
+lab <- rbind(lab_prim, lab_chal)
+rm(lab_prim, lab_chal)
 
 ## ---------------------------------------------------------------------------------------------------
 
