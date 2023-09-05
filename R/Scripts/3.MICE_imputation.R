@@ -1,22 +1,14 @@
 
 source("R/Scripts/2.Data_normalization.R")
 
-hm <- hm_norm
+library(VIM)
 
-rm(hm_norm)
+hm_genes <- hm[,c("Mouse_ID", Genes_v)]
 
-hm_genes <- rbind(gmf, gml)
-
-# remove HKG
-hm_genes <- hm_genes %>%
-  dplyr::select(-c(PPIB, GAPDH))
-
-#dplyr::select(-Mouse_ID)
-# looking at patterns of nas)
 #pattern_na <-as.data.frame(md.pattern(field_genes))
 sapply(hm_genes, function(x) sum(is.na(x)))
 
-genes <- hm_genes[,-1]
+genes <- hm_genes[, -1]
 
 # The frequency distribution of the missing cases per variable can be obtained 
 # as:
@@ -38,9 +30,10 @@ marginplot(hm_genes[c(6,8)])
 
 ## ---------------------------------------------------------------------------------------------------
 # removing il 10
-#genes <- genes %>%
- # dplyr::select(-IL.10)
-# removed already at previous step (because of large missing numbers)
+genes <- genes[, !(names(genes) %in% "IL.10")]
+
+
+# removed(because of large missing numbers)
 # m=5 refers to the number of imputed datasets. Five is the default value.
 igf <- mice(genes, m = 5, seed = 500) # method = meth,
 
@@ -59,25 +52,21 @@ complete_genes <- complete(igf, 1)
 #visualize missingness
 vis_dat(complete_genes)
 
-##transform genes with multiplaction by -1! We want to avoid confusion in the subsequent
-#data analysis 
-#the higher the numbers represent higher fold expression
-complete_genes <- unique(complete_genes)
-complete_genes <- complete_genes %>%
-    mutate_if(is.numeric, funs(.*-1))
 
 ## ---------------------------------------------------------------------------------------------------
-#remove the non imputed genes from our data set
-hm_selection_g <- hm_selection_g %>%
-  dplyr::select(-c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10",
-                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                "TICAM1", "TNF", "origin"))
-# add the new imputed genes to the data
-hm_selection_g <- hm_selection_g %>%
-    left_join(complete_genes, by = "Mouse_ID")
+# remove IL.10 from the selection vector
+Genes_v <- Genes_v[!Genes_v == "IL.10"]
 
-hm_selection_g <- unique(hm_selection_g)
+#remove the non imputed genes from our data set
+hm <-hm %>%
+  dplyr::select(-all_of(Genes_v))
+
+# join the imputed genes
+Mouse_ID <- hm_genes$Mouse_ID
+result <- data.frame(Mouse_ID, complete_genes)
+
+hm <- hm %>%
+  left_join(result, by = "Mouse_ID")
 
 ## ---------------------------------------------------------------------------------------------------
 plot(igf)
@@ -103,12 +92,8 @@ stripplot(igf, pch = c(20,21), cex = 1.2)
 densityplot(igf)
 
 
-
-
-
-
 ## ---------------------------------------------------------------------------------------------------
  ##save the imputed data 
-write.csv(hm_select, "Data/Data_output/2.imputed_MICE_data_set.csv", 
+write.csv(hm, "Data/Data_output/2.imputed_MICE_data_set.csv", 
           row.names = FALSE)
 
