@@ -169,6 +169,8 @@ residuals_1 <-
     xlab("Theoretical Quantiles") +
     ylab("Sample Quantiles")
 
+residuals_1
+
 ggsave(filename = "figures/residuals_model_1.jpeg", 
        plot = residuals_1, 
        width = 12, height = 6, dpi = 600)
@@ -186,6 +188,8 @@ residuals_vs_fitted <-
     ggtitle("Residuals vs Fitted Values") +
     xlab("Fitted Values") +
     ylab("Residuals")
+
+residuals_vs_fitted
 
 ggsave(filename = "figures/residuals_vs_fitted.jpeg", 
        plot = residuals_vs_fitted, 

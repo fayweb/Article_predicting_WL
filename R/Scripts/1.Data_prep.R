@@ -70,6 +70,7 @@ Challenge <- Challenge %>%
             Parasite_challenge == "uninfected" ~ "ferrisi_uninfected",
         TRUE ~ ""))
 
+
 Challenge[sapply(Challenge, is.infinite)] <- NA
 
 
@@ -140,6 +141,21 @@ SOTA <- SOTA %>%
 Challenge <- Challenge %>% 
     dplyr::rename(Mouse_ID = EH_ID, delta_ct_cewe_MminusE = delta, 
                   MC.Eimeria = Eim_MC, Feces_Weight = feces_weight)
+
+# Here I create a new column, where we get the actual infection status
+# According to the melting curve for eimeria 
+Challenge <- Challenge %>%
+  dplyr::mutate(current_infection = case_when(
+    Parasite_challenge == "E_ferrisi" & MC.Eimeria == "TRUE" ~ "E_ferrisi",
+    Parasite_challenge == "E_ferrisi" & MC.Eimeria == "FALSE" ~ "uninfected",
+    Parasite_challenge == "E_falciformis" & MC.Eimeria == "TRUE" ~ "E_falciformis",
+    Parasite_challenge == "E_falciformis" & MC.Eimeria == "FALSE" ~ "uninfected",
+    Parasite_challenge == "uninfected" & MC.Eimeria == "TRUE" ~ "E_falciformis",
+    Parasite_challenge == "uninfected" & MC.Eimeria == "FALSE" ~ "uninfected",
+    TRUE ~ ""
+  ))
+
+
 
 # Join wild and lab data 
 length(intersect(colnames(Challenge), colnames(SOTA)))

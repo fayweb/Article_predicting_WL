@@ -81,7 +81,7 @@ rm(lab_prim, lab_chal)
 # Livak's method of normalisation
 # Create a function to calculate the delta delta ct for each gene for each mouse
 # 1. Step 1: ΔCt (sample) = Ct(gene of interest) − Ct(reference gene)
-# 2. Step 2: ΔΔCt = ΔCt(experimental sample) − ΔCt(average of each gene as control)
+# 2. ΔΔct = Δct from step 1 - mean(Δct for the gene)
 # 3. 2-ΔΔCt
 df <- field
 
@@ -95,29 +95,30 @@ plot_list <- lapply(names(gf), function(colname){
 
 #grid.arrange(grobs = plot_list, ncol = 3) 
 #placed in hashtags, takes to long to process
-
 calculate_expression <- function(df) {
   # Extract GAPDH column
   GAPDH <- df$GAPDH
-  Mouse_ID <- df$Mouse_ID
+  
   # Step 1: Calculate delta ct for all genes except GAPDH
   delta_ct <- df[, sapply(df, is.numeric)]  # Ensure only numeric columns are taken
   delta_ct <- delta_ct[, !colnames(delta_ct) %in% "GAPDH"]  # Exclude GAPDH
   delta_ct <- sapply(delta_ct, function(gene) gene - GAPDH)
   
-  # Step 2: Calculate ΔΔct using mean of original gene column
-  gene_means <- colMeans(df[, colnames(delta_ct)], na.rm = TRUE)  # Calculate mean for each original gene
-  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - gene_means))
+  # Step 2: Calculate ΔΔct
+  mean_dct <- colMeans(delta_ct, na.rm = TRUE)  # Calculate mean delta_ct for each gene
+  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - mean_dct))
   
   # Step 3: Calculate the result
   result <- 2^(-delta_delta_ct)
-  # Include the Mouse_ID column
-  result <- data.frame(Mouse_ID, result)
+  result <- round(result, 2)
   return(result)
 }
 
 # Use the function
-result_field <- calculate_expression(gmf)
+result_df <- calculate_expression(df)
+
+# View the result
+print(result_df)
 
 #check the distributions of genes
 plot_list <- lapply(names(result_field[,-1]), function(colname){
@@ -128,46 +129,6 @@ plot_list <- lapply(names(result_field[,-1]), function(colname){
 
 
 #grid.arrange(grobs = plot_list, ncol = 3)
-
-# We have a lot of extreme values that change the distribution of the data completely
-# due to the log transformation
-# let's try avoiding the log transformation
-
-calculate_expression <- function(df) {
-  # Extract GAPDH column
-  GAPDH <- df$GAPDH
-  Mouse_ID <- df$Mouse_ID
-  # Step 1: Calculate delta ct for all genes except GAPDH
-  delta_ct <- df[, sapply(df, is.numeric)]  # Ensure only numeric columns are taken
-  delta_ct <- delta_ct[, !colnames(delta_ct) %in% "GAPDH"]  # Exclude GAPDH
-  delta_ct <- sapply(delta_ct, function(gene) gene - GAPDH)
-  
-  # Step 2: Calculate ΔΔct using mean of original gene column
-  gene_means <- colMeans(df[, colnames(delta_ct)], na.rm = TRUE)  # Calculate mean for each original gene
-  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - gene_means))
-  
-  # Step 3: Calculate the result
-  #result <- 2^(-delta_delta_ct) !!! removing this step and using only delta delta ct
-  # to void log transformation
-  # Include the Mouse_ID column
-  result <- data.frame(Mouse_ID, delta_delta_ct)
-  return(result)
-}
-
-# Use the function
-result_field <- calculate_expression(gmf)
-
-#check the distributions of genes
-plot_list <- lapply(names(result_field[,-1]), function(colname){
-  ggplot(result_field[,-1], aes_string(x = colname)) +
-    geom_histogram(bins = 30, fill = "skyblue", color = "black") +
-    labs(title = paste("Histogram of", colname))
-})
-
-
-#grid.arrange(grobs = plot_list, ncol = 3)
-
-
 
 ############### same for lab ##################################################
 # In the lab we use PPIB
@@ -187,23 +148,20 @@ plot_list <- lapply(names(gl), function(colname){
 calculate_expression <- function(df) {
   # Extract PPIB column
   PPIB <- df$PPIB
-  Mouse_ID <- df$Mouse_ID
+  
   # Step 1: Calculate delta ct for all genes except PPIB
   delta_ct <- df[, sapply(df, is.numeric)]  # Ensure only numeric columns are taken
   delta_ct <- delta_ct[, !colnames(delta_ct) %in% "PPIB"]  # Exclude PPIB
   delta_ct <- sapply(delta_ct, function(gene) gene - PPIB)
   
-  # Step 2: Calculate ΔΔct using mean of original gene column
-  # Calculate mean for each original gene
-  gene_means <- colMeans(df[, colnames(delta_ct)], na.rm = TRUE)  
-  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - gene_means))
+  # Step 2: Calculate ΔΔct
+  mean_dct <- colMeans(delta_ct, na.rm = TRUE)  # Calculate mean delta_ct for each gene
+  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - mean_dct))
   
   # Step 3: Calculate the result
-  #result <- 2^(-delta_delta_ct)
-  # look at the function for the field data
-  # Include the Mouse_ID column
-  result <- data.frame(Mouse_ID, delta_delta_ct)
-  return(result)
+  result <- 2^(-delta_delta_ct)
+  
+  return(as.data.frame(result))
 }
 
 # Use the function
@@ -221,7 +179,7 @@ plot_list <- lapply(names(result_lab[,-1]), function(colname){
 })
 
 
-#grid.arrange(grobs = plot_list, ncol = 3)
+grid.arrange(grobs = plot_list, ncol = 3)
 
 
 
@@ -234,7 +192,7 @@ result <- rbind(result_field, result_lab)
 # negative ddct = upregulation
 # postive ddct = downregulation
 # Check if each column is numeric and, if so, multiply by -1
-result[] <- lapply(result, function(x) if(is.numeric(x)) -1 * x else x)
+#result[] <- lapply(result, function(x) if(is.numeric(x)) -1 * x else x)
 
 # Therefore deciding to transform data by *-1
 # then positive = upgregulation - more intuitive for interpretation

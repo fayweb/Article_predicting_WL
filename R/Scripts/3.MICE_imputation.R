@@ -19,13 +19,13 @@ meth <- init$method
 
 
 ## ---------------------------------------------------------------------------------------------------
-aggr_plot <- aggr(hm_genes, col=c('navyblue','red'), numbers=TRUE, 
-                  sortVars=TRUE, labels=names(hm_genes), cex.axis=.7, gap=3, 
-                  ylab=c("Histogram of missing data","Pattern"))
+#aggr_plot <- aggr(hm_genes, col=c('navyblue','red'), numbers=TRUE, 
+  #                sortVars=TRUE, labels=names(hm_genes), cex.axis=.7, gap=3, 
+   #               ylab=c("Histogram of missing data","Pattern"))
 
 
 ## ---------------------------------------------------------------------------------------------------
-marginplot(hm_genes[c(6,8)])
+#marginplot(hm_genes[c(6,8)])
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -69,19 +69,19 @@ hm <- hm %>%
   left_join(result, by = "Mouse_ID")
 
 ## ---------------------------------------------------------------------------------------------------
-plot(igf)
+#plot(igf)
 
 
 ## ---------------------------------------------------------------------------------------------------
-xyplot(igf, IFNy ~ IL.13 + IRGM1 + MUC2, pch=18,cex=1)
+#xyplot(igf, IFNy ~ IL.13 + IRGM1 + MUC2, pch=18,cex=1)
 
 
 ## ---------------------------------------------------------------------------------------------------
-xyplot(igf,IFNy ~ IL.13 + PRF1 + CASP1, pch=18,cex=1)
+#xyplot(igf,IFNy ~ IL.13 + PRF1 + CASP1, pch=18,cex=1)
 
 
 ## ---------------------------------------------------------------------------------------------------
-stripplot(igf, pch = c(20,21), cex = 1.2)
+#stripplot(igf, pch = c(20,21), cex = 1.2)
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -89,8 +89,8 @@ stripplot(igf, pch = c(20,21), cex = 1.2)
 
 
 ## ---------------------------------------------------------------------------------------------------
-densityplot(igf)
-
+#densityplot(igf)
+rm(complete_genes, df, genes, hm_genes, igf, init, plot_list, result)
 
 ## ---------------------------------------------------------------------------------------------------
  ##save the imputed data 

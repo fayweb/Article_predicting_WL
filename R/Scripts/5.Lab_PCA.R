@@ -3,9 +3,6 @@
 #BiocManager::install("org.Mm.eg.db")
 # BiocManager::install("clusterProfiler")
 
-
-library(dplyr)
-library(stringr)
 library(FactoMineR)
 library(reshape2)
 library(corrplot)
@@ -21,74 +18,15 @@ library(org.Mm.eg.db) # gene ids identifiers Mus musculus
 library(viridis)
 
 
-# Load the normalized and imputed data set
-hm <- read.csv("Data/Data_output//2.imputed_MICE_data_set.csv")
+source("R/Scripts/3.MICE_imputation.R")
 
 
-# Vectors for selecting the relevant immune genes
-Gene_lab   <- c("IFNy", "CXCR3", "IL.6", "IL.13",
-                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                "TICAM1", "TNF") # "IL.12", "IRG6")
-
-# Data cleaning and preparation
-
-## Select the laboratory data. As we have duplicate data for each mice with 
-## the same gene expression values, we select the mice once, using the mesenterial
-## lymphnode data as a separator ("mLN")
+# WOrking with laboratory data only
+# Select genes
 lab <- hm %>%
-  dplyr::filter(origin == "Lab", Position == "mLN") 
+  dplyr::filter(origin == "Lab")
 
-## check for duplicates
-lab <- unique(lab)
-
-
-## select the mice labels and the immune genes
-gene <- lab %>%
-  dplyr::select(c(Mouse_ID, all_of(Gene_lab)))
-
-## duplicates?
-genes <- unique(gene)
-
-## remove the mice labes
-genes <- genes[, -1]
-
-#remove rows with only nas
-genes <- genes[,colSums(is.na(genes))<nrow(genes)]
-
-#remove colums with only nas 
-genes <- genes[rowSums(is.na(genes)) != ncol(genes), ]
-
-#select same rows in the first table
-gene <- gene[row.names(genes), ]
-
-# we need to change the  in challenge infections to a factor
-lab$MC.Eimeria <- as.factor(lab$MC.Eimeria)
-
-# Here I create a new column, where we get the actual infection status
-# According to the melting curve for eimeria 
-lab <- lab %>%
-  dplyr::mutate(current_infection = case_when(
-    Parasite_challenge == "E_ferrisi" & MC.Eimeria == "TRUE" ~ "E_ferrisi",
-    Parasite_challenge == "E_ferrisi" & MC.Eimeria == "FALSE" ~ "uninfected",
-    Parasite_challenge == "E_falciformis" & MC.Eimeria == "TRUE" ~ "E_falciformis",
-    Parasite_challenge == "E_falciformis" & MC.Eimeria == "FALSE" ~ "uninfected",
-    Parasite_challenge == "uninfected" & MC.Eimeria == "TRUE" ~ "infected_eimeria",
-    Parasite_challenge == "uninfected" & MC.Eimeria == "FALSE" ~ "uninfected",
-    TRUE ~ ""
-  ))
-
-# current falciformis
-lab <- lab %>%
-  dplyr::mutate(infection = case_when(
-    Parasite_challenge == "E_ferrisi" & MC.Eimeria == "TRUE" ~ "E_ferrisi",
-    Parasite_challenge == "E_ferrisi" & MC.Eimeria == "FALSE" ~ "uninfected",
-    Parasite_challenge == "E_falciformis" & MC.Eimeria == "TRUE" ~ "E_falciformis",
-    Parasite_challenge == "E_falciformis" & MC.Eimeria == "FALSE" ~ "uninfected",
-    Parasite_challenge == "uninfected" & MC.Eimeria == "TRUE" ~ "E_falciformis",
-    Parasite_challenge == "uninfected" & MC.Eimeria == "FALSE" ~ "uninfected",
-    TRUE ~ ""
-  ))
+genes <- lab[, names(lab) %in% Genes_v]
 
 # PCA
 ## we can now run a normal pca on the complete data set
@@ -113,9 +51,7 @@ dimdesc(res.pca)
 
 
 ## Adding the PC Eigenvectors to the data set. 
-
-mouse_id <- gene %>%
-  dplyr::select(Mouse_ID)
+mouse_id <- lab[,1]
 
 mouse_id$pc1 <- res.pca$ind$coord[, 1] # indexing the first column
 
@@ -173,7 +109,7 @@ fviz_contrib(res.pca, choice = "ind", axes = 1:2)
 lab <- lab[row.names(genes), ]
 
 fviz_pca_biplot(res.pca, 
-                col.ind = lab$infection, palette = "jco", 
+                col.ind = lab$current_infection, palette = "jco", 
                 addEllipses = TRUE, label = "var",
                 col.var = "black", repel = TRUE,
                 legend.title = "Infection groups",
@@ -183,7 +119,6 @@ fviz_pca_biplot(res.pca,
 
 
 ################## Linear models: Predicting weight loss with the PCA eigenvectors
-
 # predicting weight loss with the pc1 and pc2
 model_1_pc1_pc2 <- lm(WL_max ~ pc1 + pc2, data = lab)
 summary(model_1_pc1_pc2)
@@ -228,10 +163,10 @@ AIC(model_3_infection_hybrid_status)
 llr_test <- anova(model_1_pc1_pc2, model_2_pc1_pc2_challenge)
 print(llr_test)
 
-# model_2_pc1_pc2_challenge <- lm(WL_max ~ pc1 + pc2 + infection, data = lab)
+# model_2_pc1_pc2_challenge <- lm(WL_max ~ pc1 + pc2 + current_infection, data = lab)
 
-weight_no_pc1 <- lm(WL_max ~ pc2 + infection, data = lab)
-weight_no_pc2 <- lm(WL_max ~ pc1  + infection, data = lab)
+weight_no_pc1 <- lm(WL_max ~ pc2 + current_infection, data = lab)
+weight_no_pc2 <- lm(WL_max ~ pc1  + current_infection, data = lab)
 weight_no_infection <- lm(WL_max ~ pc1 + pc2, data = lab)
 lrtest(model_2_pc1_pc2_challenge, weight_no_pc1)
 lrtest(model_2_pc1_pc2_challenge, weight_no_pc2)
@@ -244,7 +179,7 @@ lrtest(weight_no_pc1, weight_no_pc2)
 
 # for the model with pc1 and pc2
 ggplot(lab, aes(x = pc1, y = WL_max)) +
-  geom_point(aes(color = infection)) +
+  geom_point(aes(color = current_infection)) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(x = "PC1", y = "Maximum Weight Loss") +
   theme_bw()
@@ -252,7 +187,7 @@ ggplot(lab, aes(x = pc1, y = WL_max)) +
 
 # for the model with pc2 and infection
 ggplot(lab, aes(x = pc2, y = WL_max)) +
-  geom_point(aes(color = infection)) +
+  geom_point(aes(color = current_infection)) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(x = "PC2", y = "Maximum Weight Loss") +
   theme_bw()
@@ -278,7 +213,7 @@ ggplot(lab, aes(x = pc2, y = residuals_pc1_pc2)) +
   theme_bw()
 
 
-ggplot(lab, aes(x = infection, y = residuals_pc1_pc2)) +
+ggplot(lab, aes(x = current_infection, y = residuals_pc1_pc2)) +
   geom_point() +
   geom_hline(yintercept = 0, linetype = "dashed") +
   labs(x = "Infection group", y = "Residuals") +
@@ -290,7 +225,7 @@ ggplot(lab, aes(x = infection, y = residuals_pc1_pc2)) +
 
 
 # First, make sure infection is a factor
-lab$infection <- as.factor(lab$infection)
+lab$current_infection <- as.factor(lab$infection)
 
 # Then, define the color for each level of infection
 color_mapping <- c("E_falciformis" = "salmon", 
@@ -298,9 +233,9 @@ color_mapping <- c("E_falciformis" = "salmon",
                    "uninfected" = "blue")
 
 # Now create the scatter plot using this color mapping
-ggplot(lab, aes(x = pc1, y = WL_max, color = infection)) +
+ggplot(lab, aes(x = pc1, y = WL_max, color = current_infection)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE, aes(color = infection)) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = current_infection)) +
   scale_color_manual(values = color_mapping) +
   labs(x = "PC1", y = "Maximum Weight Loss") +
   theme_bw()
@@ -308,24 +243,13 @@ ggplot(lab, aes(x = pc1, y = WL_max, color = infection)) +
 
 
 # Now create the scatter plot using this color mapping
-ggplot(lab, aes(x = pc2, y = WL_max, color = infection)) +
+ggplot(lab, aes(x = pc2, y = WL_max, color = current_infection)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE, aes(color = infection)) +
+  geom_smooth(method = "lm", se = FALSE, aes(color = current_infection)) +
   scale_color_manual(values = color_mapping) +
   labs(x = "PC2", y = "Maximum Weight Loss") +
   theme_bw()
 
-
-
-
-
-
-# Create a new color column in your dataframe by mapping 'infection' to your colors
-lab$color <- color_mapping[lab$infection]
-
-# 3D scatter plot
-scatterplot3d(lab$pc1, lab$pc2, lab$WL_max, pch = 16, color = lab$color,
-              xlab = "PC1", ylab = "PC2", zlab = "Maximum Weight Loss")
 
 
 
@@ -334,7 +258,7 @@ scatterplot3d(lab$pc1, lab$pc2, lab$WL_max, pch = 16, color = lab$color,
 
 # turn the data frame into a matrix and transpose it. We want to have each cell 
 # type as a row name 
-gene <- t(as.matrix(gene))
+gene <- t(as.matrix(data.frame(mouse_id,genes)))
 
 # turn the first row into column names
 gene %>%
@@ -359,7 +283,7 @@ heatmap_data <-  heatmap_data[, colSums(is.na(heatmap_data)) !=
 
 #Prepare the annotation data frame
 annotation_df <- as_tibble(lab) %>%
-  dplyr::select(c("Mouse_ID",  "WL_max", "infection")) 
+  dplyr::select(c("Mouse_ID",  "WL_max", "current_infection")) 
 
 annotation_df <- unique(annotation_df) 
 
@@ -389,7 +313,7 @@ pheatmap(heatmap_data, annotation_col = annotation_df,# color = my_colors,
          scale = "row",
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean",
-         annotation_colors = list(infection = parasite_colors)) # use annotation_colors
+         annotation_colors = list(current_infection = parasite_colors)) # use annotation_colors
 
 
 ####### Gene enrichment analysis

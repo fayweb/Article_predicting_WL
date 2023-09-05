@@ -1,964 +1,898 @@
 "GO_Term","p_value"
-"response to virus",2.66135458785627e-09
-"response to lipopolysaccharide",2.66135458785627e-09
-"response to molecule of bacterial origin",2.82212046160914e-09
-"cytokine-mediated signaling pathway",4.23983484349657e-09
-"cellular response to lipopolysaccharide",7.82906198257415e-09
-"cellular response to molecule of bacterial origin",8.53514643706333e-09
-"cellular response to biotic stimulus",1.44712481091464e-08
-"regulation of production of molecular mediator of immune response",2.7271350520462e-08
-"leukocyte activation involved in inflammatory response",6.4611584875315e-08
-"regulation of cytokine production involved in immune response",7.06915009492062e-08
-"positive regulation of defense response",1.04403727759302e-07
-"positive regulation of production of molecular mediator of immune response",1.20817347299546e-07
-"cytokine production involved in immune response",1.42944804862157e-07
-"positive regulation of interleukin-1 beta production",1.69469435120049e-07
-"cytokine production involved in inflammatory response",1.70643424420694e-07
-"defense response to virus",1.75280697939692e-07
-"defense response to symbiont",1.75280697939692e-07
-"regulation of tyrosine phosphorylation of STAT protein",1.77359968758997e-07
-"positive regulation of immune effector process",2.09684527681275e-07
-"tyrosine phosphorylation of STAT protein",2.11196949938551e-07
-"positive regulation of interleukin-1 production",2.4567588671964e-07
-"positive regulation of chemokine production",3.21755621436468e-07
-"positive regulation of cytokine production involved in immune response",3.47366577970738e-07
-"positive regulation of cytokine production involved in inflammatory response",4.02337841917653e-07
-"positive regulation of macrophage cytokine production",4.45447261175671e-07
-"regulation of inflammatory response",4.54743747198231e-07
-"production of molecular mediator of immune response",7.08871417470556e-07
-"production of molecular mediator involved in inflammatory response",7.08871417470556e-07
-"regulation of interleukin-1 beta production",7.08871417470556e-07
-"positive regulation of leukocyte activation",7.08871417470556e-07
-"myeloid cell activation involved in immune response",8.27409170216992e-07
-"macrophage activation",8.27409170216992e-07
-"interleukin-1 beta production",8.27409170216992e-07
-"positive regulation of interleukin-6 production",8.27409170216992e-07
-"positive regulation of cell activation",8.74788925992049e-07
-"regulation of chemokine production",9.37081710998432e-07
-"cellular response to type II interferon",1.08626503516265e-06
-"positive regulation of myeloid leukocyte cytokine production involved in immune response",1.18988335572662e-06
-"chemokine production",1.24083666911081e-06
-"regulation of interleukin-1 production",1.24083666911081e-06
-"regulation of immune effector process",1.24083666911081e-06
-"regulation of lymphocyte proliferation",1.24083666911081e-06
-"myeloid leukocyte activation",1.26841618062336e-06
-"regulation of mononuclear cell proliferation",1.29684789775457e-06
-"regulation of macrophage cytokine production",1.33554748292037e-06
-"interleukin-1 production",1.42709144726932e-06
-"microglial cell activation",1.50808250830342e-06
-"regulation of response to biotic stimulus",1.50808250830342e-06
-"positive regulation of nitric oxide biosynthetic process",1.74072707075138e-06
-"regulation of leukocyte proliferation",1.87281795590788e-06
-"positive regulation of nitric oxide metabolic process",1.9706680718685e-06
-"macrophage cytokine production",2.07555333655708e-06
-"regulation of cytokine-mediated signaling pathway",2.07555333655708e-06
-"response to type II interferon",2.18367992612698e-06
-"positive regulation of inflammatory response",2.37512461036122e-06
-"positive regulation of tyrosine phosphorylation of STAT protein",2.40166113036666e-06
-"glial cell activation",2.40166113036666e-06
-"regulation of response to cytokine stimulus",2.7468717343727e-06
-"leukocyte activation involved in immune response",2.85703355882977e-06
-"positive regulation of lymphocyte proliferation",2.92372876934872e-06
-"cell activation involved in immune response",2.97563191382957e-06
-"positive regulation of mononuclear cell proliferation",3.10960155451732e-06
-"regulation of cytokine production involved in inflammatory response",3.54191688028208e-06
-"positive regulation of lymphocyte activation",3.98066846372786e-06
-"regulation of interleukin-6 production",4.01217290777601e-06
-"positive regulation of leukocyte proliferation",4.69579574657311e-06
-"lymphocyte proliferation",4.74212578011341e-06
-"myeloid leukocyte cytokine production",4.77642677225562e-06
-"interleukin-6 production",4.88544380028243e-06
-"mononuclear cell proliferation",5.01176480952909e-06
-"defense response to bacterium",5.1051910345445e-06
-"regulation of nitric oxide biosynthetic process",5.68749517541702e-06
-"pattern recognition receptor signaling pathway",6.04928120606979e-06
-"regulation of smooth muscle cell proliferation",6.28755897108054e-06
-"regulation of nitric oxide metabolic process",6.79560633323924e-06
-"regulation of innate immune response",6.85380171602046e-06
-"interferon-mediated signaling pathway",6.88888364272106e-06
-"neuroinflammatory response",6.88888364272106e-06
-"smooth muscle cell proliferation",7.13064172238664e-06
-"immune response-activating signaling pathway",7.13064172238664e-06
-"innate immune response-activating signaling pathway",7.21743262441229e-06
-"receptor signaling pathway via JAK-STAT",7.40554099889043e-06
-"leukocyte proliferation",7.40554099889043e-06
-"immune response-regulating signaling pathway",7.9927757886662e-06
-"receptor signaling pathway via STAT",8.75726161522431e-06
-"nitric oxide biosynthetic process",9.31164958061644e-06
-"macrophage activation involved in immune response",9.46847700463357e-06
-"regulation of immunoglobulin production",1.09518360010273e-05
-"nitric oxide metabolic process",1.18418055711118e-05
-"interleukin-1-mediated signaling pathway",1.21757185350316e-05
-"reactive nitrogen species metabolic process",1.2639699676484e-05
-"positive regulation of B cell activation",1.30515387728641e-05
-"activation of innate immune response",1.42454584452892e-05
-"type II interferon-mediated signaling pathway",1.5124789419122e-05
-"leukocyte mediated immunity",1.78513828167235e-05
-"activation of immune response",1.94870990130164e-05
-"regulation of peptidyl-tyrosine phosphorylation",2.55313361242425e-05
-"positive regulation of tumor necrosis factor production",2.5628899450216e-05
-"positive regulation of smooth muscle cell proliferation",2.62796145369554e-05
-"muscle cell proliferation",2.66332992453768e-05
-"positive regulation of tumor necrosis factor superfamily cytokine production",2.66743383792012e-05
-"positive regulation of CD4-positive, alpha-beta T cell differentiation",2.99549546626443e-05
-"hepatocyte proliferation",3.23008226760172e-05
-"epithelial cell proliferation involved in liver morphogenesis",3.23008226760172e-05
-"liver morphogenesis",3.80232170473145e-05
-"negative regulation of cytokine production",3.80232170473145e-05
-"regulation of leukocyte mediated immunity",3.95724332020908e-05
-"positive regulation of peptidyl-serine phosphorylation",4.0311176084031e-05
-"positive regulation of I-kappaB kinase/NF-kappaB signaling",4.0311176084031e-05
-"positive regulation of innate immune response",4.24196415346545e-05
-"regulation of receptor signaling pathway via JAK-STAT",4.87732518305353e-05
-"defense response to protozoan",5.00916806622815e-05
-"peptidyl-tyrosine phosphorylation",5.46321929974446e-05
-"peptidyl-tyrosine modification",5.5807617528621e-05
-"regulation of receptor signaling pathway via STAT",5.89862568594806e-05
-"positive regulation of response to biotic stimulus",6.24872646206483e-05
-"regulation of B cell activation",6.24872646206483e-05
-"response to protozoan",6.24872646206483e-05
-"acute-phase response",6.24872646206483e-05
-"positive regulation of release of sequestered calcium ion into cytosol",6.24872646206483e-05
-"positive regulation of CD4-positive, alpha-beta T cell activation",6.24872646206483e-05
-"regulation of interleukin-17 production",7.61192772222098e-05
-"regulation of peptidyl-serine phosphorylation",8.98446388682894e-05
-"interleukin-17 production",9.07613891278527e-05
-"positive regulation of protein kinase activity",9.68787632457179e-05
-"regulation of leukocyte cell-cell adhesion",0.000106580030068325
-"positive regulation of cation transmembrane transport",0.000109858900499114
-"leukocyte migration",0.000109858900499114
-"regulation of CD4-positive, alpha-beta T cell differentiation",0.000109858900499114
-"positive regulation of alpha-beta T cell differentiation",0.000109858900499114
-"regulation of glial cell proliferation",0.000115376212819948
-"positive regulation of leukocyte mediated immunity",0.00013188201293236
-"regulation of tumor necrosis factor production",0.000132859173271442
-"macrophage differentiation",0.000132859173271442
-"regulation of neuron death",0.000137123055416697
-"regulation of tumor necrosis factor superfamily cytokine production",0.000139324926070547
-"positive regulation of peptidyl-tyrosine phosphorylation",0.000142161373416619
-"positive regulation of immunoglobulin production",0.000142161373416619
-"positive regulation of interleukin-8 production",0.000142161373416619
-"tumor necrosis factor production",0.000147044400859653
-"leukocyte cell-cell adhesion",0.000152916689827643
-"regulation of I-kappaB kinase/NF-kappaB signaling",0.000153018002273949
-"tumor necrosis factor superfamily cytokine production",0.000153018002273949
-"regulation of protein-containing complex assembly",0.000179634051236081
-"lipopolysaccharide-mediated signaling pathway",0.000179634051236081
-"regulation of interleukin-10 production",0.000179634051236081
-"positive regulation of protein serine/threonine kinase activity",0.000179634051236081
-"protein secretion",0.000179634051236081
-"positive regulation of cellular catabolic process",0.000179634051236081
-"positive regulation of kinase activity",0.000179634051236081
-"positive regulation of monoatomic ion transmembrane transport",0.000179634051236081
-"establishment of protein localization to extracellular region",0.000179634051236081
-"protein localization to extracellular region",0.000188902019734973
-"positive regulation of leukocyte differentiation",0.000188902019734973
-"positive regulation of hemopoiesis",0.000188902019734973
-"interleukin-10 production",0.000194407531007047
-"positive regulation of receptor signaling pathway via JAK-STAT",0.000210783782133569
-"neuron death",0.000218593871541433
-"regulation of alpha-beta T cell differentiation",0.000236131287203308
-"positive regulation of receptor signaling pathway via STAT",0.000254509255312574
-"regulation of interleukin-8 production",0.000263192677033602
-"glial cell proliferation",0.000268720139948349
-"interleukin-8 production",0.000268720139948349
-"regulation of CD4-positive, alpha-beta T cell activation",0.000268720139948349
-"regulation of membrane potential",0.000277678801881919
-"I-kappaB kinase/NF-kappaB signaling",0.000283280571259561
-"positive regulation of alpha-beta T cell activation",0.000283303790193483
-"cellular response to interleukin-1",0.000283303790193483
-"cell killing",0.000286570646780442
-"regulation of chronic inflammatory response",0.000286570646780442
-"regulation of release of sequestered calcium ion into cytosol",0.000311241956934384
-"neutrophil apoptotic process",0.000333903076303503
-"negative regulation of myelination",0.000333903076303503
-"fat-soluble vitamin biosynthetic process",0.000333903076303503
-"cellular response to oxidised low-density lipoprotein particle stimulus",0.000333903076303503
-"immunoglobulin production",0.000383496573981381
-"response to glucocorticoid",0.000384256928569161
-"insulin secretion",0.000408378173426554
-"cytosolic pattern recognition receptor signaling pathway",0.000447174089877267
-"fever generation",0.000447174089877267
-"response to interleukin-1",0.000452319424785649
-"myeloid leukocyte differentiation",0.000452319424785649
-"positive regulation of monoatomic ion transport",0.000452319424785649
-"positive regulation of DNA-binding transcription factor activity",0.00046094768841577
-"CD4-positive, alpha-beta T cell differentiation",0.00046094768841577
-"positive regulation of transmembrane transport",0.000461776449239049
-"positive regulation of leukocyte cell-cell adhesion",0.000461776449239049
-"regulation of circadian sleep/wake cycle, non-REM sleep",0.000491967264927542
-"response to corticosteroid",0.000491967264927542
-"regulation of oxidoreductase activity",0.000491967264927542
-"regulation of autophagy",0.00054019265085858
-"vitamin D metabolic process",0.00054103598469476
-"circadian sleep/wake cycle, non-REM sleep",0.00054103598469476
-"positive regulation of membrane protein ectodomain proteolysis",0.00054103598469476
-"regulation of response to type II interferon",0.00054103598469476
-"regulation of type II interferon-mediated signaling pathway",0.00054103598469476
-"positive regulation of calcium ion transmembrane transport",0.000631943622695252
-"biological process involved in interaction with symbiont",0.000646061185414238
-"acute inflammatory response",0.000665410458586724
-"positive regulation of type 2 immune response",0.000665410458586724
-"regulation of vitamin metabolic process",0.000665410458586724
-"negative regulation of membrane potential",0.000665410458586724
-"regulation of amyloid-beta clearance",0.000665410458586724
-"B cell activation",0.000722529752618485
-"peptide hormone secretion",0.000745549986165642
-"myeloid leukocyte mediated immunity",0.000745878281348071
-"regulation of alpha-beta T cell activation",0.000780564350342058
-"peptidyl-serine phosphorylation",0.000789223440212576
-"negative regulation of amino acid transport",0.0007927557218315
-"positive regulation of amyloid-beta formation",0.0007927557218315
-"peptide secretion",0.0007927557218315
-"positive regulation of cell-cell adhesion",0.0007927557218315
-"regulation of protein secretion",0.000853029241142585
-"positive regulation of T cell differentiation",0.000853029241142585
-"chronic inflammatory response",0.000861122592526467
-"regulation of fibroblast proliferation",0.000886156219192524
-"positive regulation of protein transport",0.000898824597902937
-"release of sequestered calcium ion into cytosol",0.000898824597902937
-"peptide transport",0.00090103810677005
-"CD4-positive, alpha-beta T cell activation",0.000907453732759627
-"negative regulation of sequestering of calcium ion",0.000907453732759627
-"vitamin biosynthetic process",0.000910938755668525
-"CD8-positive, alpha-beta T cell differentiation",0.000910938755668525
-"peptidyl-serine modification",0.000910938755668525
-"neutrophil migration",0.000912092275346898
-"cellular response to chemical stress",0.000923114045167898
-"regulation of sequestering of calcium ion",0.000924954639401897
-"regulation of protein serine/threonine kinase activity",0.000955846951555103
-"sequestering of calcium ion",0.000955846951555103
-"regulation of leukocyte differentiation",0.000955846951555103
-"heat generation",0.000955846951555103
-"positive regulation of regulatory T cell differentiation",0.000955846951555103
-"regulation of membrane protein ectodomain proteolysis",0.000955846951555103
-"alpha-beta T cell differentiation",0.000955846951555103
-"positive regulation of neuron death",0.000955846951555103
-"positive regulation of establishment of protein localization",0.000985665386383305
-"lymphocyte mediated immunity",0.00101345925650057
-"maintenance of location",0.00103082692034534
-"adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0.00103740625055486
-"liver development",0.00104379086495914
-"positive regulation of lymphocyte differentiation",0.00108458046136789
-"regulation of heterotypic cell-cell adhesion",0.00108639000750305
-"regulation of hepatocyte proliferation",0.00108639000750305
-"regulation of monoatomic cation transmembrane transport",0.00108952731585039
-"hepaticobiliary system development",0.00108952731585039
-"gliogenesis",0.00115265445375728
-"negative regulation of nervous system process",0.00115265445375728
-"positive regulation of amyloid precursor protein catabolic process",0.00115265445375728
-"regulation of T cell activation",0.00119802888783392
-"fibroblast proliferation",0.00120740400079958
-"regulation of transmission of nerve impulse",0.00121489159911938
-"chemokine (C-X-C motif) ligand 2 production",0.00121489159911938
-"positive regulation of leukocyte adhesion to vascular endothelial cell",0.00121489159911938
-"regulation of chemokine (C-X-C motif) ligand 2 production",0.00121489159911938
-"positive regulation of calcium ion transport",0.00125634689080899
-"inflammatory cell apoptotic process",0.00129113993546028
-"branching involved in salivary gland morphogenesis",0.00129113993546028
-"leukocyte apoptotic process",0.00129113993546028
-"positive regulation of adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0.00134566717189745
-"positive regulation of autophagy",0.00134566717189745
-"positive regulation of steroid biosynthetic process",0.00134566717189745
-"positive regulation of interleukin-17 production",0.00134566717189745
-"positive regulation of monooxygenase activity",0.00134566717189745
-"regulation of circadian sleep/wake cycle, sleep",0.00134566717189745
-"positive regulation of glial cell proliferation",0.00134566717189745
-"hormone secretion",0.00136719094728591
-"gland morphogenesis",0.00136719094728591
-"defense response to Gram-positive bacterium",0.00136719094728591
-"positive regulation of lymphocyte mediated immunity",0.00138264583798749
-"positive regulation of NF-kappaB transcription factor activity",0.00138264583798749
-"granulocyte migration",0.00139377568776572
-"positive regulation of acute inflammatory response",0.00139377568776572
-"negative regulation of organic acid transport",0.00139377568776572
-"response to nicotine",0.00139377568776572
-"hormone transport",0.00144784115787123
-"immunoglobulin mediated immune response",0.00145574932592518
-"CD8-positive, alpha-beta T cell activation",0.00146637299842487
-"circadian sleep/wake cycle, sleep",0.00146637299842487
-"positive regulation of adaptive immune response",0.00146637299842487
-"B cell mediated immunity",0.00151442664297234
-"regulation of circadian sleep/wake cycle",0.00154818532960109
-"regulation of epithelial cell proliferation",0.00157499452521441
-"positive regulation of amide metabolic process",0.0015797717709961
-"neutrophil homeostasis",0.00162417702210235
-"regulation of type 2 immune response",0.00162417702210235
-"amide transport",0.00165273383680812
-"circadian sleep/wake cycle process",0.00170691300228193
-"cellular response to low-density lipoprotein particle stimulus",0.00170691300228193
-"regulation of hemopoiesis",0.00178444693605085
-"calcium-mediated signaling",0.00179086029864721
-"response to lipoprotein particle",0.00179086029864721
-"regulation of DNA-binding transcription factor activity",0.00184329519738979
-"fat-soluble vitamin metabolic process",0.00187597771586291
-"regulation of leukocyte adhesion to vascular endothelial cell",0.00187597771586291
-"salivary gland morphogenesis",0.00194910047139833
-"vascular endothelial growth factor production",0.00194910047139833
-"positive regulation of protein-containing complex disassembly",0.00194910047139833
-"positive regulation of osteoclast differentiation",0.00194910047139833
-"amyloid-beta clearance",0.00194910047139833
-"cellular response to tumor necrosis factor",0.0020028336064467
-"regulation of metal ion transport",0.0020028336064467
-"negative regulation of phosphorus metabolic process",0.0020028336064467
-"negative regulation of phosphate metabolic process",0.0020028336064467
-"regulation of T cell differentiation",0.0020028336064467
-"negative regulation of amine transport",0.0020028336064467
-"cellular response to lipoprotein particle stimulus",0.0020028336064467
-"regulation of amyloid-beta formation",0.0020028336064467
-"regulation of regulatory T cell differentiation",0.00209644942128208
-"positive regulation of steroid metabolic process",0.00209644942128208
-"alpha-beta T cell activation",0.00209989289539721
-"temperature homeostasis",0.00212531459340378
-"calcium ion transmembrane import into cytosol",0.00215088939336262
-"salivary gland development",0.00216374189891209
-"neutrophil activation",0.00216374189891209
-"circadian sleep/wake cycle",0.00216374189891209
-"myeloid cell differentiation",0.00219652993596759
-"sleep",0.00225929398908042
-"autophagy",0.00228100144633927
-"process utilizing autophagic mechanism",0.00228100144633927
-"positive regulation of interleukin-10 production",0.00234631773335972
-"regulation of T cell proliferation",0.00234631773335972
-"regulation of calcium ion transmembrane transport",0.00234631773335972
-"regulation of monoatomic ion transmembrane transport",0.00241517062394293
-"positive regulation of interleukin-12 production",0.00241980063517688
-"regulatory T cell differentiation",0.00241980063517688
-"regulation of nervous system process",0.00241980063517688
-"response to tumor necrosis factor",0.00248195443755506
-"negative regulation of insulin receptor signaling pathway",0.00250786225588978
-"endolysosomal toll-like receptor signaling pathway",0.00250786225588978
-"positive regulation of protein-containing complex assembly",0.00252957735969848
-"regulation of cysteine-type endopeptidase activity involved in apoptotic process",0.00258400851571765
-"membrane protein ectodomain proteolysis",0.00258400851571765
-"negative regulation of fibroblast proliferation",0.00258400851571765
-"regulation of amyloid precursor protein catabolic process",0.00258400851571765
-"negative regulation of cell-cell adhesion",0.00259788712045214
-"negative regulation of endothelial cell proliferation",0.00265254904624624
-"regulation of monooxygenase activity",0.00265254904624624
-"myeloid cell apoptotic process",0.00265254904624624
-"granulocyte activation",0.00265254904624624
-"type 2 immune response",0.00265254904624624
-"cellular response to virus",0.00276102340232206
-"negative regulation of secretion",0.00279806854129369
-"amyloid-beta formation",0.0028629287534312
-"regulation of lymphocyte differentiation",0.00288609411360471
-"regulation of insulin secretion",0.00288609411360471
-"regulation of adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0.00293206942232606
-"positive regulation of B cell proliferation",0.00293206942232606
-"programmed necrotic cell death",0.00293206942232606
-"negative regulation of cellular response to insulin stimulus",0.00293206942232606
-"regulation of lymphocyte mediated immunity",0.00310548874927696
-"leukocyte chemotaxis",0.00310548874927696
-"positive regulation of B cell mediated immunity",0.00313994062692954
-"positive regulation of immunoglobulin mediated immune response",0.00313994062692954
-"establishment of endothelial barrier",0.0032456219890762
-"regulation of endothelial cell apoptotic process",0.0032456219890762
-"response to steroid hormone",0.00332449969555223
-"regulation of acute inflammatory response",0.00332449969555223
-"myoblast fusion",0.00332449969555223
-"exocrine system development",0.00332449969555223
-"positive regulation of protein import into nucleus",0.00332449969555223
-"phagocytosis",0.00333686940849915
-"leukocyte adhesion to vascular endothelial cell",0.00343168537578498
-"myeloid leukocyte migration",0.00344209855023215
-"regulation of adaptive immune response",0.00347437571818036
-"maintenance of location in cell",0.00350679783232115
-"endothelial cell apoptotic process",0.00352061548117478
-"epithelial cell development",0.00356236945983228
-"T cell proliferation",0.00356236945983228
-"positive regulation of JUN kinase activity",0.00360984914835443
-"amyloid-beta metabolic process",0.00360984914835443
-"heterotypic cell-cell adhesion",0.00372928754130646
-"regulation of cysteine-type endopeptidase activity",0.00381948949743678
-"killing of cells of another organism",0.00381948949743678
-"membrane protein proteolysis",0.00381948949743678
-"regulation of amino acid transport",0.00381948949743678
-"positive regulation of T cell activation",0.00382874172269768
-"positive regulation of cytokine-mediated signaling pathway",0.00393069404202051
-"amyloid precursor protein catabolic process",0.00404288594649345
-"positive regulation of oxidoreductase activity",0.00404288594649345
-"biological process involved in symbiotic interaction",0.00410145009859674
-"intracellular receptor signaling pathway",0.00422934295256163
-"regulation of interleukin-12 production",0.0042813360681903
-"regulation of peptide hormone secretion",0.00439574408795641
-"regulation of myelination",0.00452454272719096
-"interleukin-12 production",0.00452454272719096
-"regulation of peptide secretion",0.00460273387125931
-"regulation of cellular respiration",0.00464188251613789
-"regulation of peptide transport",0.00467727868077332
-"circadian behavior",0.00474789765059484
-"positive regulation of response to cytokine stimulus",0.00474789765059484
-"humoral immune response",0.00479013972900201
-"tissue homeostasis",0.00480352984449198
-"cellular response to oxidative stress",0.00480352984449198
-"anatomical structure homeostasis",0.00480352984449198
-"toll-like receptor signaling pathway",0.00496124846556661
-"necrotic cell death",0.00496124846556661
-"rhythmic behavior",0.00509409271776483
-"syncytium formation by plasma membrane fusion",0.00521519425472118
-"cell-cell fusion",0.00521519425472118
-"endothelial cell development",0.00529746613936188
-"regulation of myeloid leukocyte mediated immunity",0.00529746613936188
-"response to fungus",0.00529746613936188
-"acidic amino acid transport",0.00529746613936188
-"regulation of action potential",0.00529746613936188
-"negative regulation of cytokine-mediated signaling pathway",0.00539288009808835
-"CD4-positive, alpha-beta T cell differentiation involved in immune response",0.00539288009808835
-"syncytium formation",0.00539288009808835
-"detoxification",0.00539288009808835
-"regulation of calcium ion transport",0.00543976767508033
-"alpha-beta T cell differentiation involved in immune response",0.00544871715907459
-"regulation of B cell mediated immunity",0.00544871715907459
-"positive regulation of myeloid leukocyte differentiation",0.00544871715907459
-"regulation of immunoglobulin mediated immune response",0.00544871715907459
-"regulation of B cell proliferation",0.00544871715907459
-"regulation of JUN kinase activity",0.00544871715907459
-"second-messenger-mediated signaling",0.00545387240479845
-"alpha-beta T cell activation involved in immune response",0.00554401617824394
-"positive regulation of type I interferon production",0.00554401617824394
-"execution phase of apoptosis",0.00554401617824394
-"inflammatory response to antigenic stimulus",0.00566619807502086
-"positive regulation of nucleocytoplasmic transport",0.00566619807502086
-"amyloid precursor protein metabolic process",0.00578911652822064
-"negative regulation of response to cytokine stimulus",0.00578911652822064
-"cell chemotaxis",0.00600003208765986
-"regulation of protein import into nucleus",0.00606552076402318
-"modulation by host of symbiont process",0.00620555666052597
-"T cell differentiation involved in immune response",0.00634070444561824
-"negative regulation of cell migration",0.00634070444561824
-"regulation of phosphatase activity",0.00645905713173715
-"negative regulation of cysteine-type endopeptidase activity involved in apoptotic process",0.00645905713173715
-"intracellular calcium ion homeostasis",0.0064703532602605
-"positive regulation of neurogenesis",0.00651383074506948
-"negative regulation of cell adhesion",0.00655743850013609
-"vitamin metabolic process",0.00669975945692744
-"tumor necrosis factor-mediated signaling pathway",0.00669975945692744
-"negative regulation of cell motility",0.00698984050363799
-"regulation of myoblast differentiation",0.00698984050363799
-"positive regulation of DNA metabolic process",0.00701925985201191
-"T cell differentiation",0.00706442360914453
-"regulation of insulin receptor signaling pathway",0.00710415100354518
-"positive regulation of neuron apoptotic process",0.00738311585420723
-"positive regulation of phagocytosis",0.00738311585420723
-"regulation of steroid biosynthetic process",0.00738311585420723
-"regulation of hormone secretion",0.00754399052218919
-"calcium ion transmembrane transport",0.00764822226769022
-"positive regulation of gliogenesis",0.00764822226769022
-"regulation of cellular response to insulin stimulus",0.00764822226769022
-"regulation of osteoclast differentiation",0.00779899092617975
-"calcium ion homeostasis",0.00810591140680689
-"dicarboxylic acid transport",0.00845005635405805
-"negative regulation of protein phosphorylation",0.0085401402320487
-"positive regulation of protein localization to nucleus",0.00858764554346156
-"negative regulation of locomotion",0.00898719683376286
-"B cell activation involved in immune response",0.00926371724660107
-"regulation of endopeptidase activity",0.00937473444785834
-"transmission of nerve impulse",0.00938443643274639
-"negative regulation of cysteine-type endopeptidase activity",0.00938443643274639
-"neutrophil chemotaxis",0.00971005967184069
-"positive regulation of JNK cascade",0.00971005967184069
-"regulation of small molecule metabolic process",0.0100042933372874
-"positive regulation of nervous system development",0.0100574804978074
-"regulation of behavior",0.0102056733713181
-"positive regulation of proteolysis",0.0104687194866597
-"negative regulation of angiogenesis",0.010540767839904
-"homeostasis of number of cells",0.0106547501983675
-"positive regulation of lipid biosynthetic process",0.0106867130978229
-"regulation of organic acid transport",0.0108330380097534
-"negative regulation of blood vessel morphogenesis",0.0108330380097534
-"regulation of type I interferon production",0.0109797353414994
-"negative regulation of vasculature development",0.0109797353414994
-"regulation of steroid metabolic process",0.0114944352929098
-"positive regulation of T cell proliferation",0.0114944352929098
-"positive regulation of myeloid cell differentiation",0.0114944352929098
-"type I interferon production",0.0116431828724739
-"regulation of epithelial cell apoptotic process",0.0116431828724739
-"negative regulation of phosphorylation",0.0118279078230747
-"endothelial cell differentiation",0.0119666588289344
-"positive regulation of neuron differentiation",0.0119666588289344
-"response to oxidative stress",0.0119998159204844
-"defense response to Gram-negative bacterium",0.0121165995323153
-"positive regulation of protein kinase B signaling",0.0124689431019444
-"negative regulation of leukocyte differentiation",0.0124689431019444
-"B cell proliferation",0.0126463484401065
-"myoblast differentiation",0.0127981238880004
-"regulation of phagocytosis",0.0127981238880004
-"regulation of amine transport",0.0131563396990103
-"negative regulation of hemopoiesis",0.0131563396990103
-"T cell activation involved in immune response",0.0137557198412386
-"regulation of dephosphorylation",0.0139105310918894
-"positive regulation of cysteine-type endopeptidase activity involved in apoptotic process",0.0139105310918894
-"granulocyte chemotaxis",0.0140942352710108
-"amine transport",0.0142497323139948
-"regulation of circadian rhythm",0.0142497323139948
-"cellular nitrogen compound catabolic process",0.01425247269088
-"heterocycle catabolic process",0.01425247269088
-"positive regulation of MAP kinase activity",0.0143764207126826
-"osteoclast differentiation",0.014532185436779
-"regulation of nucleocytoplasmic transport",0.014532185436779
-"regulation of protein-containing complex disassembly",0.0147176111329894
-"cellular component disassembly",0.0151175394798369
-"calcium ion transport",0.0151874681649808
-"leukocyte homeostasis",0.0151874681649808
-"endothelium development",0.0151874681649808
-"positive regulation of stress-activated MAPK cascade",0.0151874681649808
-"negative regulation of T cell activation",0.0151874681649808
-"response to toxic substance",0.0153748296708961
-"positive regulation of translation",0.0155322572175218
-"positive regulation of stress-activated protein kinase signaling cascade",0.0155322572175218
-"regulation of gliogenesis",0.0157207050914053
-"aromatic compound catabolic process",0.0157555523758517
-"regulation of peptidase activity",0.0161075428517751
-"insulin receptor signaling pathway",0.0162901580203016
-"myotube differentiation",0.0164813250150713
-"regulation of amide metabolic process",0.0165949077030888
-"adenylate cyclase-activating G protein-coupled receptor signaling pathway",0.0166407815402623
-"lymphocyte differentiation",0.0168004025215463
-"positive regulation of intracellular protein transport",0.0168004025215463
-"cellular response to reactive oxygen species",0.0169929256385661
-"regulation of neurogenesis",0.017322241644766
-"regulation of cell killing",0.0173799061693628
-"gland development",0.0174559902888865
-"regulation of myeloid leukocyte differentiation",0.0175071460752764
-"epithelial cell apoptotic process",0.0175071460752764
-"regulation of signaling receptor activity",0.017701605022322
-"organic cyclic compound catabolic process",0.01772461339747
-"regulation of JNK cascade",0.0178287685642495
-"negative regulation of leukocyte cell-cell adhesion",0.0178287685642495
-"sensory perception of pain",0.0180238566775751
-"regulation of endothelial cell proliferation",0.0182195573410032
-"action potential",0.0184158650600696
-"regulation of generation of precursor metabolites and energy",0.0186127743837521
-"regulation of protein localization to nucleus",0.0190441062861875
-"positive regulation of cysteine-type endopeptidase activity",0.0192430938716417
-"regulation of osteoblast differentiation",0.0196795885759558
-"memory",0.0201197274170112
-"regulation of epithelial cell differentiation",0.0210107926338709
-"negative regulation of epithelial cell proliferation",0.0210107926338709
-"amino acid transport",0.0212160443238861
-"steroid biosynthetic process",0.0215559566612462
-"endothelial cell proliferation",0.0215559566612462
-"regulation of alkaline phosphatase activity",0.0215559566612462
-"regulation of interleukin-18 production",0.0215559566612462
-"regulation of NAD(P)H oxidase activity",0.0215559566612462
-"regulation of CD8-positive, alpha-beta T cell differentiation",0.0215559566612462
-"detoxification of inorganic compound",0.0215559566612462
-"cellular response to interleukin-18",0.0215559566612462
-"negative regulation of oxidative phosphorylation",0.0215559566612462
-"regulation of bile acid secretion",0.0215559566612462
-"negative regulation of execution phase of apoptosis",0.0215559566612462
-"positive regulation of platelet aggregation",0.0215559566612462
-"positive regulation of neutrophil activation",0.0215559566612462
-"phosphatidylinositol-mediated signaling",0.0216430221152771
-"negative regulation of lymphocyte activation",0.0218478569687452
-"cellular response to amino acid stimulus",0.0220532031277207
-"inositol lipid-mediated signaling",0.0222590559314706
-"regulation of protein kinase B signaling",0.0227130404587848
-"protein import into nucleus",0.0227529505773275
-"JNK cascade",0.0227529505773275
-"positive regulation of endopeptidase activity",0.0227529505773275
-"CD4-positive, CD25-positive, alpha-beta regulatory T cell differentiation",0.0227529505773275
-"positive regulation of dendritic cell cytokine production",0.0227529505773275
-"regulation of fever generation",0.0227529505773275
-"iron import into cell",0.0227529505773275
-"negative regulation of heterotypic cell-cell adhesion",0.0227529505773275
-"regulation of killing of cells of another organism",0.0227529505773275
-"regulation of branching involved in salivary gland morphogenesis",0.0227529505773275
-"regulation of vascular wound healing",0.0227529505773275
-"CAMKK-AMPK signaling cascade",0.0227529505773275
-"regulation of cell-cell adhesion involved in gastrulation",0.0227529505773275
-"positive regulation of cell proliferation in bone marrow",0.0227529505773275
-"positive regulation of extracellular matrix disassembly",0.0227529505773275
-"complement-dependent cytotoxicity",0.0227529505773275
-"positive regulation of execution phase of apoptosis",0.0227529505773275
-"positive regulation of tumor necrosis factor-mediated signaling pathway",0.0227529505773275
-"myelination",0.022932270885954
-"positive regulation of small molecule metabolic process",0.0233836281599494
-"ensheathment of neurons",0.0235085510394516
-"axon ensheathment",0.0235085510394516
-"import into nucleus",0.0235085510394516
-"positive regulation of lipid metabolic process",0.0236580928025191
-"positive regulation of intracellular transport",0.0236580928025191
-"cellular response to acid chemical",0.0236580928025191
-"positive regulation of tolerance induction",0.0236580928025191
-"tryptophan metabolic process",0.0236580928025191
-"indolalkylamine metabolic process",0.0236580928025191
-"NAD biosynthetic process",0.0236580928025191
-"fructose 1,6-bisphosphate metabolic process",0.0236580928025191
-"positive regulation of synaptic transmission, cholinergic",0.0236580928025191
-"interleukin-18 production",0.0236580928025191
-"regulation of interleukin-1 alpha production",0.0236580928025191
-"positive regulation of MHC class II biosynthetic process",0.0236580928025191
-"positive regulation of hair follicle development",0.0236580928025191
-"positive regulation of transmission of nerve impulse",0.0236580928025191
-"regulation of protein complex stability",0.0236580928025191
-"cell-cell adhesion involved in gastrulation",0.0236580928025191
-"neutrophil-mediated killing of bacterium",0.0236580928025191
-"negative regulation of transforming growth factor beta production",0.0236580928025191
-"positive regulation of podosome assembly",0.0236580928025191
-"regulation of glomerular mesangial cell proliferation",0.0236580928025191
-"negative regulation of cellular respiration",0.0236580928025191
-"regulation of tau-protein kinase activity",0.0236580928025191
-"regulation of T-helper 2 cell cytokine production",0.0236580928025191
-"response to amino acid",0.023731883396282
-"negative regulation of secretion by cell",0.023731883396282
-"response to reactive oxygen species",0.0244227179992232
-"negative regulation of endopeptidase activity",0.0246275922973134
-"regulation of T cell tolerance induction",0.0247167747569432
-"respiratory burst involved in defense response",0.0247167747569432
-"positive regulation of heat generation",0.0247167747569432
-"interleukin-1 alpha production",0.0247167747569432
-"low-density lipoprotein particle remodeling",0.0247167747569432
-"regulation of iron ion transport",0.0247167747569432
-"regulation of T-helper 2 cell differentiation",0.0247167747569432
-"positive regulation of circadian sleep/wake cycle, sleep",0.0247167747569432
-"negative regulation of miRNA-mediated gene silencing",0.0247167747569432
-"glucagon secretion",0.0247167747569432
-"regulation of glucagon secretion",0.0247167747569432
-"response to interleukin-18",0.0247167747569432
-"regulation of cell proliferation in bone marrow",0.0247167747569432
-"glomerular mesangial cell proliferation",0.0247167747569432
-"T-helper 17 cell lineage commitment",0.0247167747569432
-"establishment of endothelial intestinal barrier",0.0247167747569432
-"liver regeneration",0.0247167747569432
-"positive regulation of fibroblast apoptotic process",0.0247167747569432
-"regulation of MAP kinase activity",0.0255729876367802
-"regulation of heart contraction",0.025701982965049
-"positive regulation of binding",0.025701982965049
-"regulation of stress-activated MAPK cascade",0.025701982965049
-"positive regulation of peptidase activity",0.025701982965049
-"MyD88-independent toll-like receptor signaling pathway",0.025701982965049
-"response to peptidoglycan",0.025701982965049
-"positive regulation of heterotypic cell-cell adhesion",0.025701982965049
-"positive regulation of smooth muscle cell apoptotic process",0.025701982965049
-"negative regulation of tyrosine phosphorylation of STAT protein",0.025701982965049
-"positive regulation of isotype switching to IgG isotypes",0.025701982965049
-"negative regulation of muscle organ development",0.025701982965049
-"negative regulation of post-transcriptional gene silencing",0.025701982965049
-"negative regulation of gene silencing by RNA",0.025701982965049
-"cell proliferation in bone marrow",0.025701982965049
-"regulation of neuronal action potential",0.025701982965049
-"calmodulin dependent kinase signaling pathway",0.025701982965049
-"negative regulation of post-transcriptional gene silencing by RNA",0.025701982965049
-"regulation of apoptotic DNA fragmentation",0.025701982965049
-"regulation of miRNA maturation",0.025701982965049
-"positive regulation of chemokine (C-X-C motif) ligand 2 production",0.025701982965049
-"positive regulation of hepatocyte proliferation",0.025701982965049
-"negative regulation of leukocyte activation",0.0259031953689784
-"negative regulation of protein kinase activity",0.0260656407173403
-"regulation of stress-activated protein kinase signaling cascade",0.0260656407173403
-"regulation of carbohydrate metabolic process",0.026471648090857
-"positive regulation of protein catabolic process",0.026471648090857
-"response to acid chemical",0.0268217392584623
-"protein kinase B signaling",0.0268217392584623
-"import across plasma membrane",0.0268217392584623
-"T cell tolerance induction",0.0268217392584623
-"aromatic amino acid family catabolic process",0.0268217392584623
-"negative regulation of heart rate",0.0268217392584623
-"microglia differentiation",0.0268217392584623
-"C-terminal protein amino acid modification",0.0268217392584623
-"primary miRNA processing",0.0268217392584623
-"activation of Janus kinase activity",0.0268217392584623
-"regulation of production of small RNA involved in gene silencing by RNA",0.0268217392584623
-"neutrophil-mediated killing of symbiont cell",0.0268217392584623
-"regulation of lipid biosynthetic process",0.0269183728278466
-"myeloid cell homeostasis",0.0273655607499629
-"nicotinamide nucleotide biosynthetic process",0.0280077761694502
-"regulation of heat generation",0.0280077761694502
-"bile acid secretion",0.0280077761694502
-"positive regulation of homotypic cell-cell adhesion",0.0280077761694502
-"cellular response to hepatocyte growth factor stimulus",0.0280077761694502
-"regulation of MHC class II biosynthetic process",0.0280077761694502
-"positive regulation of action potential",0.0280077761694502
-"positive regulation of T cell apoptotic process",0.0280077761694502
-"regulation of podosome assembly",0.0280077761694502
-"glomerular mesangium development",0.0280077761694502
-"regulation of cell proliferation involved in kidney development",0.0280077761694502
-"regulation of DNA catabolic process",0.0280077761694502
-"cellular response to insulin stimulus",0.0287923837029787
-"glucose metabolic process",0.0289978359786216
-"lymphocyte activation involved in immune response",0.0291023636266685
-"osteoblast differentiation",0.0291023636266685
-"T-helper cell lineage commitment",0.0291023636266685
-"regulation of dendritic cell cytokine production",0.0291023636266685
-"positive regulation of inflammatory response to antigenic stimulus",0.0291023636266685
-"regulation of extracellular matrix disassembly",0.0291023636266685
-"regulation of synaptic transmission, cholinergic",0.0291023636266685
-"T-helper 2 cell cytokine production",0.0291023636266685
-"modulation of process of another organism",0.0291023636266685
-"MHC class II biosynthetic process",0.0291023636266685
-"negative regulation of activated T cell proliferation",0.0291023636266685
-"neutrophil mediated cytotoxicity",0.0291023636266685
-"regulation of neutrophil activation",0.0291023636266685
-"adenylate cyclase-modulating G protein-coupled receptor signaling pathway",0.0291041204613433
-"regulation of intracellular protein transport",0.0291041204613433
-"circadian rhythm",0.0292659690195146
-"negative regulation of cell activation",0.0292659690195146
-"negative regulation of kinase activity",0.0299219205308309
-"morphogenesis of a branching epithelium",0.0299219205308309
-"immune system development",0.0299796444949688
-"response to yeast",0.0299796444949688
-"dendritic cell cytokine production",0.0299796444949688
-"removal of superoxide radicals",0.0299796444949688
-"sequestering of triglyceride",0.0299796444949688
-"negative regulation of collagen biosynthetic process",0.0299796444949688
-"response to hepatocyte growth factor",0.0299796444949688
-"negative regulation of bone resorption",0.0299796444949688
-"regulation of isotype switching to IgG isotypes",0.0299796444949688
-"vascular wound healing",0.0299796444949688
-"interleukin-6-mediated signaling pathway",0.0299796444949688
-"L-glutamate import across plasma membrane",0.0299796444949688
-"regulation of autophagosome maturation",0.0299796444949688
-"regulation of myeloid cell differentiation",0.0300668512739615
-"regulation of leukocyte migration",0.0307218212617746
-"positive regulation of epithelial cell proliferation",0.0307218212617746
-"organic hydroxy compound biosynthetic process",0.0309266663689028
-"negative regulation of collagen metabolic process",0.0309798070301204
-"pyridine nucleotide biosynthetic process",0.0309798070301204
-"negative regulation of interleukin-17 production",0.0309798070301204
-"isotype switching to IgG isotypes",0.0309798070301204
-"positive regulation of nitric-oxide synthase activity",0.0309798070301204
-"membrane hyperpolarization",0.0309798070301204
-"nucleotide-binding oligomerization domain containing 2 signaling pathway",0.0309798070301204
-"regulation of endothelial cell development",0.0309798070301204
-"positive regulation of myoblast fusion",0.0309798070301204
-"regulation of establishment of endothelial barrier",0.0309798070301204
-"regulation of CD8-positive, alpha-beta T cell activation",0.0309798070301204
-"protein-containing complex disassembly",0.0313996941863823
-"stress-activated MAPK cascade",0.031809094186038
-"heart contraction",0.031809094186038
-"extrinsic apoptotic signaling pathway",0.0318095084024536
-"regulation of neuron differentiation",0.0318095084024536
-"MyD88-dependent toll-like receptor signaling pathway",0.0318095084024536
-"regulation of humoral immune response mediated by circulating immunoglobulin",0.0318095084024536
-"CD4-positive, alpha-beta T cell lineage commitment",0.0318095084024536
-"T-helper 2 cell differentiation",0.0318095084024536
-"negative regulation of gluconeogenesis",0.0318095084024536
-"negative regulation of bone remodeling",0.0318095084024536
-"astrocyte activation",0.0318095084024536
-"positive regulation of calcineurin-NFAT signaling cascade",0.0318095084024536
-"cellular response to oxygen radical",0.0318095084024536
-"cellular response to superoxide",0.0318095084024536
-"positive regulation of calcineurin-mediated signaling",0.0318095084024536
-"regulation of execution phase of apoptosis",0.0318095084024536
-"positive regulation of NLRP3 inflammasome complex assembly",0.0318095084024536
-"regulation of epithelial cell migration",0.032556939641287
-"reactive oxygen species metabolic process",0.032556939641287
-"morphogenesis of a branching structure",0.0326846459159564
-"neutrophil activation involved in immune response",0.0326846459159564
-"regulation of tolerance induction",0.0326846459159564
-"apoptotic DNA fragmentation",0.0326846459159564
-"regulation of amino acid import across plasma membrane",0.0326846459159564
-"iron ion transmembrane transport",0.0326846459159564
-"positive regulation by host of viral process",0.0326846459159564
-"positive regulation of T-helper cell differentiation",0.0326846459159564
-"positive regulation of translational initiation",0.0326846459159564
-"negative regulation of glucose import",0.0326846459159564
-"regulation of hair follicle development",0.0326846459159564
-"positive regulation of lymphocyte apoptotic process",0.0326846459159564
-"nucleotide-binding oligomerization domain containing signaling pathway",0.0326846459159564
-"regulation of amino acid transmembrane transport",0.0326846459159564
-"cellular respiration",0.032893876240943
-"stress-activated protein kinase signaling cascade",0.033344222145271
-"heart process",0.0335481541482061
-"hexose metabolic process",0.0336526655305232
-"alpha-beta T cell lineage commitment",0.0336526655305232
-"I-kappaB phosphorylation",0.0336526655305232
-"T cell chemotaxis",0.0336526655305232
-"negative regulation of phosphoprotein phosphatase activity",0.0336526655305232
-"nucleotide-binding domain, leucine rich repeat containing receptor signaling pathway",0.0336526655305232
-"positive regulation of nitric-oxide synthase biosynthetic process",0.0336526655305232
-"mucus secretion",0.0336526655305232
-"3'-UTR-mediated mRNA stabilization",0.0336526655305232
-"cell proliferation involved in kidney development",0.0336526655305232
-"response to insulin",0.034675782582965
-"response to superoxide",0.034675782582965
-"positive regulation of humoral immune response",0.034675782582965
-"maintenance of gastrointestinal epithelium",0.034675782582965
-"positive regulation of mast cell activation involved in immune response",0.034675782582965
-"positive regulation of mast cell degranulation",0.034675782582965
-"detection of mechanical stimulus involved in sensory perception of pain",0.034675782582965
-"killing by host of symbiont cells",0.034675782582965
-"podosome assembly",0.034675782582965
-"pyridine-containing compound biosynthetic process",0.034675782582965
-"positive regulation of oxidative stress-induced cell death",0.034675782582965
-"negative regulation of peptidase activity",0.035057359615869
-"import into cell",0.0352616016839266
-"fat cell differentiation",0.0355799758874346
-"negative regulation of transferase activity",0.0355799758874346
-"response to oxygen radical",0.0355799758874346
-"negative regulation of interleukin-10 production",0.0355799758874346
-"CD4-positive or CD8-positive, alpha-beta T cell lineage commitment",0.0355799758874346
-"mitochondrial depolarization",0.0355799758874346
-"angiogenesis involved in wound healing",0.0355799758874346
-"cellular response to interleukin-17",0.0355799758874346
-"positive regulation of protein localization to cell surface",0.0355799758874346
-"regulation of fibroblast apoptotic process",0.0355799758874346
-"regulation of bicellular tight junction assembly",0.0355799758874346
-"regulation of blood circulation",0.0357192496819511
-"glial cell differentiation",0.0363768323658265
-"negative regulation of neuron death",0.0363768323658265
-"toll-like receptor 3 signaling pathway",0.036771846553825
-"positive regulation of glycolytic process",0.036771846553825
-"regulation of myoblast fusion",0.036771846553825
-"positive regulation of T cell cytokine production",0.0378047662091743
-"positive regulation of vascular endothelial growth factor production",0.0378047662091743
-"negative regulation of glucose transmembrane transport",0.0378047662091743
-"regulation of glutamate secretion",0.0378047662091743
-"protein autoprocessing",0.0378047662091743
-"CD4-positive, alpha-beta T cell cytokine production",0.0378047662091743
-"negative regulation of receptor signaling pathway via JAK-STAT",0.0378047662091743
-"positive regulation of cellular respiration",0.0378047662091743
-"positive regulation of transcription regulatory region DNA binding",0.0378047662091743
-"monosaccharide metabolic process",0.0380391616249887
-"synaptic transmission, cholinergic",0.0387667561250113
-"protein-lipid complex remodeling",0.0387667561250113
-"plasma lipoprotein particle remodeling",0.0387667561250113
-"indole-containing compound metabolic process",0.0387667561250113
-"positive regulation of circadian rhythm",0.0387667561250113
-"negative regulation of oxidoreductase activity",0.0387667561250113
-"positive regulation of syncytium formation by plasma membrane fusion",0.0387667561250113
-"glomerulus vasculature development",0.0387667561250113
-"response to interleukin-17",0.0387667561250113
-"cellular response to peptide hormone stimulus",0.0393408244146933
-"positive regulation of myeloid leukocyte mediated immunity",0.0397523508016113
-"positive regulation of peptidyl-serine phosphorylation of STAT protein",0.0397523508016113
-"respiratory burst",0.0397523508016113
-"muscle cell cellular homeostasis",0.0397523508016113
-"regulation of muscle organ development",0.0397523508016113
-"renal system vasculature development",0.0397523508016113
-"kidney vasculature development",0.0397523508016113
-"regulation of NMDA receptor activity",0.0397523508016113
-"regulation of neuron apoptotic process",0.0401823574291437
-"regulation of oxidative phosphorylation",0.0403792924678478
-"L-glutamate transmembrane transport",0.0403792924678478
-"animal organ regeneration",0.0403792924678478
-"negative regulation of tissue remodeling",0.0403792924678478
-"protein-containing complex remodeling",0.0403792924678478
-"benzene-containing compound metabolic process",0.0403792924678478
-"hydrogen peroxide catabolic process",0.0403792924678478
-"positive regulation of macrophage activation",0.0403792924678478
-"negative regulation of heart contraction",0.0403792924678478
-"negative regulation of alpha-beta T cell differentiation",0.0403792924678478
-"response to copper ion",0.0403792924678478
-"nitric-oxide synthase biosynthetic process",0.0403792924678478
-"regulation of nitric-oxide synthase biosynthetic process",0.0403792924678478
-"regulation of platelet aggregation",0.0403792924678478
-"negative regulation of receptor signaling pathway via STAT",0.0403792924678478
-"tolerance induction",0.0413654336386193
-"response to ATP",0.0413654336386193
-"fibroblast apoptotic process",0.0413654336386193
-"negative regulation of lipid catabolic process",0.0413654336386193
-"L-glutamate import",0.0413654336386193
-"positive regulation of release of cytochrome c from mitochondria",0.0413654336386193
-"regulation of NLRP3 inflammasome complex assembly",0.0413654336386193
-"positive regulation of extracellular matrix organization",0.0413654336386193
-"regulation of angiogenesis",0.0418238290216133
-"regulation of the force of heart contraction",0.042039999139087
-"T cell lineage commitment",0.042039999139087
-"negative regulation of systemic arterial blood pressure",0.042039999139087
-"positive regulation of peptidyl-threonine phosphorylation",0.042039999139087
-"regulation of peptidyl-serine phosphorylation of STAT protein",0.042039999139087
-"smooth muscle cell apoptotic process",0.042039999139087
-"regulation of smooth muscle cell apoptotic process",0.042039999139087
-"regulation of hair cycle",0.042039999139087
-"negative regulation of T cell apoptotic process",0.042039999139087
-"cellular response to interleukin-6",0.042039999139087
-"T-helper 17 cell differentiation",0.042039999139087
-"cellular oxidant detoxification",0.042039999139087
-"negative regulation of blood circulation",0.042039999139087
-"regulation of vasculature development",0.0421606315327292
-"aromatic amino acid metabolic process",0.0429353095738898
-"epithelial structure maintenance",0.0429353095738898
-"apoptotic nuclear changes",0.0429353095738898
-"negative regulation of protein dephosphorylation",0.0429353095738898
-"negative regulation of myoblast differentiation",0.0429353095738898
-"positive regulation of isotype switching",0.0429353095738898
-"signaling receptor ligand precursor processing",0.0429353095738898
-"negative regulation of endothelial cell apoptotic process",0.0429353095738898
-"rhythmic process",0.0432472223891454
-"negative regulation of cell development",0.0434530400810228
-"sensory perception of mechanical stimulus",0.0435658901745575
-"cellular component disassembly involved in execution phase of apoptosis",0.0435658901745575
-"regulation of proton transport",0.0435658901745575
-"regulation of vascular endothelial growth factor production",0.0435658901745575
-"positive regulation of phosphatase activity",0.0435658901745575
-"positive regulation of natural killer cell activation",0.0435658901745575
-"NLRP3 inflammasome complex assembly",0.0435658901745575
-"cell redox homeostasis",0.0435658901745575
-"response to interleukin-6",0.0435658901745575
-"positive regulation of protein deacetylation",0.0435658901745575
-"negative regulation of cell junction assembly",0.0435658901745575
-"positive regulation of leukocyte apoptotic process",0.0435658901745575
-"extracellular matrix organization",0.0443409127253606
-"negative regulation of chemokine production",0.0444543877836035
-"regulation of nitric-oxide synthase activity",0.0444543877836035
-"regulation of miRNA-mediated gene silencing",0.0444543877836035
-"negative regulation of signal transduction in absence of ligand",0.0444543877836035
-"negative regulation of extrinsic apoptotic signaling pathway in absence of ligand",0.0444543877836035
-"learning or memory",0.0444543877836035
-"extracellular structure organization",0.0444543877836035
-"external encapsulating structure organization",0.0444543877836035
-"epithelial cell migration",0.0448643970759951
-"protein localization to nucleus",0.0448643970759951
-"epithelium migration",0.0451098685339106
-"mature B cell differentiation involved in immune response",0.0451098685339106
-"DNA catabolic process",0.0451098685339106
-"negative regulation of phosphatase activity",0.0451098685339106
-"glutamate secretion",0.0451098685339106
-"positive regulation of mast cell activation",0.0451098685339106
-"positive regulation of leukocyte degranulation",0.0451098685339106
-"regulation of syncytium formation by plasma membrane fusion",0.0451098685339106
-"regulation of oxidative stress-induced neuron death",0.0451098685339106
-"negative regulation of signaling receptor activity",0.0451098685339106
-"tissue migration",0.0453362720371033
-"skin development",0.0455408783745103
-"viral process",0.0459055080557917
-"negative regulation of cytokine production involved in immune response",0.0459055080557917
-"serine phosphorylation of STAT protein",0.0459055080557917
-"regulation of mast cell degranulation",0.0459055080557917
-"negative regulation of blood vessel endothelial cell migration",0.0459055080557917
-"inflammasome complex assembly",0.0459055080557917
-"regulation of post-transcriptional gene silencing by RNA",0.0459055080557917
-"cellular response to peptide",0.0459055080557917
-"negative regulation of catabolic process",0.0465188833115161
-"regulation of intracellular transport",0.0465188833115161
-"neuron apoptotic process",0.0465188833115161
-"regulation of inflammatory response to antigenic stimulus",0.046730796941297
-"NAD metabolic process",0.046730796941297
-"negative regulation of cell killing",0.046730796941297
-"neuron death in response to oxidative stress",0.046730796941297
-"regulation of post-transcriptional gene silencing",0.046730796941297
-"positive regulation of synaptic transmission",0.046931388778492
-"striated muscle cell differentiation",0.046931388778492
-"regulation of T cell cytokine production",0.0474157130966907
-"astrocyte development",0.0474157130966907
-"response to activity",0.0474157130966907
-"extracellular matrix disassembly",0.0474157130966907
-"regulation of T-helper cell differentiation",0.0474157130966907
-"leukocyte tethering or rolling",0.0474157130966907
-"epithelial tube branching involved in lung morphogenesis",0.0474157130966907
-"regulation of gene silencing by RNA",0.0474157130966907
-"detection of stimulus involved in sensory perception of pain",0.0474157130966907
-"dephosphorylation",0.0474461724406018
-"energy derivation by oxidation of organic compounds",0.0481603201594245
-"glandular epithelial cell development",0.0482865804690545
-"cortical actin cytoskeleton organization",0.0482865804690545
-"necroptotic process",0.0482865804690545
-"regulation of transforming growth factor beta production",0.0482865804690545
-"regulation of aerobic respiration",0.0482865804690545
-"nucleocytoplasmic transport",0.0485185526434213
-"steroid metabolic process",0.0485185526434213
-"nuclear transport",0.0485185526434213
-"neutrophil mediated immunity",0.0491437886467958
-"regulation of mast cell activation involved in immune response",0.0491437886467958
-"regulation of homotypic cell-cell adhesion",0.0491437886467958
-"pyroptosis",0.0491437886467958
-"regulation of body fluid levels",0.0495408735539241
-"positive regulation of muscle cell apoptotic process",0.049987636126824
-"positive T cell selection",0.049987636126824
-"regulation of endothelial cell differentiation",0.049987636126824
-"positive regulation of behavior",0.049987636126824
-"transforming growth factor beta production",0.049987636126824
-"plasma lipoprotein particle organization",0.049987636126824
+"response to lipopolysaccharide",3.25749660957628e-09
+"response to molecule of bacterial origin",3.25749660957628e-09
+"cytokine-mediated signaling pathway",4.22096924441400e-09
+"cellular response to lipopolysaccharide",8.17549251982955e-09
+"cellular response to molecule of bacterial origin",8.58061497660902e-09
+"cellular response to biotic stimulus",1.38965933884844e-08
+"response to virus",1.58942248476086e-08
+"leukocyte activation involved in inflammatory response",3.91455518430683e-08
+"positive regulation of interleukin-1 beta production",1.49946871225519e-07
+"cytokine production involved in inflammatory response",2.02247894318742e-07
+"positive regulation of interleukin-1 production",3.07993246365801e-07
+"regulation of inflammatory response",5.32856525417789e-07
+"positive regulation of chemokine production",5.32856525417789e-07
+"positive regulation of cytokine production involved in inflammatory response",5.50476961805094e-07
+"production of molecular mediator involved in inflammatory response",8.52331634067567e-07
+"regulation of interleukin-1 beta production",8.52331634067567e-07
+"macrophage activation",1.02945893550863e-06
+"interleukin-1 beta production",1.02945893550863e-06
+"positive regulation of interleukin-6 production",1.30150119415453e-06
+"regulation of chemokine production",1.48522275258099e-06
+"regulation of lymphocyte proliferation",1.59741623170115e-06
+"regulation of mononuclear cell proliferation",1.60917798400598e-06
+"regulation of interleukin-1 production",1.60917798400598e-06
+"chemokine production",1.60930788246231e-06
+"positive regulation of response to external stimulus",1.60930788246231e-06
+"microglial cell activation",1.60930788246231e-06
+"interleukin-1 production",1.7451555442321e-06
+"myeloid leukocyte activation",1.7451555442321e-06
+"regulation of leukocyte proliferation",2.01578446623041e-06
+"positive regulation of nitric oxide biosynthetic process",2.32156013373501e-06
+"defense response to virus",2.32156013373501e-06
+"defense response to symbiont",2.32156013373501e-06
+"regulation of cytokine-mediated signaling pathway",2.32156013373501e-06
+"glial cell activation",2.32156013373501e-06
+"positive regulation of nitric oxide metabolic process",2.44149001700405e-06
+"positive regulation of inflammatory response",2.44149001700405e-06
+"positive regulation of defense response",2.67533332387883e-06
+"positive regulation of lymphocyte proliferation",2.98189382399449e-06
+"regulation of response to cytokine stimulus",2.98189382399449e-06
+"positive regulation of mononuclear cell proliferation",3.11052453226224e-06
+"regulation of cytokine production involved in inflammatory response",4.40705101880652e-06
+"positive regulation of leukocyte proliferation",4.84825278911137e-06
+"lymphocyte proliferation",4.84825278911137e-06
+"regulation of interleukin-6 production",4.84825278911137e-06
+"mononuclear cell proliferation",5.01227939956667e-06
+"neuroinflammatory response",5.78854294098762e-06
+"interleukin-6 production",5.90339412038059e-06
+"regulation of production of molecular mediator of immune response",6.4680245894625e-06
+"regulation of smooth muscle cell proliferation",6.51395591459598e-06
+"regulation of tyrosine phosphorylation of STAT protein",6.761748569888e-06
+"regulation of nitric oxide biosynthetic process",7.02149528992725e-06
+"leukocyte proliferation",7.03982069418192e-06
+"smooth muscle cell proliferation",7.47452571375839e-06
+"positive regulation of lymphocyte activation",7.93826478922684e-06
+"tyrosine phosphorylation of STAT protein",7.98352222973201e-06
+"regulation of nitric oxide metabolic process",7.98352222973201e-06
+"defense response to bacterium",1.00335487880207e-05
+"nitric oxide biosynthetic process",1.16083552210571e-05
+"interferon-gamma-mediated signaling pathway",1.29854423406522e-05
+"nitric oxide metabolic process",1.48659905790544e-05
+"regulation of immunoglobulin production",1.52948942962592e-05
+"reactive nitrogen species metabolic process",1.57323614181553e-05
+"positive regulation of leukocyte activation",1.68074386518775e-05
+"interleukin-1-mediated signaling pathway",1.81906043341131e-05
+"positive regulation of cell activation",2.11083442302247e-05
+"regulation of cell-cell adhesion",2.29833480907251e-05
+"positive regulation of smooth muscle cell proliferation",2.78322444635987e-05
+"muscle cell proliferation",2.78322444635987e-05
+"positive regulation of tumor necrosis factor production",2.91667442736581e-05
+"cellular response to interferon-gamma",3.04844866662475e-05
+"positive regulation of tumor necrosis factor superfamily cytokine production",3.04844866662475e-05
+"myeloid cell activation involved in immune response",3.34444721968518e-05
+"positive regulation of CD4-positive, alpha-beta T cell differentiation",3.89284689127501e-05
+"regulation of leukocyte mediated immunity",4.77370467108464e-05
+"positive regulation of production of molecular mediator of immune response",4.78765949451506e-05
+"positive regulation of I-kappaB kinase/NF-kappaB signaling",4.8222276498159e-05
+"negative regulation of cytokine production",4.8222276498159e-05
+"positive regulation of immune effector process",5.00113785848241e-05
+"positive regulation of peptidyl-serine phosphorylation",5.14807571002322e-05
+"defense response to protozoan",6.02384804125752e-05
+"response to interferon-gamma",6.36808152569885e-05
+"leukocyte activation involved in immune response",6.79327576979368e-05
+"positive regulation of CD4-positive, alpha-beta T cell activation",6.79327576979368e-05
+"cell activation involved in immune response",7.07042679490086e-05
+"acute-phase response",7.07042679490086e-05
+"regulation of interleukin-17 production",7.07042679490086e-05
+"response to protozoan",7.4375958571383e-05
+"regulation of glial cell proliferation",7.4375958571383e-05
+"positive regulation of release of sequestered calcium ion into cytosol",7.90169366626701e-05
+"regulation of leukocyte cell-cell adhesion",8.46841178979963e-05
+"interleukin-17 production",8.87715517118006e-05
+"positive regulation of B cell activation",9.35540067062585e-05
+"positive regulation of protein kinase activity",9.95476007191527e-05
+"regulation of peptidyl-serine phosphorylation",0.000114169844170193
+"positive regulation of cation transmembrane transport",0.000124119815654753
+"leukocyte migration",0.000127258558278153
+"leukocyte cell-cell adhesion",0.000132536605140862
+"production of molecular mediator of immune response",0.000134179940971146
+"regulation of CD4-positive, alpha-beta T cell differentiation",0.000134179940971146
+"pattern recognition receptor signaling pathway",0.000138288065846789
+"positive regulation of alpha-beta T cell differentiation",0.000139191104084703
+"regulation of neuron death",0.000142836283497025
+"positive regulation of leukocyte mediated immunity",0.000142904313646617
+"positive regulation of tyrosine phosphorylation of STAT protein",0.000142904313646617
+"protein secretion",0.000152996754912308
+"establishment of protein localization to extracellular region",0.000153393623732288
+"regulation of tumor necrosis factor production",0.000153863116064648
+"protein localization to extracellular region",0.000160925326487131
+"regulation of tumor necrosis factor superfamily cytokine production",0.000160925326487131
+"positive regulation of leukocyte differentiation",0.000161363319479063
+"positive regulation of hemopoiesis",0.000161363319479063
+"tumor necrosis factor production",0.000166249561153745
+"regulation of I-kappaB kinase/NF-kappaB signaling",0.000166249561153745
+"positive regulation of immunoglobulin production",0.000166249561153745
+"glial cell proliferation",0.000166249561153745
+"positive regulation of interleukin-8 production",0.000166249561153745
+"positive regulation of ion transmembrane transport",0.000166249561153745
+"tumor necrosis factor superfamily cytokine production",0.000168228394483035
+"regulation of immune effector process",0.000177775375850639
+"lipopolysaccharide-mediated signaling pathway",0.000177775375850639
+"receptor signaling pathway via JAK-STAT",0.000177775375850639
+"regulation of protein-containing complex assembly",0.000184593794433511
+"regulation of interleukin-10 production",0.000191043272119324
+"positive regulation of kinase activity",0.000192042108574625
+"receptor signaling pathway via STAT",0.000197271242939623
+"neuron death",0.000197528932247562
+"positive regulation of protein serine/threonine kinase activity",0.000197912258082901
+"positive regulation of calcium ion transport into cytosol",0.000199868867182371
+"interleukin-10 production",0.000199868867182371
+"regulation of B cell activation",0.000216416427947382
+"immune response-regulating signaling pathway",0.000225770118413179
+"regulation of CD4-positive, alpha-beta T cell activation",0.000233198418182943
+"positive regulation of cellular catabolic process",0.000239333252176838
+"regulation of alpha-beta T cell differentiation",0.000260622442548363
+"I-kappaB kinase/NF-kappaB signaling",0.00028681435660548
+"insulin secretion",0.000304572159550711
+"regulation of interleukin-8 production",0.000308784214137609
+"positive regulation of alpha-beta T cell activation",0.000308784214137609
+"cell killing",0.000316232214341788
+"interleukin-8 production",0.000316232214341788
+"regulation of chronic inflammatory response",0.000322973559462116
+"cellular response to interleukin-1",0.00032376621733509
+"regulation of release of sequestered calcium ion into cytosol",0.00034620549167299
+"response to glucocorticoid",0.000356518500595335
+"positive regulation of leukocyte cell-cell adhesion",0.000358469621890533
+"neutrophil apoptotic process",0.00036906532328916
+"fat-soluble vitamin biosynthetic process",0.00036906532328916
+"cellular response to oxidised low-density lipoprotein particle stimulus",0.00036906532328916
+"positive regulation of transmembrane transport",0.000371316618515017
+"positive regulation of calcium ion transmembrane transport",0.000421781059147262
+"response to corticosteroid",0.000433222602788447
+"regulation of peptidyl-tyrosine phosphorylation",0.00044279842513099
+"CD4-positive, alpha-beta T cell differentiation",0.000456589683840466
+"positive regulation of DNA-binding transcription factor activity",0.00047924548909947
+"regulation of oxidoreductase activity",0.00047924548909947
+"fever generation",0.00047924548909947
+"regulation of circadian sleep/wake cycle, non-REM sleep",0.00047924548909947
+"immunoglobulin production",0.000520397673885843
+"regulation of cytokine production involved in immune response",0.000525067473951046
+"response to interleukin-1",0.000525067473951046
+"regulation of autophagy",0.000525067473951046
+"circadian sleep/wake cycle, non-REM sleep",0.000529126349204383
+"regulation of response to interferon-gamma",0.000529126349204383
+"regulation of interferon-gamma-mediated signaling pathway",0.000529126349204383
+"peptide hormone secretion",0.000579018616328219
+"vitamin D metabolic process",0.000593576039787392
+"positive regulation of membrane protein ectodomain proteolysis",0.000593576039787392
+"peptide secretion",0.000626954254423922
+"positive regulation of cell-cell adhesion",0.000626954254423922
+"positive regulation of T cell differentiation",0.000626954254423922
+"acute inflammatory response",0.000658940922359592
+"regulation of protein secretion",0.000675301777544633
+"regulation of calcium ion transport into cytosol",0.000706617888538699
+"positive regulation of type 2 immune response",0.000717440127964239
+"regulation of vitamin metabolic process",0.000717440127964239
+"regulation of amyloid-beta clearance",0.000717440127964239
+"regulation of alpha-beta T cell activation",0.000767259492492402
+"cytokine production involved in immune response",0.000773406561098699
+"peptide transport",0.000773406561098699
+"chronic inflammatory response",0.000773406561098699
+"negative regulation of membrane potential",0.000773406561098699
+"positive regulation of amyloid-beta formation",0.000773406561098699
+"positive regulation of protein transport",0.000773406561098699
+"CD4-positive, alpha-beta T cell activation",0.000774287703006057
+"regulation of leukocyte differentiation",0.000774287703006057
+"peptidyl-tyrosine phosphorylation",0.000779398165410488
+"peptidyl-tyrosine modification",0.000799534503459051
+"release of sequestered calcium ion into cytosol",0.000799534503459051
+"positive regulation of ion transport",0.000811004565413424
+"negative regulation of sequestering of calcium ion",0.000811004565413424
+"vitamin biosynthetic process",0.000815933206251194
+"CD8-positive, alpha-beta T cell differentiation",0.000815933206251194
+"positive regulation of lymphocyte differentiation",0.000834188721588464
+"regulation of sequestering of calcium ion",0.000834188721588464
+"myeloid leukocyte mediated immunity",0.000850240431343977
+"sequestering of calcium ion",0.000866449115916555
+"positive regulation of establishment of protein localization",0.000866687083943844
+"macrophage activation involved in immune response",0.000869693310078978
+"regulation of production of miRNAs involved in gene silencing by miRNA",0.000869693310078978
+"peptidyl-serine phosphorylation",0.00088332871481567
+"maintenance of location",0.000888929055260692
+"neutrophil migration",0.000923090294505951
+"positive regulation of regulatory T cell differentiation",0.000923090294505951
+"positive regulation of glial cell proliferation",0.000923090294505951
+"regulation of production of small RNA involved in gene silencing by RNA",0.000923090294505951
+"alpha-beta T cell differentiation",0.000923090294505951
+"regulation of T cell activation",0.000923090294505951
+"regulation of protein serine/threonine kinase activity",0.000956039324453596
+"positive regulation of neuron death",0.000956039324453596
+"amide transport",0.000971902042667255
+"heat generation",0.000981087751706189
+"regulation of membrane protein ectodomain proteolysis",0.000981087751706189
+"regulation of receptor signaling pathway via JAK-STAT",0.000981087751706189
+"defense response to Gram-positive bacterium",0.00104307046223687
+"positive regulation of interleukin-17 production",0.00105648561984932
+"peptidyl-serine modification",0.00107433641020884
+"hormone secretion",0.00111864213587052
+"regulation of heterotypic cell-cell adhesion",0.00111864213587052
+"regulation of transmission of nerve impulse",0.00111864213587052
+"positive regulation of amyloid precursor protein catabolic process",0.00111864213587052
+"leukocyte apoptotic process",0.00111864213587052
+"regulation of receptor signaling pathway via STAT",0.00111864213587052
+"B cell activation",0.00113082947898835
+"hormone transport",0.00118239691289613
+"inflammatory cell apoptotic process",0.00118239691289613
+"positive regulation of leukocyte adhesion to vascular endothelial cell",0.00118239691289613
+"positive regulation of calcium ion transport",0.00118814288913317
+"regulation of cation transmembrane transport",0.00119969014315946
+"positive regulation of adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0.00120188334053605
+"chemokine (C-X-C motif) ligand 2 production",0.00124876641027451
+"regulation of chemokine (C-X-C motif) ligand 2 production",0.00124876641027451
+"positive regulation of autophagy",0.00128472891675987
+"neutrophil homeostasis",0.00132131912519188
+"regulation of circadian sleep/wake cycle, sleep",0.00132131912519188
+"branching involved in salivary gland morphogenesis",0.00132131912519188
+"positive regulation of adaptive immune response",0.00133881184843494
+"positive regulation of lymphocyte mediated immunity",0.00137750177821165
+"calcium ion transmembrane import into cytosol",0.00137750177821165
+"regulation of hemopoiesis",0.00137750177821165
+"positive regulation of acute inflammatory response",0.00137750177821165
+"positive regulation of steroid biosynthetic process",0.00137750177821165
+"positive regulation of monooxygenase activity",0.00137750177821165
+"gland morphogenesis",0.00139113116477651
+"positive regulation of NF-kappaB transcription factor activity",0.00139113116477651
+"granulocyte migration",0.00139113116477651
+"regulation of epithelial cell proliferation",0.00139113116477651
+"circadian sleep/wake cycle, sleep",0.00144534500682574
+"lymphocyte mediated immunity",0.00150086880385112
+"response to nicotine",0.00152439627816243
+"regulation of circadian sleep/wake cycle",0.00152439627816243
+"adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0.00152439627816243
+"positive regulation of cellular amide metabolic process",0.00158729897928325
+"regulation of T cell differentiation",0.00158729897928325
+"hepatocyte proliferation",0.00159483654552959
+"epithelial cell proliferation involved in liver morphogenesis",0.00159483654552959
+"regulation of type 2 immune response",0.00168373298498863
+"circadian sleep/wake cycle process",0.00168373298498863
+"regulation of DNA-binding transcription factor activity",0.0017530850013371
+"positive regulation of osteoclast differentiation",0.0017530850013371
+"response to lipoprotein particle",0.0017530850013371
+"liver morphogenesis",0.0017530850013371
+"regulation of leukocyte adhesion to vascular endothelial cell",0.0017530850013371
+"regulation of calcium ion transmembrane transport",0.0017530850013371
+"CD8-positive, alpha-beta T cell activation",0.00183839573632331
+"positive regulation of protein-containing complex disassembly",0.00183839573632331
+"regulation of metal ion transport",0.00187439595968776
+"calcium ion transport into cytosol",0.00187629954042725
+"negative regulation of immune system process",0.00189225226105973
+"vascular endothelial growth factor production",0.00190960019900134
+"amyloid-beta clearance",0.00190960019900134
+"cellular response to tumor necrosis factor",0.00198832370936692
+"fat-soluble vitamin metabolic process",0.00198832370936692
+"salivary gland morphogenesis",0.00198832370936692
+"cellular response to lipoprotein particle stimulus",0.00198832370936692
+"negative regulation of phosphorus metabolic process",0.00199775451651664
+"negative regulation of phosphate metabolic process",0.00199775451651664
+"alpha-beta T cell activation",0.00202346149938492
+"regulation of T cell proliferation",0.0020351317660322
+"autophagy",0.0020351317660322
+"process utilizing autophagic mechanism",0.0020351317660322
+"regulation of regulatory T cell differentiation",0.00203829672035681
+"regulation of amyloid-beta formation",0.00203829672035681
+"temperature homeostasis",0.0020434831595921
+"regulation of insulin secretion",0.0021002591806821
+"myeloid cell apoptotic process",0.00211043165442298
+"circadian sleep/wake cycle",0.00211043165442298
+"positive regulation of peptidyl-tyrosine phosphorylation",0.00211043165442298
+"regulation of membrane potential",0.00211137641993581
+"salivary gland development",0.00219223611740389
+"sleep",0.00219223611740389
+"epithelial cell proliferation",0.00219223611740389
+"calcium-mediated signaling",0.00220374312427665
+"positive regulation of cell adhesion",0.00226958446102958
+"positive regulation of interleukin-10 production",0.00226958446102958
+"regulation of miRNA-mediated gene silencing",0.00226958446102958
+"regulation of lymphocyte differentiation",0.00234066311952202
+"regulatory T cell differentiation",0.00235902022214672
+"cytosolic calcium ion transport",0.00235902022214672
+"positive regulation of protein localization",0.00239863263690674
+"response to tumor necrosis factor",0.00241192546439302
+"positive regulation of interleukin-12 production",0.00243105738440639
+"regulation of post-transcriptional gene silencing",0.00243105738440639
+"regulation of post-transcriptional gene silencing by RNA",0.00243105738440639
+"positive regulation of protein-containing complex assembly",0.00248415475787082
+"regulation of ion transmembrane transport",0.00249910012060821
+"type 2 immune response",0.00252067929550714
+"negative regulation of cell-cell adhesion",0.00253009239204909
+"regulation of cysteine-type endopeptidase activity involved in apoptotic process",0.00255734630012107
+"membrane protein ectodomain proteolysis",0.00258598669325595
+"positive regulation of steroid metabolic process",0.00258598669325595
+"regulation of gene silencing by RNA",0.00258598669325595
+"regulation of amyloid precursor protein catabolic process",0.00258598669325595
+"positive regulation of B cell proliferation",0.00267014363858226
+"regulation of monooxygenase activity",0.00267014363858226
+"programmed necrotic cell death",0.00267014363858226
+"regulation of adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0.00267014363858226
+"amyloid-beta formation",0.00289593598290426
+"immunoglobulin mediated immune response",0.00291359686919213
+"regulation of lymphocyte mediated immunity",0.00294280301590229
+"positive regulation of T cell activation",0.00297214855992489
+"production of miRNAs involved in gene silencing by miRNA",0.00298015759749071
+"B cell mediated immunity",0.00298304735636661
+"maintenance of location in cell",0.00298304735636661
+"T cell proliferation",0.00305157218119108
+"regulation of acute inflammatory response",0.00306256402705548
+"leukocyte chemotaxis",0.00306256402705548
+"response to steroid hormone",0.00306256402705548
+"myeloid leukocyte migration",0.0030924155480559
+"positive regulation of B cell mediated immunity",0.00313050781864167
+"positive regulation of immunoglobulin mediated immune response",0.00313050781864167
+"myoblast fusion",0.00313050781864167
+"regulation of adaptive immune response",0.00313354182950714
+"positive regulation of protein import into nucleus",0.00322498349991126
+"leukocyte adhesion to vascular endothelial cell",0.00322498349991126
+"regulation of peptide hormone secretion",0.00326464604849034
+"exocrine system development",0.00329693827403387
+"establishment of endothelial barrier",0.00329693827403387
+"primary sncRNA processing",0.00329693827403387
+"regulation of endothelial cell apoptotic process",0.00329693827403387
+"epithelial cell development",0.00329693827403387
+"regulation of peptide secretion",0.00339977679217798
+"regulation of cysteine-type endopeptidase activity",0.00339977679217798
+"positive regulation of cytokine-mediated signaling pathway",0.00348401610429294
+"heterotypic cell-cell adhesion",0.00348401610429294
+"positive regulation of JUN kinase activity",0.00348401610429294
+"regulation of peptide transport",0.00348401610429294
+"endothelial cell apoptotic process",0.00359843026140709
+"positive regulation of oxidoreductase activity",0.00371683559656668
+"membrane protein proteolysis",0.00382580109922319
+"positive regulation of protein import",0.00382580109922319
+"amyloid precursor protein catabolic process",0.00408112111588228
+"positive regulation of response to cytokine stimulus",0.00434368152415297
+"killing of cells of another organism",0.0044586767515858
+"regulation of interleukin-12 production",0.0044586767515858
+"regulation of myoblast differentiation",0.00456170524256739
+"circadian behavior",0.00456170524256739
+"amyloid-beta metabolic process",0.00456170524256739
+"interleukin-12 production",0.00467812369881612
+"necrotic cell death",0.00467812369881612
+"positive regulation of cytokine production involved in immune response",0.00480867607430626
+"rhythmic behavior",0.00494060558770372
+"syncytium formation by plasma membrane fusion",0.00501844538013732
+"negative regulation of cytokine-mediated signaling pathway",0.00501844538013732
+"positive regulation of type I interferon production",0.00501844538013732
+"positive regulation of receptor signaling pathway via JAK-STAT",0.00501844538013732
+"cell-cell fusion",0.00501844538013732
+"negative regulation of endothelial cell proliferation",0.00524367364757765
+"CD4-positive, alpha-beta T cell differentiation involved in immune response",0.00524367364757765
+"regulation of myeloid leukocyte mediated immunity",0.00524367364757765
+"syncytium formation",0.00524367364757765
+"execution phase of apoptosis",0.00524367364757765
+"tissue homeostasis",0.00524447240420178
+"regulation of calcium ion transport",0.0052830643142004
+"alpha-beta T cell differentiation involved in immune response",0.00530732167337397
+"positive regulation of myeloid leukocyte differentiation",0.00530732167337397
+"response to fungus",0.00530732167337397
+"regulation of B cell proliferation",0.00530732167337397
+"negative regulation of cell migration",0.00539913498936227
+"alpha-beta T cell activation involved in immune response",0.00539913498936227
+"regulation of JUN kinase activity",0.00539913498936227
+"negative regulation of response to cytokine stimulus",0.00539913498936227
+"regulation of B cell mediated immunity",0.0054909930362001
+"regulation of immunoglobulin mediated immune response",0.0054909930362001
+"cellular response to virus",0.0054909930362001
+"positive regulation of receptor signaling pathway via STAT",0.0054909930362001
+"inflammatory response to antigenic stimulus",0.00560279422292829
+"positive regulation of nucleocytoplasmic transport",0.00560279422292829
+"positive regulation of neurogenesis",0.00560279422292829
+"endothelial cell development",0.00570752924616796
+"amyloid precursor protein metabolic process",0.00570752924616796
+"T cell differentiation",0.00570752924616796
+"calcium ion transmembrane transport",0.00570752924616796
+"negative regulation of cell motility",0.00591291753283038
+"regulation of protein import into nucleus",0.00596288197030819
+"regulation of hormone secretion",0.00599434627103404
+"T cell differentiation involved in immune response",0.00608606008334693
+"second-messenger-mediated signaling",0.00613282286969859
+"negative regulation of cell adhesion",0.00631463711075282
+"negative regulation of cellular component movement",0.00631463711075282
+"cell chemotaxis",0.00631463711075282
+"phagocytosis",0.00658499664843365
+"positive regulation of gliogenesis",0.00658499664843365
+"tumor necrosis factor-mediated signaling pathway",0.00658499664843365
+"regulation of osteoclast differentiation",0.00658499664843365
+"negative regulation of cysteine-type endopeptidase activity involved in apoptotic process",0.00669473808011361
+"regulation of steroid biosynthetic process",0.00669473808011361
+"regulation of protein import",0.00669473808011361
+"vitamin metabolic process",0.00683803436249613
+"positive regulation of phagocytosis",0.00698243627912603
+"anatomical structure homeostasis",0.00704045663035474
+"regulation of phosphatase activity",0.00709333151161577
+"positive regulation of neuron apoptotic process",0.00709333151161577
+"humoral immune response",0.00729689149027579
+"negative regulation of locomotion",0.00765847249857803
+"myoblast differentiation",0.00802332183683597
+"positive regulation of protein localization to nucleus",0.00802332183683597
+"regulation of epithelial cell apoptotic process",0.00815663211878017
+"negative regulation of cysteine-type endopeptidase activity",0.00815663211878017
+"gliogenesis",0.00821827385406653
+"transmission of nerve impulse",0.00844789665199972
+"negative regulation of protein phosphorylation",0.00844789665199972
+"positive regulation of cytosolic calcium ion concentration",0.00849573215535736
+"positive regulation of proteolysis",0.00866029390303215
+"regulation of endopeptidase activity",0.00866029390303215
+"positive regulation of nervous system development",0.00870864646891885
+"B cell activation involved in immune response",0.00887145710221255
+"regulation of behavior",0.00920579614684535
+"regulation of response to biotic stimulus",0.00920579614684535
+"neutrophil chemotaxis",0.00952128326080615
+"regulation of small molecule metabolic process",0.00952128326080615
+"regulation of type I interferon production",0.00966846150437826
+"positive regulation of JNK cascade",0.00983064876217945
+"positive regulation of cell development",0.00989357143487874
+"biological process involved in interaction with symbiont",0.0101577389150856
+"type I interferon production",0.010298948757675
+"positive regulation of lipid biosynthetic process",0.010298948757675
+"positive regulation of T cell proliferation",0.0104643914620688
+"regulation of fibroblast proliferation",0.0106307074762484
+"negative regulation of angiogenesis",0.0107978884513171
+"positive regulation of myeloid cell differentiation",0.0110845422461698
+"fibroblast proliferation",0.0110845422461698
+"negative regulation of leukocyte differentiation",0.0110845422461698
+"negative regulation of blood vessel morphogenesis",0.0110845422461698
+"regulation of cytosolic calcium ion concentration",0.0111611512650444
+"negative regulation of vasculature development",0.0112283284476478
+"negative regulation of hemopoiesis",0.0113979109478095
+"negative regulation of phosphorylation",0.0114031450377282
+"defense response to Gram-negative bacterium",0.0115424945214287
+"regulation of phagocytosis",0.0117133917792073
+"regulation of steroid metabolic process",0.0118587435356678
+"B cell proliferation",0.0118587435356678
+"endothelial cell differentiation",0.0120043659732403
+"positive regulation of protein kinase B signaling",0.0120043659732403
+"positive regulation of neuron differentiation",0.0121770159182606
+"osteoclast differentiation",0.012350449720469
+"epithelial cell apoptotic process",0.012524659955866
+"leukocyte homeostasis",0.0126996392677017
+"toll-like receptor signaling pathway",0.0130518760255303
+"T cell activation involved in immune response",0.0130518760255303
+"cellular component disassembly",0.0131864451646337
+"cellular nitrogen compound catabolic process",0.0131864451646337
+"heterocycle catabolic process",0.0132442680083616
+"positive regulation of cysteine-type endopeptidase activity involved in apoptotic process",0.0135272595376428
+"granulocyte chemotaxis",0.0135272595376428
+"regulation of circadian rhythm",0.0137060566276951
+"liver development",0.0138262327489582
+"regulation of gliogenesis",0.0138262327489582
+"positive regulation of MAP kinase activity",0.0138262327489582
+"regulation of nucleocytoplasmic transport",0.0140058191575677
+"calcium ion transport",0.0140643420391399
+"regulation of peptidase activity",0.014213187359488
+"lymphocyte differentiation",0.0142727572929994
+"regulation of protein-containing complex disassembly",0.0142761700426113
+"hepaticobiliary system development",0.0142761700426113
+"negative regulation of T cell activation",0.0144568962385549
+"endothelium development",0.0146076192926379
+"regulation of dephosphorylation",0.0146076192926379
+"aromatic compound catabolic process",0.0147231034269962
+"regulation of cellular amide metabolic process",0.014783481332139
+"regulation of neurogenesis",0.0150275235522731
+"positive regulation of stress-activated MAPK cascade",0.01530689740668
+"positive regulation of translation",0.01530689740668
+"regulation of myeloid leukocyte differentiation",0.0154271254651697
+"myotube differentiation",0.0154271254651697
+"regulation of cell killing",0.0154271254651697
+"positive regulation of stress-activated protein kinase signaling cascade",0.0156112523183639
+"cellular response to reactive oxygen species",0.0162338515018934
+"positive regulation of intracellular protein transport",0.016627911893839
+"gland development",0.016627911893839
+"organic cyclic compound catabolic process",0.016788844822412
+"negative regulation of leukocyte cell-cell adhesion",0.0169866688280062
+"regulation of signaling receptor activity",0.0171415468266091
+"miRNA-mediated gene silencing",0.0171415468266091
+"positive regulation of cysteine-type endopeptidase activity",0.0173315448783886
+"adenylate cyclase-activating G protein-coupled receptor signaling pathway",0.0177133014191301
+"regulation of JNK cascade",0.0177133014191301
+"regulation of protein localization to nucleus",0.0179050487895304
+"mononuclear cell differentiation",0.0180008018368657
+"regulation of epithelial cell differentiation",0.0185207430519949
+"post-transcriptional gene silencing by RNA",0.0187150601296728
+"cellular calcium ion homeostasis",0.0188137350158747
+"multicellular organismal signaling",0.0188722584384824
+"regulation of osteoblast differentiation",0.0190673574569051
+"memory",0.0197338738311192
+"post-transcriptional gene silencing",0.0199317289301178
+"regulation of endothelial cell proliferation",0.0210941368572345
+"positive regulation of small molecule metabolic process",0.0212962913044126
+"steroid biosynthetic process",0.0214597870013674
+"positive regulation of endopeptidase activity",0.0214597870013674
+"negative regulation of lymphocyte activation",0.0214597870013674
+"CD4-positive, CD25-positive, alpha-beta regulatory T cell differentiation",0.0214597870013674
+"regulation of alkaline phosphatase activity",0.0214597870013674
+"positive regulation of synaptic transmission, cholinergic",0.0214597870013674
+"regulation of vascular wound healing",0.0214597870013674
+"CAMKK-AMPK signaling cascade",0.0214597870013674
+"response to interleukin-18",0.0214597870013674
+"positive regulation of extracellular matrix disassembly",0.0214597870013674
+"negative regulation of execution phase of apoptosis",0.0214597870013674
+"positive regulation of execution phase of apoptosis",0.0214597870013674
+"negative regulation of production of miRNAs involved in gene silencing by miRNA",0.0214597870013674
+"negative regulation of epithelial cell proliferation",0.0216438326874626
+"cellular response to amino acid stimulus",0.0216438326874626
+"negative regulation of secretion by cell",0.0218449709268367
+"regulation of protein kinase B signaling",0.0225368680160151
+"protein import into nucleus",0.0227404618647202
+"JNK cascade",0.0228075171702496
+"respiratory burst involved in defense response",0.0228075171702496
+"primary miRNA processing",0.0228075171702496
+"regulation of fever generation",0.0228075171702496
+"negative regulation of myelination",0.0228075171702496
+"negative regulation of heterotypic cell-cell adhesion",0.0228075171702496
+"positive regulation of transmission of nerve impulse",0.0228075171702496
+"regulation of branching involved in salivary gland morphogenesis",0.0228075171702496
+"regulation of protein complex stability",0.0228075171702496
+"regulation of cell-cell adhesion involved in gastrulation",0.0228075171702496
+"positive regulation of cell proliferation in bone marrow",0.0228075171702496
+"liver regeneration",0.0228075171702496
+"positive regulation of tumor necrosis factor-mediated signaling pathway",0.0228075171702496
+"positive regulation of peptidase activity",0.022877312802763
+"import into nucleus",0.0230793780181491
+"endothelial cell proliferation",0.0235282210480632
+"positive regulation of lipid metabolic process",0.0237672709806681
+"negative regulation of endopeptidase activity",0.0237672709806681
+"response to amino acid",0.0237672709806681
+"cellular response to acid chemical",0.0237672709806681
+"positive regulation of intracellular transport",0.0237672709806681
+"positive regulation of tolerance induction",0.0237672709806681
+"tryptophan metabolic process",0.0237672709806681
+"indolalkylamine metabolic process",0.0237672709806681
+"NAD biosynthetic process",0.0237672709806681
+"fructose 1,6-bisphosphate metabolic process",0.0237672709806681
+"iron import into cell",0.0237672709806681
+"positive regulation of MHC class II biosynthetic process",0.0237672709806681
+"positive regulation of hair follicle development",0.0237672709806681
+"cell-cell adhesion involved in gastrulation",0.0237672709806681
+"neutrophil-mediated killing of bacterium",0.0237672709806681
+"regulation of glomerular mesangial cell proliferation",0.0237672709806681
+"regulation of neuronal action potential",0.0237672709806681
+"calmodulin dependent kinase signaling pathway",0.0237672709806681
+"positive regulation of NLRP3 inflammasome complex assembly",0.0237672709806681
+"regulation of tau-protein kinase activity",0.0237672709806681
+"positive regulation of production of miRNAs involved in gene silencing by miRNA",0.0237672709806681
+"regulation of T-helper 2 cell cytokine production",0.0237672709806681
+"gene silencing by RNA",0.0240102045340979
+"response to reactive oxygen species",0.024456314990413
+"regulation of nervous system process",0.0248128044377519
+"positive regulation of binding",0.0248128044377519
+"regulation of T cell tolerance induction",0.0248128044377519
+"MyD88-independent toll-like receptor signaling pathway",0.0248128044377519
+"positive regulation of heat generation",0.0248128044377519
+"regulation of interleukin-1 alpha production",0.0248128044377519
+"low-density lipoprotein particle remodeling",0.0248128044377519
+"negative regulation of tyrosine phosphorylation of STAT protein",0.0248128044377519
+"regulation of T-helper 2 cell differentiation",0.0248128044377519
+"negative regulation of miRNA-mediated gene silencing",0.0248128044377519
+"glucagon secretion",0.0248128044377519
+"regulation of glucagon secretion",0.0248128044377519
+"negative regulation of transforming growth factor beta production",0.0248128044377519
+"positive regulation of podosome assembly",0.0248128044377519
+"regulation of cell proliferation in bone marrow",0.0248128044377519
+"glomerular mesangial cell proliferation",0.0248128044377519
+"T-helper 17 cell lineage commitment",0.0248128044377519
+"establishment of endothelial intestinal barrier",0.0248128044377519
+"complement-dependent cytotoxicity",0.0248128044377519
+"regulation of carbohydrate metabolic process",0.0252625181048431
+"regulation of MAP kinase activity",0.0252625181048431
+"myeloid cell homeostasis",0.0257089949292654
+"negative regulation of leukocyte activation",0.0257843925672306
+"negative regulation of secretion",0.0257843925672306
+"negative regulation of protein kinase activity",0.0257843925672306
+"regulation of lipid biosynthetic process",0.0257843925672306
+"response to peptidoglycan",0.0257843925672306
+"interleukin-1 alpha production",0.0257843925672306
+"positive regulation of heterotypic cell-cell adhesion",0.0257843925672306
+"positive regulation of smooth muscle cell apoptotic process",0.0257843925672306
+"regulation of iron ion transport",0.0257843925672306
+"positive regulation of circadian sleep/wake cycle, sleep",0.0257843925672306
+"positive regulation of isotype switching to IgG isotypes",0.0257843925672306
+"negative regulation of muscle organ development",0.0257843925672306
+"negative regulation of post-transcriptional gene silencing",0.0257843925672306
+"negative regulation of gene silencing by RNA",0.0257843925672306
+"cell proliferation in bone marrow",0.0257843925672306
+"negative regulation of post-transcriptional gene silencing by RNA",0.0257843925672306
+"regulation of apoptotic DNA fragmentation",0.0257843925672306
+"positive regulation of chemokine (C-X-C motif) ligand 2 production",0.0257843925672306
+"regulation of stress-activated MAPK cascade",0.0263499983459731
+"response to acid chemical",0.0267522070686801
+"protein kinase B signaling",0.0267522070686801
+"regulation of stress-activated protein kinase signaling cascade",0.0269538336491314
+"T cell tolerance induction",0.0269912976951701
+"regulation of dendritic cell cytokine production",0.0269912976951701
+"aromatic amino acid family catabolic process",0.0269912976951701
+"regulation of extracellular matrix disassembly",0.0269912976951701
+"C-terminal protein amino acid modification",0.0269912976951701
+"regulation of synaptic transmission, cholinergic",0.0269912976951701
+"positive regulation of homotypic cell-cell adhesion",0.0269912976951701
+"activation of Janus kinase activity",0.0269912976951701
+"positive regulation of T cell apoptotic process",0.0269912976951701
+"neutrophil-mediated killing of symbiont cell",0.0269912976951701
+"positive regulation of epithelial cell proliferation",0.0281880469593158
+"dendritic cell cytokine production",0.0281880469593158
+"positive regulation of inflammatory response to antigenic stimulus",0.0281880469593158
+"nicotinamide nucleotide biosynthetic process",0.0281880469593158
+"regulation of heat generation",0.0281880469593158
+"cellular response to hepatocyte growth factor stimulus",0.0281880469593158
+"positive regulation by host of viral process",0.0281880469593158
+"regulation of MHC class II biosynthetic process",0.0281880469593158
+"vascular wound healing",0.0281880469593158
+"glomerular mesangium development",0.0281880469593158
+"regulation of autophagosome maturation",0.0281880469593158
+"regulation of cell proliferation involved in kidney development",0.0281880469593158
+"regulation of DNA catabolic process",0.0281880469593158
+"circadian rhythm",0.0288419283134524
+"osteoblast differentiation",0.0289315830182916
+"lymphocyte activation involved in immune response",0.0289315830182916
+"regulation of myeloid cell differentiation",0.0289315830182916
+"negative regulation of cell activation",0.0289315830182916
+"regulation of intracellular protein transport",0.0289315830182916
+"positive regulation of protein catabolic process",0.0289315830182916
+"response to yeast",0.0289315830182916
+"T-helper cell lineage commitment",0.0289315830182916
+"negative regulation of collagen metabolic process",0.0289315830182916
+"removal of superoxide radicals",0.0289315830182916
+"negative regulation of collagen biosynthetic process",0.0289315830182916
+"response to hepatocyte growth factor",0.0289315830182916
+"T-helper 2 cell cytokine production",0.0289315830182916
+"T-helper 2 cell differentiation",0.0289315830182916
+"MHC class II biosynthetic process",0.0289315830182916
+"negative regulation of activated T cell proliferation",0.0289315830182916
+"astrocyte activation",0.0289315830182916
+"positive regulation of calcineurin-NFAT signaling cascade",0.0289315830182916
+"neutrophil mediated cytotoxicity",0.0289315830182916
+"regulation of podosome assembly",0.0289315830182916
+"positive regulation of calcineurin-mediated signaling",0.0289315830182916
+"regulation of leukocyte migration",0.0290398313394274
+"glucose metabolic process",0.0290398313394274
+"adenylate cyclase-modulating G protein-coupled receptor signaling pathway",0.0291953829621285
+"negative regulation of kinase activity",0.0291953829621285
+"morphogenesis of a branching epithelium",0.02988684816732
+"protein import",0.0301609076744169
+"sequestering of triglyceride",0.0301609076744169
+"regulation of isotype switching to IgG isotypes",0.0301609076744169
+"interleukin-6-mediated signaling pathway",0.0301609076744169
+"nucleotide-binding oligomerization domain containing 2 signaling pathway",0.0301609076744169
+"organic hydroxy compound biosynthetic process",0.0308502344688826
+"regulation of innate immune response",0.0309226090508081
+"pyridine nucleotide biosynthetic process",0.0309226090508081
+"negative regulation of interleukin-17 production",0.0309226090508081
+"negative regulation of gluconeogenesis",0.0309226090508081
+"negative regulation of bone resorption",0.0309226090508081
+"positive regulation of glycolytic process",0.0309226090508081
+"isotype switching to IgG isotypes",0.0309226090508081
+"negative regulation of amino acid transport",0.0309226090508081
+"membrane hyperpolarization",0.0309226090508081
+"3'-UTR-mediated mRNA stabilization",0.0309226090508081
+"cellular response to oxygen radical",0.0309226090508081
+"cellular response to superoxide",0.0309226090508081
+"regulation of execution phase of apoptosis",0.0309226090508081
+"regulation of NLRP3 inflammasome complex assembly",0.0309226090508081
+"regulation of endothelial cell development",0.0309226090508081
+"positive regulation of myoblast fusion",0.0309226090508081
+"regulation of establishment of endothelial barrier",0.0309226090508081
+"regulation of CD8-positive, alpha-beta T cell activation",0.0309226090508081
+"regulation of epithelial cell migration",0.0309226090508081
+"protein-containing complex disassembly",0.0309226090508081
+"regulation of neuron differentiation",0.031368501360993
+"myeloid leukocyte differentiation",0.0317702465616898
+"extrinsic apoptotic signaling pathway",0.0317702465616898
+"reactive oxygen species metabolic process",0.0319715109790212
+"MyD88-dependent toll-like receptor signaling pathway",0.0320397019568595
+"regulation of humoral immune response mediated by circulating immunoglobulin",0.0320397019568595
+"CD4-positive, alpha-beta T cell lineage commitment",0.0320397019568595
+"positive regulation of translational initiation",0.0320397019568595
+"nucleotide-binding oligomerization domain containing signaling pathway",0.0320397019568595
+"stress-activated MAPK cascade",0.0324362226448526
+"morphogenesis of a branching structure",0.0328868787056628
+"neutrophil activation involved in immune response",0.0330108590771254
+"regulation of tolerance induction",0.0330108590771254
+"positive regulation of humoral immune response",0.0330108590771254
+"apoptotic DNA fragmentation",0.0330108590771254
+"I-kappaB phosphorylation",0.0330108590771254
+"nucleotide-binding domain, leucine rich repeat containing receptor signaling pathway",0.0330108590771254
+"cellular biogenic amine catabolic process",0.0330108590771254
+"NLRP3 inflammasome complex assembly",0.0330108590771254
+"negative regulation of bone remodeling",0.0330108590771254
+"regulation of hair follicle development",0.0330108590771254
+"positive regulation of lymphocyte apoptotic process",0.0330108590771254
+"hexose metabolic process",0.0338517751541685
+"stress-activated protein kinase signaling cascade",0.0338517751541685
+"response to superoxide",0.0338517751541685
+"alpha-beta T cell lineage commitment",0.0338517751541685
+"amine catabolic process",0.0338517751541685
+"maintenance of gastrointestinal epithelium",0.0338517751541685
+"iron ion transmembrane transport",0.0338517751541685
+"positive regulation of T-helper cell differentiation",0.0338517751541685
+"negative regulation of glucose import",0.0338517751541685
+"positive regulation of nitric-oxide synthase biosynthetic process",0.0338517751541685
+"angiogenesis involved in wound healing",0.0338517751541685
+"positive regulation of myeloid leukocyte cytokine production involved in immune response",0.0338517751541685
+"podosome assembly",0.0338517751541685
+"cell proliferation involved in kidney development",0.0338517751541685
+"regulation of bicellular tight junction assembly",0.0338517751541685
+"biological process involved in symbiotic interaction",0.0340997853091424
+"negative regulation of peptidase activity",0.0345020031994243
+"negative regulation of neuron death",0.0345020031994243
+"response to oxygen radical",0.0348200272841954
+"T cell chemotaxis",0.0348200272841954
+"positive regulation of mast cell activation involved in immune response",0.0348200272841954
+"positive regulation of mast cell degranulation",0.0348200272841954
+"negative regulation of receptor signaling pathway via JAK-STAT",0.0348200272841954
+"muscle cell cellular homeostasis",0.0348200272841954
+"pyridine-containing compound biosynthetic process",0.0348200272841954
+"inflammasome complex assembly",0.0348200272841954
+"negative regulation of transferase activity",0.0348200272841954
+"negative regulation of phosphoprotein phosphatase activity",0.0358588597521043
+"negative regulation of interleukin-10 production",0.0358588597521043
+"benzene-containing compound metabolic process",0.0358588597521043
+"CD4-positive or CD8-positive, alpha-beta T cell lineage commitment",0.0358588597521043
+"nicotinamide nucleotide metabolic process",0.0358588597521043
+"mitochondrial depolarization",0.0358588597521043
+"signaling receptor ligand precursor processing",0.0358588597521043
+"positive regulation of protein localization to cell surface",0.0358588597521043
+"regulation of hepatocyte proliferation",0.0358588597521043
+"monosaccharide metabolic process",0.0365860488451008
+"cellular response to oxidative stress",0.0367885698810677
+"regulation of glutamate secretion",0.0368922616789815
+"negative regulation of nervous system process",0.0368922616789815
+"negative regulation of oxidoreductase activity",0.0368922616789815
+"cellular oxidant detoxification",0.0368922616789815
+"regulation of myoblast fusion",0.0368922616789815
+"positive regulation of miRNA-mediated gene silencing",0.0368922616789815
+"positive regulation of transcription regulatory region DNA binding",0.0368922616789815
+"negative regulation of cytokine production involved in immune response",0.0379001460523068
+"positive regulation of T cell cytokine production",0.0379001460523068
+"positive regulation of myeloid leukocyte mediated immunity",0.0379001460523068
+"positive regulation of vascular endothelial growth factor production",0.0379001460523068
+"CD4-positive, alpha-beta T cell cytokine production",0.0379001460523068
+"respiratory burst",0.0379001460523068
+"positive regulation of post-transcriptional gene silencing",0.0379001460523068
+"positive regulation of post-transcriptional gene silencing by RNA",0.0379001460523068
+"negative regulation of receptor signaling pathway via STAT",0.0379001460523068
+"regulation of neuron apoptotic process",0.038214525373288
+"negative regulation of glucose transmembrane transport",0.038632547687145
+"pyridine nucleotide metabolic process",0.038632547687145
+"animal organ regeneration",0.038632547687145
+"protein-lipid complex remodeling",0.038632547687145
+"plasma lipoprotein particle remodeling",0.038632547687145
+"indole-containing compound metabolic process",0.038632547687145
+"positive regulation of circadian rhythm",0.038632547687145
+"post-translational protein modification",0.038632547687145
+"positive regulation of syncytium formation by plasma membrane fusion",0.038632547687145
+"negative regulation of T cell apoptotic process",0.038632547687145
+"glomerulus vasculature development",0.038632547687145
+"positive regulation of cellular respiration",0.038632547687145
+"regulation of NMDA receptor activity",0.038632547687145
+"synaptic transmission, cholinergic",0.0394378923627754
+"smooth muscle cell apoptotic process",0.0394378923627754
+"regulation of smooth muscle cell apoptotic process",0.0394378923627754
+"positive regulation of myoblast differentiation",0.0394378923627754
+"negative regulation of alpha-beta T cell differentiation",0.0394378923627754
+"regulation of muscle organ development",0.0394378923627754
+"negative regulation of lipid catabolic process",0.0394378923627754
+"nitric-oxide synthase biosynthetic process",0.0394378923627754
+"regulation of nitric-oxide synthase biosynthetic process",0.0394378923627754
+"renal system vasculature development",0.0394378923627754
+"kidney vasculature development",0.0394378923627754
+"positive regulation of extracellular matrix organization",0.0394378923627754
+"DNA catabolic process, endonucleolytic",0.0403696007701587
+"negative regulation of organic acid transport",0.0403696007701587
+"positive regulation of peptidyl-serine phosphorylation of STAT protein",0.0403696007701587
+"response to ATP",0.0403696007701587
+"negative regulation of tissue remodeling",0.0403696007701587
+"protein-containing complex remodeling",0.0403696007701587
+"hydrogen peroxide catabolic process",0.0403696007701587
+"positive regulation of macrophage activation",0.0403696007701587
+"regulation of platelet aggregation",0.0403696007701587
+"positive regulation of DNA metabolic process",0.0407444138193469
+"aromatic amino acid family metabolic process",0.0414856027454776
+"regulation of proton transport",0.0414856027454776
+"positive regulation of peptidyl-threonine phosphorylation",0.0414856027454776
+"positive regulation of release of cytochrome c from mitochondria",0.0414856027454776
+"regulation of angiogenesis",0.0421164645623785
+"rhythmic process",0.0421164645623785
+"regulation of the force of heart contraction",0.0421164645623785
+"T cell lineage commitment",0.0421164645623785
+"tolerance induction",0.0421164645623785
+"epithelial structure maintenance",0.0421164645623785
+"apoptotic nuclear changes",0.0421164645623785
+"negative regulation of chemokine production",0.0421164645623785
+"regulation of hair cycle",0.0421164645623785
+"myeloid leukocyte cytokine production",0.0421164645623785
+"cellular response to interleukin-6",0.0421164645623785
+"T-helper 17 cell differentiation",0.0421164645623785
+"negative regulation of cell junction assembly",0.0421164645623785
+"negative regulation of endothelial cell apoptotic process",0.0421164645623785
+"epithelial cell migration",0.0425036147121743
+"regulation of vasculature development",0.0425036147121743
+"epithelium migration",0.0429605734539606
+"mature B cell differentiation involved in immune response",0.042984290340892
+"cellular component disassembly involved in execution phase of apoptosis",0.042984290340892
+"regulation of vascular endothelial growth factor production",0.042984290340892
+"regulation of peptidyl-serine phosphorylation of STAT protein",0.042984290340892
+"cell redox homeostasis",0.042984290340892
+"negative regulation of myoblast differentiation",0.042984290340892
+"extracellular matrix organization",0.0430509978860362
+"tissue migration",0.0430509978860362
+"negative regulation of catabolic process",0.0432005911323032
+"extracellular structure organization",0.0432005911323032
+"external encapsulating structure organization",0.0434023787040853
+"neuron apoptotic process",0.0436043022566509
+"positive regulation of isotype switching",0.0437798300199483
+"response to interleukin-6",0.0437798300199483
+"negative regulation of anion transport",0.0437798300199483
+"positive regulation of leukocyte apoptotic process",0.0437798300199483
+"learning or memory",0.0438504367288727
+"protein localization to nucleus",0.0440522223094855
+"astrocyte development",0.0446613873812748
+"glutamate secretion",0.0446613873812748
+"negative regulation of protein dephosphorylation",0.0446613873812748
+"modulation by host of viral process",0.0446613873812748
+"killing by host of symbiont cells",0.0446613873812748
+"pyroptosis",0.0446613873812748
+"striated muscle cell differentiation",0.0452119358825107
+"DNA catabolic process",0.0454185277290813
+"negative regulation of cell killing",0.0454185277290813
+"positive regulation of natural killer cell activation",0.0454185277290813
+"positive regulation of mast cell activation",0.0454185277290813
+"negative regulation of blood vessel endothelial cell migration",0.0454185277290813
+"negative regulation of fibroblast proliferation",0.0454185277290813
+"regulation of syncytium formation by plasma membrane fusion",0.0454185277290813
+"negative regulation of signal transduction in absence of ligand",0.0454185277290813
+"negative regulation of extrinsic apoptotic signaling pathway in absence of ligand",0.0454185277290813
+"nucleocytoplasmic transport",0.0461028718033782
+"positive regulation of synaptic transmission",0.0461028718033782
+"nuclear transport",0.0461028718033782
+"regulation of inflammatory response to antigenic stimulus",0.0461036745721785
+"protein ADP-ribosylation",0.0461036745721785
+"positive regulation of phosphatase activity",0.0461036745721785
+"negative regulation of osteoclast differentiation",0.0461036745721785
+"necroptotic process",0.0461036745721785
+"pyridine-containing compound metabolic process",0.0461036745721785
+"positive regulation of protein deacetylation",0.0461036745721785
+"negative regulation of signaling receptor activity",0.0461036745721785
+"regulation of intracellular transport",0.0463853059206418
+"steroid metabolic process",0.046532974772211
+"cellular response to chemical stress",0.046532974772211
+"positive regulation of muscle cell apoptotic process",0.0466638645379211
+"negative regulation of phosphatase activity",0.0466638645379211
+"protein autoprocessing",0.0466638645379211
+"extracellular matrix disassembly",0.0466638645379211
+"serine phosphorylation of STAT protein",0.0466638645379211
+"regulation of mast cell degranulation",0.0466638645379211
+"leukocyte tethering or rolling",0.0466638645379211
+"negative regulation of amine transport",0.0466638645379211
+"epithelial tube branching involved in lung morphogenesis",0.0466638645379211
+"positive regulation of vascular associated smooth muscle cell proliferation",0.0466638645379211
+"regulation of T cell cytokine production",0.0475814157952804
+"response to activity",0.0475814157952804
+"cortical actin cytoskeleton organization",0.0475814157952804
+"positive regulation of leukocyte degranulation",0.0475814157952804
+"regulation of T-helper cell differentiation",0.0475814157952804
+"regulation of transforming growth factor beta production",0.0475814157952804
+"dephosphorylation",0.0484230195096617
+"negative regulation of production of molecular mediator of immune response",0.0484311157615823
+"neutrophil activation",0.0484311157615823
+"positive regulation of nucleotide metabolic process",0.0484311157615823
+"positive regulation of calcium-mediated signaling",0.0484311157615823
+"regulation of calcineurin-NFAT signaling cascade",0.0484311157615823
+"positive regulation of purine nucleotide metabolic process",0.0484311157615823
+"mature B cell differentiation",0.0493216820606443
+"neutrophil mediated immunity",0.0493216820606443
+"regulation of homotypic cell-cell adhesion",0.0493216820606443
+"positive regulation of behavior",0.0493216820606443
+"regulation of calcineurin-mediated signaling",0.0493216820606443
+"positive regulation of ATP metabolic process",0.0493216820606443
+"viral process",0.0495021684961999
+"cognition",0.0499603555453304
