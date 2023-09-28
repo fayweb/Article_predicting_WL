@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.1.17)  28 SEP 2023 11:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.1.17)  28 SEP 2023 14:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -429,21 +429,81 @@ Package hyperref Info: Link coloring OFF on input line 113.
 \@outlinefile=\write4
 \openout4 = `Testing_normalization_imputation_order.out'.
 
-! I can't write on file `Testing_normalization_imputation_order.pdf'.
-(Press Enter to retry, or Control-Z to exit; default file extension is `.pdf')
-Please type another file name for output
-! Emergency stop.
-<to be read again> 
-                   \edef 
-l.113 \begin{document}
-                       
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 115.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
+File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 115.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 115.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
+File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 115.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
+File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 115.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 115.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 115.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 115.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+) (c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 115.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) (c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 154.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 155.
+LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 176.
+(c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
+File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [1
+
+{c:/Users/fay_w/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+<Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-4-1.pdf, id=32, 469.755pt x 325.215pt>
+File: Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf)
+<use Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-4-1.pdf>
+Package pdftex.def Info: Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-4-1.pdf  used on input line 182.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[2 <./Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-4-1.pdf>]
+<Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-6-1.pdf, id=55, 469.755pt x 325.215pt>
+File: Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
+<use Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-6-1.pdf>
+Package pdftex.def Info: Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-6-1.pdf  used on input line 247.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[3 <./Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-6-1.pdf>]
+
+! LaTeX Error: Unicode character Δ (U+0394)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.292 ...eference gene) {-} Ct(gene of interest) }
+                                                   
 Here is how much of TeX's memory you used:
- 12789 strings out of 478053
- 205269 string characters out of 5839308
- 1848787 words of memory out of 5000000
- 32779 multiletter control sequences out of 15000+600000
- 516206 words of font info for 36 fonts, out of 8000000 for 9000
+ 13146 strings out of 478053
+ 213231 string characters out of 5839308
+ 1862787 words of memory out of 5000000
+ 33004 multiletter control sequences out of 15000+600000
+ 549363 words of font info for 80 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,1n,77p,1035b,382s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,6n,77p,1035b,539s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 !  ==> Fatal error occurred, no output PDF file produced!

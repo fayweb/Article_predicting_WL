@@ -174,7 +174,8 @@ data}\label{correlation-of-non-normalized-and-non-imputed-gene-expression-data}}
          \AttributeTok{order=}\StringTok{"hclust"}\NormalTok{, }\CommentTok{\#hclust reordering}
          \AttributeTok{p.mat =}\NormalTok{ p.mat, }\AttributeTok{sig.level =} \FloatTok{0.01}\NormalTok{, }\AttributeTok{insig =} \StringTok{"blank"}\NormalTok{,}
          \AttributeTok{addCoef.col =} \StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{,}
-         \AttributeTok{number.cex=}\FloatTok{0.5}\NormalTok{) }
+         \AttributeTok{number.cex=}\FloatTok{0.5}\NormalTok{, }
+         \AttributeTok{title =} \StringTok{"Lab"}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
@@ -220,7 +221,9 @@ data}\label{correlation-of-non-normalized-and-imputed-gene-expression-data}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{gene\_correlation }\OtherTok{\textless{}{-}}\NormalTok{ hm\_imp[,Genes\_v]}
+\NormalTok{lab }\OtherTok{\textless{}{-}}\NormalTok{ hm\_imp }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{filter}\NormalTok{(origin}\SpecialCharTok{==} \StringTok{"Lab"}\NormalTok{)}
+\NormalTok{gene\_correlation }\OtherTok{\textless{}{-}}\NormalTok{ lab[,Genes\_v]}
 
 \CommentTok{\# draw correlation between the genes}
 \NormalTok{gene\_correlation }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{cor}\NormalTok{(gene\_correlation, }
@@ -236,7 +239,8 @@ data}\label{correlation-of-non-normalized-and-imputed-gene-expression-data}}
          \AttributeTok{order=}\StringTok{"hclust"}\NormalTok{, }\CommentTok{\#hclust reordering}
          \AttributeTok{p.mat =}\NormalTok{ p.mat, }\AttributeTok{sig.level =} \FloatTok{0.01}\NormalTok{, }\AttributeTok{insig =} \StringTok{"blank"}\NormalTok{,}
          \AttributeTok{addCoef.col =} \StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{,}
-         \AttributeTok{number.cex=}\FloatTok{0.5}\NormalTok{) }
+         \AttributeTok{number.cex=}\FloatTok{0.5}\NormalTok{,}
+         \AttributeTok{title =} \StringTok{"Lab"}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
@@ -255,17 +259,104 @@ expression data,
 Results:}\label{correlation-of-non-normalized-and-imputed-gene-expression-data-results}}
 
 \begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
+\def\labelenumi{\alph{enumi}.}
 \tightlist
 \item
-  Correlation of normalized data (no imputation)
+  positive correlations between MUC2, IRGM1, SOCS1
 \item
-  Correlation of 1st normalized and sequentially imputed gene expression
-  data
+  positive correlations between IL1RN, MPO
 \item
-  Corrrelation of 1st imputed and sequentially normalized gene
-  expression data
+  positve correlations between CASP1, MUC5AC
+\item
+  positve correlations between CXCR3, MYD88
+\item
+  positive correlations between RETNLB, TICAM1, IL.6, TNF, CXCL9, IFNy,
+  IDO1
+\item
+  positive correlations between IL1RN and TNF, IFN\textless{} and IDO1
+\item
+  negative correlations between IRGM1, SOCS2 and IL1RN, MPO
+\item
+  negative correlations between group MUC2, IRGM1, SOC1 vs IL.6, TNF,
+  CXCL9, IFNy and IDO1
+\item
+  negative correlations between IL.13 and CASP1, MUC5AC and MYD88
 \end{enumerate}
+
+\hypertarget{correlation-of-normalized-data-no-imputation}{%
+\subsection{3. Correlation of normalized data (no
+imputation)}\label{correlation-of-normalized-data-no-imputation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#ΔCt (sample) = Ct(reference gene) {-} Ct(gene of interest) }
+
+\NormalTok{calculate\_delta\_ct }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(df, HKG) \{}
+  \CommentTok{\# Extract the column of the housekeeping gene}
+\NormalTok{  reference\_gene }\OtherTok{\textless{}{-}}\NormalTok{ df[[HKG]]}
+\NormalTok{  Mouse\_ID }\OtherTok{\textless{}{-}}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Mouse\_ID}
+\NormalTok{  g }\OtherTok{\textless{}{-}}\NormalTok{ df[, }\FunctionTok{colnames}\NormalTok{(df) }\SpecialCharTok{\%in\%}\NormalTok{ Genes\_v]}
+
+\NormalTok{  delta\_ct }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(g, }\ControlFlowTok{function}\NormalTok{(gene) reference\_gene }\SpecialCharTok{{-}}\NormalTok{ gene)}
+\NormalTok{  delta\_ct }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(Mouse\_ID, delta\_ct))}
+  \FunctionTok{return}\NormalTok{(delta\_ct)}
+\NormalTok{\}}
+
+\CommentTok{\# more positive = higher expression }
+
+\CommentTok{\# Use the function}
+\NormalTok{norm\_field }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_delta\_ct}\NormalTok{(field, }\StringTok{"GAPDH"}\NormalTok{)}
+
+\NormalTok{norm\_lab }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_delta\_ct}\NormalTok{(lab, }\StringTok{"PPIB"}\NormalTok{)}
+
+\NormalTok{norm\_g }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(norm\_field, norm\_lab)}
+
+\NormalTok{hm\_norm }\OtherTok{\textless{}{-}}\NormalTok{ hm }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{    dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{all\_of}\NormalTok{(Genes\_v)) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{left\_join}\NormalTok{(norm\_g, }\AttributeTok{by =} \StringTok{"Mouse\_ID"}\NormalTok{)}
+
+\FunctionTok{rm}\NormalTok{(result, norm\_g)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{correlations-normalised-genes-no-imputation}{%
+\subsubsection{Correlations normalised genes (no
+imputation)}\label{correlations-normalised-genes-no-imputation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lab }\OtherTok{\textless{}{-}}\NormalTok{ hm\_norm}\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{filter}\NormalTok{(origin}\SpecialCharTok{==} \StringTok{"Lab"}\NormalTok{)}
+
+\NormalTok{gene\_correlation }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(lab[,Genes\_v], as.numeric)}
+
+\CommentTok{\# draw correlation between the genes}
+\NormalTok{gene\_correlation }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{cor}\NormalTok{(gene\_correlation, }
+                                  \AttributeTok{use=}\StringTok{"pairwise.complete.obs"}\NormalTok{))}
+
+\CommentTok{\# matrix of the p{-}value of the correlatio}
+\NormalTok{p.mat }\OtherTok{\textless{}{-}} \FunctionTok{cor.mtest}\NormalTok{(gene\_correlation)}
+
+\FunctionTok{corrplot}\NormalTok{(gene\_correlation, }
+         \AttributeTok{method =} \StringTok{"circle"}\NormalTok{,  }\CommentTok{\#method of the plot, "color" would show colour gradient}
+         \AttributeTok{tl.col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{tl.srt=}\DecValTok{45}\NormalTok{, }\CommentTok{\#colour of labels and rotation}
+         \AttributeTok{col =} \FunctionTok{brewer.pal}\NormalTok{(}\AttributeTok{n =} \DecValTok{8}\NormalTok{, }\AttributeTok{name =}\StringTok{"RdYlBu"}\NormalTok{), }\CommentTok{\#colour of matrix}
+         \AttributeTok{order=}\StringTok{"hclust"}\NormalTok{, }\CommentTok{\#hclust reordering}
+         \AttributeTok{p.mat =}\NormalTok{ p.mat, }\AttributeTok{sig.level =} \FloatTok{0.01}\NormalTok{, }\AttributeTok{insig =} \StringTok{"blank"}\NormalTok{,}
+         \AttributeTok{addCoef.col =} \StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{,}
+         \AttributeTok{number.cex=}\FloatTok{0.5}\NormalTok{,}
+         \AttributeTok{title =} \StringTok{"Lab"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  \CommentTok{\#Add significance level to the correlogram}
+\CommentTok{\#remove the values that are insignificant}
+\end{Highlighting}
+\end{Shaded}
+
 
 \end{document}
