@@ -358,5 +358,161 @@ imputation)}\label{correlations-normalised-genes-no-imputation}}
 \end{Highlighting}
 \end{Shaded}
 
+\hypertarget{correlation-of-normalized-not-imputed-gene-expression-data-results}{%
+\subsubsection{3. Correlation of normalized (not imputed) gene
+expression data,
+Results:}\label{correlation-of-normalized-not-imputed-gene-expression-data-results}}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi}.}
+\item
+  \begin{itemize}
+  \tightlist
+  \item
+    correlation between IL.13 and TICAM1
+  \end{itemize}
+\item
+  \begin{itemize}
+  \tightlist
+  \item
+    correlation between CXCL9 and TNF, IFNy and IDO1
+  \end{itemize}
+\item
+  \begin{itemize}
+  \tightlist
+  \item
+    correlation between IL1RN, MPO, TNF, IFNy, IDO1
+  \end{itemize}
+\item
+  \begin{itemize}
+  \tightlist
+  \item
+    correlation between NCR1, PRF1, MUC2, IRGM1, SOCS1, CXCR3, CASP1
+  \end{itemize}
+\item
+  \begin{itemize}
+  \tightlist
+  \item
+    correlation between MUC5AC and CXCL9, IL1RN, MUC2, CXCR3, IL.16
+  \end{itemize}
+\item
+  \begin{itemize}
+  \tightlist
+  \item
+    correlation between MYD88 and IL.13, TICAM1
+  \end{itemize}
+\end{enumerate}
+
+\hypertarget{correlation-of-1st-normalized-and-sequentially-imputed-gene-expression-data}{%
+\subsection{4. Correlation of 1st normalized and sequentially imputed
+gene expression
+data}\label{correlation-of-1st-normalized-and-sequentially-imputed-gene-expression-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hm\_genes }\OtherTok{\textless{}{-}}\NormalTok{ hm\_norm[,}\FunctionTok{c}\NormalTok{(}\StringTok{"Mouse\_ID"}\NormalTok{, Genes\_v)]}
+
+
+\NormalTok{genes }\OtherTok{\textless{}{-}}\NormalTok{ hm\_genes[, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{]}
+
+\CommentTok{\#init \textless{}{-} mice(genes, maxit = 0)}
+\end{Highlighting}
+\end{Shaded}
+
+Error in edit.setup(data, setup, \ldots) : \texttt{mice} detected
+constant and/or collinear variables. No predictors were left after their
+removal.
+
+The treshold for colinearity in the package ``MICE'' is set to a max
+correlation of 0.99 by default.
+
+The normalised gene expression values present a maximum correlation of
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{max}\NormalTok{(gene\_correlation[gene\_correlation }\SpecialCharTok{\textless{}} \DecValTok{1}\NormalTok{], }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.9843948
+\end{verbatim}
+
+between genes.
+
+I can't run mice as genes become ``too'' correlated.
+
+I can't get this to work:
+\url{https://github.com/amices/mice/issues/278}
+
+\hypertarget{corrrelation-of-1st-imputed-and-sequentially-normalized-gene-expression-data}{%
+\subsection{5. Corrrelation of 1st imputed and sequentially normalized
+gene expression
+data}\label{corrrelation-of-1st-imputed-and-sequentially-normalized-gene-expression-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{field }\OtherTok{\textless{}{-}}\NormalTok{ hm\_imp }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{    dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(origin }\SpecialCharTok{==} \StringTok{"Field"}\NormalTok{)}
+
+\NormalTok{lab }\OtherTok{\textless{}{-}}\NormalTok{ hm\_imp }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{    dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(origin }\SpecialCharTok{==} \StringTok{"Lab"}\NormalTok{)}
+
+\CommentTok{\#ΔCt (sample) = Ct(reference gene) {-} Ct(gene of interest) }
+
+\CommentTok{\# more positive = higher expression }
+
+\CommentTok{\# Use the function}
+\NormalTok{norm\_field }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_delta\_ct}\NormalTok{(field, }\StringTok{"GAPDH"}\NormalTok{)}
+
+\NormalTok{norm\_lab }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_delta\_ct}\NormalTok{(lab, }\StringTok{"PPIB"}\NormalTok{)}
+
+\NormalTok{norm\_g }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(norm\_field, norm\_lab)}
+
+\NormalTok{hm\_norm }\OtherTok{\textless{}{-}}\NormalTok{ hm }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{    dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{all\_of}\NormalTok{(Genes\_v)) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{left\_join}\NormalTok{(norm\_g, }\AttributeTok{by =} \StringTok{"Mouse\_ID"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{correlations-normalised-genes-no-imputation-1}{%
+\subsubsection{Correlations normalised genes (no
+imputation)}\label{correlations-normalised-genes-no-imputation-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lab }\OtherTok{\textless{}{-}}\NormalTok{ hm\_norm}\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{filter}\NormalTok{(origin}\SpecialCharTok{==} \StringTok{"Lab"}\NormalTok{)}
+
+\NormalTok{gene\_correlation }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(lab[,Genes\_v], as.numeric)}
+
+\CommentTok{\# draw correlation between the genes}
+\NormalTok{gene\_correlation }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{cor}\NormalTok{(gene\_correlation, }
+                                  \AttributeTok{use=}\StringTok{"pairwise.complete.obs"}\NormalTok{))}
+
+\CommentTok{\# matrix of the p{-}value of the correlatio}
+\NormalTok{p.mat }\OtherTok{\textless{}{-}} \FunctionTok{cor.mtest}\NormalTok{(gene\_correlation)}
+
+\FunctionTok{corrplot}\NormalTok{(gene\_correlation, }
+         \AttributeTok{method =} \StringTok{"circle"}\NormalTok{,  }\CommentTok{\#method of the plot, "color" would show colour gradient}
+         \AttributeTok{tl.col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{tl.srt=}\DecValTok{45}\NormalTok{, }\CommentTok{\#colour of labels and rotation}
+         \AttributeTok{col =} \FunctionTok{brewer.pal}\NormalTok{(}\AttributeTok{n =} \DecValTok{8}\NormalTok{, }\AttributeTok{name =}\StringTok{"RdYlBu"}\NormalTok{), }\CommentTok{\#colour of matrix}
+         \AttributeTok{order=}\StringTok{"hclust"}\NormalTok{, }\CommentTok{\#hclust reordering}
+         \AttributeTok{p.mat =}\NormalTok{ p.mat, }\AttributeTok{sig.level =} \FloatTok{0.01}\NormalTok{, }\AttributeTok{insig =} \StringTok{"blank"}\NormalTok{,}
+         \AttributeTok{addCoef.col =} \StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{,}
+         \AttributeTok{number.cex=}\FloatTok{0.5}\NormalTok{,}
+         \AttributeTok{title =} \StringTok{"Lab"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Testing_normalization_imputation_order_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  \CommentTok{\#Add significance level to the correlogram}
+\CommentTok{\#remove the values that are insignificant}
+\end{Highlighting}
+\end{Shaded}
+
 
 \end{document}

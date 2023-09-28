@@ -3,8 +3,8 @@ title: "Norm_Imputation_strategy_selection"
 author: "Fay"
 date: "2023-09-28"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -313,15 +313,13 @@ f. - correlation between MYD88 and IL.13, TICAM1
 ```{r}
 hm_genes <- hm_norm[,c("Mouse_ID", Genes_v)]
 
-#pattern_na <-as.data.frame(md.pattern(field_genes))
-sapply(hm_genes, function(x) sum(is.na(x)))
 
 genes <- hm_genes[, -1]
 
-# The frequency distribution of the missing cases per variable can be obtained 
-# as:
-init <- mice(genes, maxit = 0)
+#init <- mice(genes, maxit = 0)
 ```
+Error in edit.setup(data, setup, ...) :
+`mice` detected constant and/or collinear variables. No predictors were left after their removal.
 
 The treshold for colinearity in the package "MICE" is set to a max correlation of 0.99 by default. 
 
@@ -333,41 +331,43 @@ max(gene_correlation[gene_correlation < 1], na.rm = TRUE)
 
 between genes.
 
-I will add the new treshold to be above this number.
+I can't run mice as genes become "too" correlated.
+
+I can't get this to work: https://github.com/amices/mice/issues/278
 
 
-```{r}
-init <- mice(genes, maxit = 0,  threshold = 0.999) # multicollinearity threshold
+## 5. Corrrelation of 1st imputed and sequentially normalized gene expression data
+```{r warning=FALSE, message=FALSE, include = TRUE}
+field <- hm_imp %>%
+    dplyr::filter(origin == "Field")
 
-#we want to impute only the specific variables
-meth <- init$method
+lab <- hm_imp %>%
+    dplyr::filter(origin == "Lab")
 
-# removed(because of large missing numbers)
-# m=5 refers to the number of imputed datasets. Five is the default value.
-igf <- mice(genes, m = 5, seed = 500,  threshold = 1) # multicollinearity threshold
+#ΔCt (sample) = Ct(reference gene) - Ct(gene of interest) 
 
-summary(igf)
+# more positive = higher expression 
 
-## igf$imp$IFNy
-#Now we can get back the completed dataset using the complete()
-complete_genes <- complete(igf, 1)
+# Use the function
+norm_field <- calculate_delta_ct(field, "GAPDH")
 
-# remove IL.10 from the selection vector
-Genes_v <- Genes_v[!Genes_v == "IL.10"]
+norm_lab <- calculate_delta_ct(lab, "PPIB")
 
-# join the imputed genes
-Mouse_ID <- hm_genes$Mouse_ID
-result <- data.frame(Mouse_ID, complete_genes)
+norm_g <- rbind(norm_field, norm_lab)
 
-hm_imp <- hm %>%
+hm_norm <- hm %>%
     dplyr::select(-all_of(Genes_v)) %>%
-    left_join(result, by = "Mouse_ID")
+    left_join(norm_g, by = "Mouse_ID")
+
+
 ```
 
+### Correlations normalised genes (no imputation)
 ```{r, warning=FALSE, message=FALSE, include = TRUE}
-lab <- hm_imp %>%
+lab <- hm_norm%>%
     filter(origin== "Lab")
-gene_correlation <- lab[,Genes_v]
+
+gene_correlation <- sapply(lab[,Genes_v], as.numeric)
 
 # draw correlation between the genes
 gene_correlation <- as.matrix(cor(gene_correlation, 
@@ -389,4 +389,3 @@ corrplot(gene_correlation,
 #remove the values that are insignificant
 ```
 
-## 5. Corrrelation of 1st imputed and sequentially normalized gene expression data
