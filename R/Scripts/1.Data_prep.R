@@ -162,6 +162,19 @@ Challenge <- Challenge %>%
     TRUE ~ ""
   ))
 
+Challenge <- Challenge %>%
+    dplyr::mutate(immunization = case_when(
+    infection_history == "falciformis_ferrisi" ~ "heterologous",
+    infection_history == "ferrisi_falciformis" ~ "heterologous",
+    infection_history == "falciformis_uninfected" ~ "uninfected",
+    infection_history == "ferrisi_uninfected" ~ "uninfected",
+    infection_history == "ferrisi_ferrisi" ~ "homologous",
+    infection_history == "falciformis_falciformis" ~ "homologous",
+    infection_history == "uninfected_falciformis" ~ "naive",
+    infection_history == "uninfected_ferrisi" ~ "naive",
+    infection_history == "uninfected" ~ "uninfected",
+    TRUE ~ "NA"
+))
 
 
 # Join wild and lab data 
@@ -252,6 +265,7 @@ sapply(gml, function(x) sum(is.na(x)))
 #remove duplicates
 lab_prim <- lab %>%
     filter(death == "primary")
+
 lab_chal <- lab %>% 
     filter(death == "challenge", infection == "challenge")
 

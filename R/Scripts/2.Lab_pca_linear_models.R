@@ -18,7 +18,7 @@ library(org.Mm.eg.db) # gene ids identifiers Mus musculus
 library(viridis)
 
 
-source("R/Scripts/3.MICE_imputation.R")
+hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
 
 # WOrking with laboratory data only
@@ -26,7 +26,15 @@ source("R/Scripts/3.MICE_imputation.R")
 lab <- hm %>%
   dplyr::filter(origin == "Lab")
 
-genes <- lab[, names(lab) %in% Genes_v]
+
+Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
+               "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
+               "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
+               "TICAM1", "TNF") #"IL.12", "IRG6")
+
+
+genes <- lab[ ,colnames(lab) %in% Genes_v]
+
 
 # PCA
 ## we can now run a normal pca on the complete data set
@@ -50,16 +58,16 @@ fviz_pca_ind(res.pca, col.ind = "cos2",
 dimdesc(res.pca)
 
 
-## Adding the PC Eigenvectors to the data set. 
-mouse_id <- lab[,1]
+# Convert mouse_id to a data frame
+mouse <- data.frame(Mouse_ID = lab[,1])
 
-mouse_id$pc1 <- res.pca$ind$coord[, 1] # indexing the first column
+# Add the new column pc1 to the mouse_id data frame
+mouse$pc1 <- res.pca$ind$coord[, 1]
 
-mouse_id$pc2 <- res.pca$ind$coord[, 2]  # indexing the second column
+mouse$pc2 <- res.pca$ind$coord[, 2]  # indexing the second column
 
 lab <- lab %>% 
-  left_join(mouse_id, by = "Mouse_ID")
-
+  left_join(mouse, by = "Mouse_ID")
 
 
 ## We also need to extract the data for the variable contributions to each of 
@@ -283,7 +291,7 @@ heatmap_data <-  heatmap_data[, colSums(is.na(heatmap_data)) !=
 
 #Prepare the annotation data frame
 annotation_df <- as_tibble(lab) %>%
-  dplyr::select(c("Mouse_ID",  "WL_max", "current_infection")) 
+  dplyr::select(c("Mouse_ID",  "WL_max", "Parasite_challenge")) 
 
 annotation_df <- unique(annotation_df) 
 
