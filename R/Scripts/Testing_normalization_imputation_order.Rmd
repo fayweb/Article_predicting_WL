@@ -1,0 +1,383 @@
+---
+title: "Norm_Imputation_strategy_selection"
+author: "Fay"
+date: "2023-09-28"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Normalize or impute first? 
+
+Here is a document on selecting the best order for normalizationa and imputation of the immune gene expression data. 
+
+## Layout: 
+
+1. Correlation of non-normalized and non-imputed gene expression data
+2. Correlation of non-normalized and imputed gene expression data 
+3. Correlation of normalized data (no imputation)
+4. Correlation of 1st normalized and sequentially imputed gene expression data
+5. Corrrelation of 1st imputed and sequentially normalized gene expression data
+
+## Data input
+
+### Libraries
+```{r, warning=FALSE, message=FALSE, include = FALSE}
+library(mice)
+library(stringr)
+library(gridExtra)
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(janitor)
+library(visdat)
+library(corrplot)
+library(RColorBrewer)
+library(ggplot2)
+library(VIM)
+
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, include = FALSE}
+#Lab genes
+# The measurements of IL.12 and IRG6 are done with an other assay and will 
+#ignore for now
+Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
+                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
+                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
+                "TICAM1", "TNF") #"IL.12", "IRG6")
+```
+
+
+```{r, warning=FALSE, message=FALSE, include = FALSE}
+hm <- read.csv("Data/Data_output/1.MICE_cleaned_data.csv")
+
+
+hm$Mouse_ID <- str_replace(hm$Mouse_ID, "_", "")
+
+field <- hm %>%
+    dplyr::filter(origin == "Field") 
+
+# select the genes, the mouse identifier and the house keeping gene
+gmf <- field[, c("Mouse_ID", Genes_v, "GAPDH")] 
+
+# Remove columns with only NA values
+gmf <- gmf %>% select_if(~!all(is.na(.)))
+
+#remove rows with only nas 
+gmf <- gmf[!apply(is.na(gmf[-1]), 1, all), ]
+
+gf <- gmf[,-1]
+
+##select same rows in the first table
+field <- field %>% 
+    filter(Mouse_ID %in% gmf$Mouse_ID)
+
+
+###############lab
+#select the genes and lab mice
+lab <- hm %>%
+    dplyr::filter(origin == "Lab", Position == "mLN") %>%
+    group_by(Mouse_ID, infection) %>%
+    filter(dpi == max_dpi)
+    
+
+# select the genes, the mouse identifier and the house keeping gene
+gml <- lab[, c("Mouse_ID", Genes_v, "PPIB")] 
+
+gml <- unique(gml)
+
+# Remove columns with only NA values
+gml <- gml %>% select_if(~!all(is.na(.)))
+
+#remove rows with only nas 
+gml <- gml[!apply(is.na(gml[-1]), 1, all), ]
+
+gl <- gml[,-1]
+
+##select same rows in the first table
+lab <- lab %>%
+    filter(Mouse_ID %in% gml$Mouse_ID)
+
+
+# looking at patterns of nas)
+#pattern_na <-as.data.frame(md.pattern(field_genes))
+#field 
+sapply(gmf, function(x) sum(is.na(x)))
+
+#lab
+sapply(gml, function(x) sum(is.na(x)))
+
+#remove duplicates
+lab_prim <- lab %>%
+    filter(death == "primary")
+lab_chal <- lab %>% 
+    filter(death == "challenge", infection == "challenge")
+
+lab <- rbind(lab_prim, lab_chal)
+rm(lab_prim, lab_chal)
+
+hm <- rbind(lab, field)
+```
+
+## 1. Correlation of non-normalized and non-imputed gene expression data
+```{r, warning=FALSE, message=FALSE, include = TRUE}
+gene_correlation <- lab %>% 
+  filter(infection == "challenge", dpi == max_dpi) %>%
+  ungroup() %>%
+  dplyr::select(all_of(Genes_v))
+
+# draw correlation between the genes
+gene_correlation <- as.matrix(cor(gene_correlation, 
+                                  use="pairwise.complete.obs"))
+
+# load the function to calculate the p value for correlations
+source("R/Functions/p_value_for_correlations.R")
+
+# matrix of the p-value of the correlatio
+p.mat <- cor.mtest(gene_correlation)
+
+corrplot(gene_correlation, 
+         method = "circle",  #method of the plot, "color" would show colour gradient
+         tl.col = "black", tl.srt=45, #colour of labels and rotation
+         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
+         order="hclust", #hclust reordering
+         p.mat = p.mat, sig.level = 0.01, insig = "blank",
+         addCoef.col = 'black',
+         number.cex=0.5, 
+         title = "Lab") 
+  #Add significance level to the correlogram
+#remove the values that are insignificant
+
+```
+
+### Correlation of non-normalized and non-imputed gene expression data, Results: 
+a. positive correlations between MUC2, IRGM1 and SOCS1
+b. positive correlations between CASP1 and MUC5AC
+c. positive correlations between IFNy, IL.10, IL.13, TNF, CXCL9, TICAM1 and IDO1
+d. MYD88, PRF1, IL.6, NCR1, RETNLB, TICAM1 positve correlations with group c
+e. negative correlations between group a (MUC2, IRGM1, SOCS1) and group c (IFNY, IL.10 etc)
+f. negative correlations between IL1RN, MPO and group a
+g. negative correlations between 
+NCR1, RETNLB, TICAM1 and group a
+
+
+## 2. Correlation of non-normalized and imputed gene expression data 
+```{r warning=FALSE, message=FALSE, include = FALSE}
+hm_genes <- hm[,c("Mouse_ID", Genes_v)]
+
+#pattern_na <-as.data.frame(md.pattern(field_genes))
+sapply(hm_genes, function(x) sum(is.na(x)))
+
+genes <- hm_genes[, -1]
+
+# The frequency distribution of the missing cases per variable can be obtained 
+# as:
+init <- mice(genes, maxit = 0)
+
+#we want to impute only the specific variables
+meth <- init$method
+
+# removing il 10
+genes <- genes[, !(names(genes) %in% "IL.10")]
+
+# removed(because of large missing numbers)
+# m=5 refers to the number of imputed datasets. Five is the default value.
+igf <- mice(genes, m = 5, seed = 500) # method = meth,
+
+summary(igf)
+
+## igf$imp$IFNy
+#Now we can get back the completed dataset using the complete()
+complete_genes <- complete(igf, 1)
+
+# remove IL.10 from the selection vector
+Genes_v <- Genes_v[!Genes_v == "IL.10"]
+
+#remove the non imputed genes from our data set
+hm <-hm %>%
+  dplyr::select(-all_of(Genes_v))
+
+# join the imputed genes
+Mouse_ID <- hm_genes$Mouse_ID
+result <- data.frame(Mouse_ID, complete_genes)
+
+hm_imp <- hm %>%
+  left_join(result, by = "Mouse_ID")
+```
+
+```{r, warning=FALSE, message=FALSE, include = TRUE}
+lab <- hm_imp %>%
+    filter(origin== "Lab")
+gene_correlation <- lab[,Genes_v]
+
+# draw correlation between the genes
+gene_correlation <- as.matrix(cor(gene_correlation, 
+                                  use="pairwise.complete.obs"))
+
+# matrix of the p-value of the correlatio
+p.mat <- cor.mtest(gene_correlation)
+
+corrplot(gene_correlation, 
+         method = "circle",  #method of the plot, "color" would show colour gradient
+         tl.col = "black", tl.srt=45, #colour of labels and rotation
+         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
+         order="hclust", #hclust reordering
+         p.mat = p.mat, sig.level = 0.01, insig = "blank",
+         addCoef.col = 'black',
+         number.cex=0.5,
+         title = "Lab") 
+  #Add significance level to the correlogram
+#remove the values that are insignificant
+```
+### 2. Correlation of non-normalized and imputed gene expression data, Results:
+a. positive correlations between MUC2, IRGM1, SOCS1
+b. positive correlations between IL1RN, MPO
+c. positve correlations between CASP1, MUC5AC
+d. positve correlations between CXCR3, MYD88
+e. positive correlations between RETNLB, TICAM1, IL.6, TNF, CXCL9, IFNy, IDO1
+f. positive correlations between IL1RN and TNF, IFN< and IDO1
+g. negative correlations between IRGM1, SOCS2 and IL1RN, MPO
+h. negative correlations between group MUC2, IRGM1, SOC1 vs IL.6, TNF, CXCL9, IFNy and IDO1
+i. negative correlations between IL.13 and CASP1, MUC5AC and MYD88
+
+## 3. Correlation of normalized data (no imputation)
+```{r warning=FALSE, message=FALSE, include = FALSE}
+#ΔCt (sample) = Ct(gene of interest) − Ct(reference gene)
+
+df <- hm %>%
+    filter(origin == "field")
+
+#check the distributions of genes
+plot_list <- lapply(names(gf), function(colname){
+  ggplot(df, aes_string(x = colname)) +
+    geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+    labs(title = paste("Histogram of", colname))
+})
+
+
+#grid.arrange(grobs = plot_list, ncol = 3) 
+#placed in hashtags, takes to long to process
+calculate_expression <- function(df) {
+  # Extract GAPDH column
+  GAPDH <- df$GAPDH
+  
+  # Step 1: Calculate delta ct for all genes except GAPDH
+  delta_ct <- df[, sapply(df, is.numeric)]  # Ensure only numeric columns are taken
+  delta_ct <- delta_ct[, !colnames(delta_ct) %in% "GAPDH"]  # Exclude GAPDH
+  delta_ct <- sapply(delta_ct, function(gene) gene - GAPDH)
+  
+  # Step 2: Calculate ΔΔct
+  mean_dct <- colMeans(delta_ct, na.rm = TRUE)  # Calculate mean delta_ct for each gene
+  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - mean_dct))
+  
+  # Step 3: Calculate the result
+  result <- 2^(-delta_delta_ct)
+  result <- round(result, 2)
+  return(result)
+}
+
+# Use the function
+result_df <- calculate_expression(df)
+
+# View the result
+print(result_df)
+
+#check the distributions of genes
+plot_list <- lapply(names(result_field[,-1]), function(colname){
+  ggplot(result_field[,-1], aes_string(x = colname)) +
+    geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+    labs(title = paste("Histogram of", colname))
+})
+
+
+#grid.arrange(grobs = plot_list, ncol = 3)
+
+############### same for lab ##################################################
+# In the lab we use PPIB
+#hist(lab$PPIB)
+
+#check the distributions of genes
+plot_list <- lapply(names(gl), function(colname){
+  ggplot(gl, aes_string(x = colname)) +
+    geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+    labs(title = paste("Histogram of", colname))
+})
+
+
+#grid.arrange(grobs = plot_list, ncol = 3)
+
+
+calculate_expression <- function(df) {
+  # Extract PPIB column
+  PPIB <- df$PPIB
+  
+  # Step 1: Calculate delta ct for all genes except PPIB
+  delta_ct <- df[, sapply(df, is.numeric)]  # Ensure only numeric columns are taken
+  delta_ct <- delta_ct[, !colnames(delta_ct) %in% "PPIB"]  # Exclude PPIB
+  delta_ct <- sapply(delta_ct, function(gene) gene - PPIB)
+  
+  # Step 2: Calculate ΔΔct
+  mean_dct <- colMeans(delta_ct, na.rm = TRUE)  # Calculate mean delta_ct for each gene
+  delta_delta_ct <- t(apply(delta_ct, 1, function(row) row - mean_dct))
+  
+  # Step 3: Calculate the result
+  result <- 2^(-delta_delta_ct)
+  
+  return(as.data.frame(result))
+}
+
+# Use the function
+result_lab <- calculate_expression(gml)
+
+# View the result
+#print(result_lab)
+#summary(result_lab)
+
+#check the distributions of genes
+plot_list <- lapply(names(result_lab[,-1]), function(colname){
+  ggplot(result_lab[,-1], aes_string(x = colname)) +
+    geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+    labs(title = paste("Histogram of", colname))
+})
+
+
+grid.arrange(grobs = plot_list, ncol = 3)
+
+
+
+#join the normalised data
+result <- rbind(result_field, result_lab)
+
+
+# When working with DDct Values
+# A ddct of 0 = no change in fold expression
+# negative ddct = upregulation
+# postive ddct = downregulation
+# Check if each column is numeric and, if so, multiply by -1
+#result[] <- lapply(result, function(x) if(is.numeric(x)) -1 * x else x)
+
+# Therefore deciding to transform data by *-1
+# then positive = upgregulation - more intuitive for interpretation
+rm(gmf,data, gf, gl, gml, hm, result_field, result_lab)
+
+hm <- rbind(field, lab)
+
+#remove non normalised genes
+hm <-hm %>%
+  dplyr::select(-all_of(Genes_v))
+
+# join the normalised genes
+hm <- hm %>%
+  left_join(result, by = "Mouse_ID")
+
+rm(lab, field, result)
+
+## 4. Correlation of 1st normalized and sequentially imputed gene expression data
+## 5. Corrrelation of 1st imputed and sequentially normalized gene expression data
