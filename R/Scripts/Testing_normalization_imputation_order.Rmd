@@ -316,7 +316,8 @@ hm_genes <- hm_norm[,c("Mouse_ID", Genes_v)]
 
 genes <- hm_genes[, -1]
 
-#init <- mice(genes, maxit = 0)
+seed = 1213
+#init <- mice(hm_genes, maxit = 0)
 ```
 Error in edit.setup(data, setup, ...) :
 `mice` detected constant and/or collinear variables. No predictors were left after their removal.
