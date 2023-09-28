@@ -1,8 +1,15 @@
+library(mice)
+library(stringr)
+library(gridExtra)
+library(dplyr)
 library(tidyverse)
 library(tidyr)
-library(dplyr)
 library(janitor)
 library(visdat)
+library(corrplot)
+library(RColorBrewer)
+library(ggplot2)
+library(VIM)
 
 
 # Import data 
@@ -184,7 +191,172 @@ data <- data %>%
   
 rm(Challenge, SOTA)
 
-write.csv(data, "Data/Data_output/1.MICE_cleaned_data.csv", row.names = FALSE)
+hm <- data
+
+
+hm$Mouse_ID <- str_replace(hm$Mouse_ID, "_", "")
+
+field <- hm %>%
+    dplyr::filter(origin == "Field") 
+
+# select the genes, the mouse identifier and the house keeping gene
+gmf <- field[, c("Mouse_ID", Genes_v, "GAPDH")] 
+
+# Remove columns with only NA values
+gmf <- gmf %>% select_if(~!all(is.na(.)))
+
+#remove rows with only nas 
+gmf <- gmf[!apply(is.na(gmf[-1]), 1, all), ]
+
+gf <- gmf[,-1]
+
+##select same rows in the first table
+field <- field %>% 
+    filter(Mouse_ID %in% gmf$Mouse_ID)
+
+
+###############lab
+#select the genes and lab mice
+lab <- hm %>%
+    dplyr::filter(origin == "Lab", Position == "mLN") %>%
+    group_by(Mouse_ID, infection) %>%
+    filter(dpi == max_dpi)
+
+
+# select the genes, the mouse identifier and the house keeping gene
+gml <- lab[, c("Mouse_ID", Genes_v, "PPIB")] 
+
+gml <- unique(gml)
+
+# Remove columns with only NA values
+gml <- gml %>% select_if(~!all(is.na(.)))
+
+#remove rows with only nas 
+gml <- gml[!apply(is.na(gml[-1]), 1, all), ]
+
+gl <- gml[,-1]
+
+##select same rows in the first table
+lab <- lab %>%
+    filter(Mouse_ID %in% gml$Mouse_ID)
+
+
+# looking at patterns of nas)
+#pattern_na <-as.data.frame(md.pattern(field_genes))
+#field 
+sapply(gmf, function(x) sum(is.na(x)))
+
+#lab
+sapply(gml, function(x) sum(is.na(x)))
+
+#remove duplicates
+lab_prim <- lab %>%
+    filter(death == "primary")
+lab_chal <- lab %>% 
+    filter(death == "challenge", infection == "challenge")
+
+lab <- rbind(lab_prim, lab_chal)
+rm(lab_prim, lab_chal)
+
+hm <- rbind(lab, field)
+
+
+
+gene_correlation <- lab %>% 
+    filter(infection == "challenge", dpi == max_dpi) %>%
+    ungroup() %>%
+    dplyr::select(all_of(Genes_v))
+
+# draw correlation between the genes
+gene_correlation <- as.matrix(cor(gene_correlation, 
+                                  use="pairwise.complete.obs"))
+
+# load the function to calculate the p value for correlations
+source("R/Functions/p_value_for_correlations.R")
+
+# matrix of the p-value of the correlatio
+p.mat <- cor.mtest(gene_correlation)
+
+corrplot(gene_correlation, 
+         method = "circle",  #method of the plot, "color" would show colour gradient
+         tl.col = "black", tl.srt=45, #colour of labels and rotation
+         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
+         order="hclust", #hclust reordering
+         p.mat = p.mat, sig.level = 0.01, insig = "blank",
+         addCoef.col = 'black',
+         number.cex=0.5, 
+         title = "Lab") 
+#Add significance level to the correlogram
+#remove the values that are insignificant
+
+
+hm_genes <- hm[,c("Mouse_ID", Genes_v, "GAPDH", "PPIB")]
+
+#pattern_na <-as.data.frame(md.pattern(field_genes))
+sapply(hm_genes, function(x) sum(is.na(x)))
+
+genes <- hm_genes[, !colnames(hm_genes) %in% "Mouse_ID"]
+
+# The frequency distribution !f the missing cases per variable can be obtained 
+# as:
+init <- mice(genes, maxit = 0)
+
+#we want to impute only the specific variables
+meth <- init$method
+
+# removing il 10
+genes <- genes[, !(names(genes) %in% "IL.10")]
+
+# removed(because of large missing numbers)
+# m=5 refers to the number of imputed datasets. Five is the default value.
+igf <- mice(genes, m = 5, seed = 500) # method = meth,
+
+summary(igf)
+
+## igf$imp$IFNy
+#Now we can get back the completed dataset using the complete()
+complete_genes <- complete(igf, 1)
+
+# Transform all columns by multiplying by -1 (higher expression - more positive)
+complete_genes[] <- -1 * complete_genes
+
+# join the imputed genes
+Mouse_ID <- hm_genes$Mouse_ID
+result <- data.frame(Mouse_ID, complete_genes)
+
+hm_imp <- hm %>%
+    dplyr::select(-all_of(Genes_v)) %>%
+    left_join(result, by = "Mouse_ID")
+
+lab <- hm_imp %>%
+    filter(origin== "Lab")
+
+Genes_v <- setdiff(Genes_v, "IL.10")
+
+gene_correlation <- lab[,Genes_v]
+
+# draw correlation between the genes
+gene_correlation <- as.matrix(cor(gene_correlation, 
+                                  use="pairwise.complete.obs"))
+
+# matrix of the p-value of the correlatio
+p.mat <- cor.mtest(gene_correlation)
+
+corrplot(gene_correlation, 
+         method = "circle",  #method of the plot, "color" would show colour gradient
+         tl.col = "black", tl.srt=45, #colour of labels and rotation
+         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
+         order="hclust", #hclust reordering
+         p.mat = p.mat, sig.level = 0.01, insig = "blank",
+         addCoef.col = 'black',
+         number.cex=0.5,
+         title = "Lab") 
+#Add significance level to the correlogram
+#remove the values that are insignificant
+
+
+
+write.csv(hm_imp, "Data/Data_output/imputed_clean_data.csv", row.names = FALSE)
 
 
 
