@@ -246,7 +246,7 @@ i. negative correlations between IL.13 and CASP1, MUC5AC and MYD88
 
 ## 3. Correlation of normalized data (no imputation)
 ```{r warning=FALSE, message=FALSE, include = TRUE}
-#ΔCt (sample) = Ct(reference gene) - Ct(gene of interest) 
+#DCt (sample) = Ct(reference gene) - Ct(gene of interest) 
 
 calculate_delta_ct <- function(df, HKG) {
   # Extract the column of the housekeeping gene
@@ -344,7 +344,7 @@ field <- hm_imp %>%
 lab <- hm_imp %>%
     dplyr::filter(origin == "Lab")
 
-#ΔCt (sample) = Ct(reference gene) - Ct(gene of interest) 
+#DeltaCt (sample) = Ct(reference gene) - Ct(gene of interest) 
 
 # more positive = higher expression 
 
@@ -362,7 +362,7 @@ hm_norm <- hm %>%
 
 ```
 
-### Correlations normalised genes (no imputation)
+
 ```{r, warning=FALSE, message=FALSE, include = TRUE}
 lab <- hm_norm%>%
     filter(origin== "Lab")
