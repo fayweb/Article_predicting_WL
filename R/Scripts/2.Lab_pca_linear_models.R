@@ -47,7 +47,11 @@ fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 70))
 
 fviz_pca_var(res.pca, col.var = "cos2",
              gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"),
-             repel = TRUE, title = "")
+             repel = TRUE, title = "") -> pca_col
+
+
+ggsave(filename = "figures/pca_fviz_package.jpeg", plot = pca_col, 
+       width = 10, height = 5, dpi = 300)
 
 fviz_pca_ind(res.pca, col.ind = "cos2", 
              gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"), 
@@ -60,6 +64,7 @@ dimdesc(res.pca)
 
 # Convert mouse_id to a data frame
 mouse <- data.frame(Mouse_ID = lab[,1])
+mouse_id <- data.frame(Mouse_ID = lab[,1])
 
 # Add the new column pc1 to the mouse_id data frame
 mouse$pc1 <- res.pca$ind$coord[, 1]
@@ -591,14 +596,11 @@ ggplot(bar_data, aes(x = GO_Term, y = p_value, fill = p_value)) +
   theme_minimal()
 
 
-################### NCR1, SOCS1, IRGM1, MUC2
-# "regulation of response to interferon-gamma" 
-# regulation of response to cytokine stimulus
-# reggulation of innate immun response
-# positive regulation of regulatory T cell differentiation
-gene_ens <- c("ENSMUSG00000062524", #NCR1, 
+###################################################################################
+
+################### IRGM1, SOCS1, MUC2
+gene_ens <- c("ENSMUSG00000046879", #IRGM1
               "ENSMUSG00000038037", #SOCS1
-              "ENSMUSG00000046879", #IRGM1
               "ENSMUSG00000025515") #MUC2
 
 # Perform gene ontology enrichment analysis
@@ -621,28 +623,28 @@ sorted_terms[1:10,]
 
 
 # Create a data frame for the bar plot
-bar_data <- data.frame(GO_Term = sorted_terms[1:35,], p_value = -log10(p_values[1:35]))
+bar_data <- data.frame(GO_Term = sorted_terms[1:10,], p_value = -log10(p_values[1:10]))
 
 # Sort the data frame in ascending order
 bar_data <- bar_data[order(bar_data$p_value), ]
 
 # Create the bar plot using ggplot2
-ggplot(bar_data, aes(x = GO_Term, y = p_value, fill = p_value)) +
+ggplot(bar_data, aes(x = reorder(GO_Term, p_value), y = p_value, fill = p_value)) +
   geom_segment(aes(xend = GO_Term, yend = 0), color = "mediumvioletred", size = 1.5) +
   geom_point(size = 3, shape = 19, color = "mediumvioletred", fill = "white") +
   coord_flip() +
   labs(x = "Enriched GO Terms", y = "-log10(p-value)",
-       title = "Gene Ontology Enrichment Analysis, NCR1, SOCS1, IRGM1, MUC2") +
-  theme_minimal()
+       title = "Gene Ontology Enrichment Analysis, IRGM1, SOCS1, MUC2") +
+  theme_minimal() -> plotA
 
+plotA
 
-#################### CASP1, PRF1, CXCR3, IL6, MUC5AC
-##  "positive regulation of interleukin-1 beta production
-## positive regulation of inflammatory response
-gene_ens <- c("ENSMUSG00000025888", #CASP1
-              "ENSMUSG00000037202.7", #PRF1
-              "ENSMUSG00000050232", #CXCR3"
-              "ENSMUSG00000025746", #IL6
+ggsave(filename = "figures/IRGM1_SOCS1_MUC2.jpeg", plot = plotA, 
+       width = 10, height = 5, dpi = 300)
+
+####################  MUC5AC, IL1Rn, MPO 
+gene_ens <- c("ENSMUSG00000026981", #IL1RN
+              "ENSMUSG00000009350", #MPO"
               "ENSMUSG00000037974") #MUC5AC
 
 # Perform gene ontology enrichment analysis
@@ -661,30 +663,42 @@ gene_ratio <- enrich_result$GeneRatio
 
 # Sort the enriched terms based on p-values
 sorted_terms <- as.data.frame(enriched_terms[order(p_values)])
-sorted_terms[1:15,]
+
+# Define the vector of values for which you want to filter
+filter_terms <- c("interleukin-1-mediated signaling pathway",
+                   "negative regulation of cytokine-mediated signaling pathway",
+                   "inflammatory response to antigenic stimulus",
+                   "negative regulation of response to cytokine stimulus",
+                   "acute inflammatory response")
+
+# Filter the dataframe based on the column values
+sorted_terms <- sorted_terms %>%
+    filter(`enriched_terms[order(p_values)]` %in% filter_terms)
 
 
 # Create a data frame for the bar plot
-bar_data <- data.frame(GO_Term = sorted_terms[1:35,], p_value = -log10(p_values[1:35]))
+bar_data <- data.frame(GO_Term = sorted_terms[1:5,], p_value = -log10(p_values[1:5]))
 
 # Sort the data frame in ascending order
 bar_data <- bar_data[order(bar_data$p_value), ]
 
 # Create the bar plot using ggplot2
-ggplot(bar_data, aes(x = GO_Term, y = p_value, fill = p_value)) +
+ggplot(bar_data, aes(x = reorder(GO_Term, p_value), y = p_value, fill = p_value)) +
   geom_segment(aes(xend = GO_Term, yend = 0), color = "mediumvioletred", size = 1.5) +
   geom_point(size = 3, shape = 19, color = "mediumvioletred", fill = "white") +
   coord_flip() +
   labs(x = "Enriched GO Terms", y = "-log10(p-value)",
-       title = "Gene Ontology Enrichment Analysis, CASP1, PRF1, CXCR3, IL6, MUC5AC") +
-  theme_minimal()
+       title = "Gene Ontology Enrichment Analysis, MUC5AC, IL1RN, MPO") +
+  theme_minimal() -> plotB
 
 
-############################ ILRN
-# interleukin-1-mediated signaling pathway
-# negative regulation of cytokine-mediated signaling pathway
-# negative regulation of response to cytokine stimulus
-gene_ens <-  "ENSMUSG00000026981" #IL1RN
+plotB
+ggsave(filename = "figures/MUC5AC_IL1Rn_MPO.jpeg", plot = plotB, 
+       width = 10, height = 5, dpi = 300)
+
+
+############################ IL13
+gene_ens <-  "ENSMUSG00000020383" #IL13"
 
 # Perform gene ontology enrichment analysis
 enrich_result <- enrichGO(gene = gene_ens,
@@ -702,10 +716,20 @@ gene_ratio <- enrich_result$GeneRatio
 
 # Sort the enriched terms based on p-values
 sorted_terms <- as.data.frame(enriched_terms[order(p_values)])
-sorted_terms[1:50,]
+
+
+# Define the vector of values for which you want to filter
+filter_terms <- c("negative regulation of cytokine production",
+                  "cell activation involved in immune response",
+                  "regulation of inflammatory response",
+                  "positive regulation of leukocyte activation")
+
+# Filter the dataframe based on the column values
+sorted_terms <- sorted_terms %>%
+    filter(`enriched_terms[order(p_values)]` %in% filter_terms)
 
 # Create a data frame for the bar plot
-bar_data <- data.frame(GO_Term = sorted_terms[1:35,], p_value = -log10(p_values[1:35]))
+bar_data <- data.frame(GO_Term = sorted_terms[1:4,], p_value = -log10(p_values[1:4]))
 
 # Sort the data frame in ascending order
 bar_data <- bar_data[order(bar_data$p_value), ]
@@ -716,18 +740,23 @@ ggplot(bar_data, aes(x = GO_Term, y = p_value, fill = p_value)) +
   geom_point(size = 3, shape = 19, color = "mediumvioletred", fill = "white") +
   coord_flip() +
   labs(x = "Enriched GO Terms", y = "-log10(p-value)",
-       title = "Gene Ontology Enrichment Analysis, ILRN") +
-  theme_minimal()
+       title = "Gene Ontology Enrichment Analysis, IL-13") +
+  theme_minimal() -> plotC
 
-################## MPO, IFNG, CXCL9, TNF
-# 	leukocyte activation involved in inflammatory response
-#	positive regulation of B cell mediated immunity
-# leukocyte activation involved in inflammatory response
-# "positive regulation of B cell mediated immunity"                   
-#"positive regulation of immunoglobulin mediated immune response"  
-gene_ens <-  c("ENSMUSG00000009350", #MPO"
-               "ENSMUSG00000055170", #IFNG, 
+ggsave(filename = "figures/IL13.jpeg", plot = plotC, 
+       width = 10, height = 5, dpi = 300)
+
+
+################## TICAM1, NCR1, PRF1, CXCR3, RETNLB, IL.6, CXCL9, CASP1, MYD88, TNF
+gene_ens <-  c("ENSMUSG00000047123", #TICAM1
+               "ENSMUSG00000062524", #NCR1
+               "ENSMUSG00000037202.7", #PRF1
+               "ENSMUSG00000050232", #CXCR3"
+               "ENSMUSG00000022650", #RETNLB
+               "ENSMUSG00000025746", #IL6
                "ENSMUSG00000029417", #CXCL9
+               "ENSMUSG00000025888", #CASP1
+               "ENSMUSG00000032508", #MYD88
                "ENSMUSG00000024401") #TNF 
 
 
@@ -751,19 +780,23 @@ sorted_terms[1:50,]
 
 
 # Create a data frame for the bar plot
-bar_data <- data.frame(GO_Term = sorted_terms[1:35,], p_value = -log10(p_values[1:35]))
+bar_data <- data.frame(GO_Term = sorted_terms[1:15,], p_value = -log10(p_values[1:15]))
 
 # Sort the data frame in ascending order
 bar_data <- bar_data[order(bar_data$p_value), ]
 
 # Create the bar plot using ggplot2
-ggplot(bar_data, aes(x = GO_Term, y = p_value, fill = p_value)) +
+ggplot(bar_data, aes(x = reorder(GO_Term, p_value), y = p_value, fill = p_value)) +
   geom_segment(aes(xend = GO_Term, yend = 0), color = "mediumvioletred", size = 1.5) +
   geom_point(size = 3, shape = 19, color = "mediumvioletred", fill = "white") +
   coord_flip() +
   labs(x = "Enriched GO Terms", y = "-log10(p-value)",
-       title = "Gene Ontology Enrichment Analysis: MPO, IFNG, CXCL9, TNF") +
-  theme_minimal()
+       title = "Gene Ontology Enrichment Analysis: 
+       TICAM1, NCR1, PRF1, CXCR3, RETNLB, IL.6, CXCL9, CASP1, MYD88, TNF") +
+  theme_minimal() -> plotD
+
+ggsave(filename = "figures/most_immune_genes.jpeg", plot = plotD, 
+       width = 10, height = 5, dpi = 300)
 
 ## save the variance contribution of each gene 
 ##save the normalized data 

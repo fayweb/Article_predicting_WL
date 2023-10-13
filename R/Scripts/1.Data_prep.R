@@ -13,8 +13,6 @@ library(VIM)
 
 
 # Import data 
-
-
 #Challenge = experimental challenge infection data
 
 #SOTA = State of the Art, of wild data
