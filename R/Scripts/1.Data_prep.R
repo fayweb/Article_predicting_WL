@@ -366,6 +366,25 @@ corrplot(gene_correlation,
 #Add significance level to the correlogram
 #remove the values that are insignificant
 
+# add missing infection intensities
+ii <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/CEWE_FECES_infection_intensities")
+
+ii$Mouse_ID <- gsub(pattern = "AA_", replacement = "AA", x = ii$Mouse_ID)
+
+ii <- ii %>%
+    dplyr::select(-c("OPG", "FEC_Eim_Ct", "MC.Eimeria.FEC" ))
+
+hm_imp <- hm_imp %>%
+    left_join(ii, by = c("Mouse_ID", "Year"))
+
+hm_imp <- hm_imp %>%
+    mutate(delta_ct_cewe_MminusE = ifelse(is.na(delta_ct_cewe_MminusE.x), delta_ct_cewe_MminusE.y, delta_ct_cewe_MminusE.x),
+           MC.Eimeria = ifelse(is.na(MC.Eimeria.x), MC.Eimeria.y, MC.Eimeria.x),
+           MCs = ifelse(is.na(MCs.x), MCs.y, MCs.x),
+           GAPDH = ifelse(is.na(GAPDH.x), GAPDH.y, GAPDH.x),
+           PPIB = ifelse(is.na(PPIB.x), PPIB.y, PPIB.x)) %>%
+    dplyr::select(-matches("\\.x$|\\.y$"))
+
 
 
 write.csv(hm_imp, "Data/Data_output/imputed_clean_data.csv", row.names = FALSE)
