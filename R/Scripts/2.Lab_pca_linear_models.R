@@ -16,6 +16,9 @@ library(scatterplot3d)
 library(clusterProfiler) # gene enrichment analysis
 library(org.Mm.eg.db) # gene ids identifiers Mus musculus
 library(viridis)
+library(tidyr)
+library(dplyr)
+
 
 
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -42,8 +45,14 @@ res.pca <- PCA(genes)
 
 ## How much does each dimension contribute to variance?
 
-fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 70))
+fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 70), barfill = "seagreen2") -> 
+    variance_contrib
 
+variance_contrib
+
+
+ggsave(filename = "figures/contributions_all_dimentsions.jpeg", plot = variance_contrib, 
+       width = 6, height = 4, dpi = 1000)
 
 fviz_pca_var(res.pca, col.var = "cos2",
              gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"),
@@ -102,8 +111,13 @@ pca_var <- as.data.frame(pca.vars)
 
 # Contributions of variables to PC1
 fviz_contrib(res.pca, choice = "var", axes = 1, top = 18, 
-             title = "Contribution of immune genes to the first dimension of the PCA")
+             title = "Contribution of immune genes to the first dimension of the PCA", 
+             fill =  "seagreen2") -> contributions_pc1
 
+contributions_pc1
+
+ggsave(filename = "figures/contributions_pc1.jpeg", plot = contributions_pc1, 
+       width = 6, height = 4, dpi = 1000)
 # res.pca$var$contrib
 
 
@@ -111,7 +125,14 @@ fviz_contrib(res.pca, choice = "var", axes = 1, top = 18,
 
 ## Contributions of variables to PC2
 fviz_contrib(res.pca, choice = "var", axes = 2, top = 18, 
-             title = "Contribution of immune genes to the second dimension of the PCA")
+             title = "Contribution of immune genes to the second dimension of the PCA",
+             fill =  "seagreen2") -> contributions_pc2
+
+contributions_pc2
+
+ggsave(filename = "figures/contributions_pc2.jpeg", plot = contributions_pc2, 
+       width = 6, height = 4, dpi = 1000)
+
 
 fviz_contrib(res.pca, choice = "var", axes = 1:2, top = 18)
 

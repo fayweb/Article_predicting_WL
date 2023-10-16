@@ -20,6 +20,10 @@ library(reshape2)
 library(knitr)
 library(stargazer)
 library(kableExtra)
+library(sjmisc)
+library(sjlabelled)
+library(jtools)
+library(sjPlot)
 
 
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -136,13 +140,204 @@ pca_variables <-
   guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
   scale_color_gradientn(colors = gradient_colors, guide = "none")  
 
-
+pca_variables
 
 ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
        width = 12, height = 6, dpi = 600)
 
+################### IRGM1, SOCS1, MUC2
+#focus on some variables for the presentations
+# Variables you want to focus on
+focus_vars <- c("IRGM1", "SOCS1", "MUC2")
 
-#pca_variables
+vpg <- vpg %>%
+    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
+
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    
+    # Plot faded variables first
+    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
+    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
+    
+    # Plot focus variables on top
+    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
+    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+    
+    coord_equal() +
+    xlab("PC1 (32.83%)") +
+    ylab("PC2 (16.25%)") +
+    theme_minimal() + 
+    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
+    scale_color_gradientn(colors = gradient_colors, guide = "none")
+
+print(pca_variables)
+
+ggsave(filename = "figures/pca_variables_SOC1_IRGM1_MUC2.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
+
+################### MUC5AC, IL1RN, MPO
+#focus on some variables for the presentations
+# Variables you want to focus on
+focus_vars <- c("MUC5AC", "IL1RN", "MPO")
+
+vpg <- vpg %>%
+    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
+
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    
+    # Plot faded variables first
+    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
+    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
+    
+    # Plot focus variables on top
+    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
+    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+    
+    coord_equal() +
+    xlab("PC1 (32.83%)") +
+    ylab("PC2 (16.25%)") +
+    theme_minimal() + 
+    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
+    scale_color_gradientn(colors = gradient_colors, guide = "none")
+
+print(pca_variables)
+
+ggsave(filename = "figures/pca_variables_MUC5AC_IL1RN_MPO.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
+
+################### IL13
+#focus on some variables for the presentations
+# Variables you want to focus on
+focus_vars <- "IL.13"
+
+vpg <- vpg %>%
+    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
+
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    
+    # Plot faded variables first
+    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
+    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
+    
+    # Plot focus variables on top
+    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
+    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+    
+    coord_equal() +
+    xlab("PC1 (32.83%)") +
+    ylab("PC2 (16.25%)") +
+    theme_minimal() + 
+    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
+    scale_color_gradientn(colors = gradient_colors, guide = "none")
+
+print(pca_variables)
+
+ggsave(filename = "figures/pca_variables_IL.13.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
+
+################## TICAM1, NCR1, PRF1, CXCR3, RETNLB, IL.6, CXCL9, CASP1, MYD88, TNF
+#focus on some variables for the presentations
+# Variables you want to focus on
+focus_vars <- c("TICAM1", "NCR1", "PRF1", "CXCR3", "RETNLB", "IL.6", "CXCL9", 
+                "CASP1", "MYD88", "TNF")
+
+vpg <- vpg %>%
+    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
+
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    
+    # Plot faded variables first
+    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
+    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
+    
+    # Plot focus variables on top
+    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
+    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+    
+    coord_equal() +
+    xlab("PC1 (32.83%)") +
+    ylab("PC2 (16.25%)") +
+    theme_minimal() + 
+    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
+    scale_color_gradientn(colors = gradient_colors, guide = "none")
+
+print(pca_variables)
+
+ggsave(filename = "figures/pca_variables_most_genes.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
+
+
+
+################################# pca variables focusing on pc1
+################## TNF, IDO1, RETNLB, CXCL9, TICAM1, CXCR3, IFNy, MYD88, IL1RN
+#focus on some variables for the presentations
+# Variables you want to focus on
+focus_vars <- c("TNF", "IDO1", "RETNLB", "CXCL9", "TICAM1", "CXCR3", "IFNy", 
+                "MYD88", "IL1RN")
+
+vpg <- vpg %>%
+    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
+
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    
+    # Plot faded variables first
+    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.01) +
+    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
+    
+    # Plot focus variables on top
+    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
+    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+    
+    coord_equal() +
+    xlab("PC1 (32.83%)") +
+    ylab("PC2 (16.25%)") +
+    theme_minimal() + 
+    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
+    scale_color_gradientn(colors = gradient_colors, guide = "none")
+
+print(pca_variables)
+
+ggsave(filename = "figures/pca_variables_pc1.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
+
+
+
+################################# pca variables focusing on pc2
+################## IRGM1, SOCS1, MPO, MUC2, IL1RN
+#focus on some variables for the presentations
+# Variables you want to focus on
+focus_vars <- c("IRGM1", "SOCS1", "MPO", "MUC2", "IL1RN")
+
+vpg <- vpg %>%
+    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
+
+pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    
+    # Plot faded variables first
+    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.01) +
+    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
+    
+    # Plot focus variables on top
+    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
+    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+    
+    coord_equal() +
+    xlab("PC1 (32.83%)") +
+    ylab("PC2 (16.25%)") +
+    theme_minimal() + 
+    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
+    scale_color_gradientn(colors = gradient_colors, guide = "none")
+
+print(pca_variables)
+
+ggsave(filename = "figures/pca_variables_pc2.jpeg", plot = pca_variables, 
+       width = 12, height = 6, dpi = 600)
 
 ######################## Enriched Terms data frame
 enriched_terms_df <- read.csv("Data/Data_output/enriched_sorted_terms.csv")
@@ -187,6 +382,14 @@ model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
                 weight_dpi0, data = lab )
 
 summary(model_1)
+
+tab_model(model_1)
+
+stargazer(model_1,
+          type = "html", out = "tables/predictors_weightloss.html", 
+          title = "Linear models - Predicting maximum weight loss")
+
+#, file = "tables/predicting_weight_loss_linear.doc")
 
 # Extract the residuals from the model
 residuals <- resid(model_1)
@@ -244,6 +447,7 @@ model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab)
 
 summary(model_4)
 
+tab_model(model_4, file = "tables/pc1_pc2_lm.doc")
 ## Please cite as:
 ##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
 stargazer(model_1, model_2, model_3, model_4, 
@@ -257,6 +461,7 @@ model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>%
 model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab %>% 
                   drop_na(delta_ct_cewe_MminusE))
 
+
 # Anova of different models
 anova_mod <- anova(model_1, model_2, model_3, model_4)
 
@@ -268,23 +473,28 @@ effects <- ggpredict(model_4)
 
 pc1_current_infection <- 
     ggpredict(model_4, terms = c("PC1")) %>% 
-    plot(colors = "blue")
+    plot(colors = "blue") +
+    ylab("Predicted values of weight loss")
 
 pc1_current_infection
 
 ggsave(filename = "figures/pc1_current_infection.jpeg", 
        plot = pc1_current_infection, 
-       width = 12, height = 6, dpi = 600)
+       width = 6, height = 4, dpi = 1000)
 
 pc2_current_infection <- 
     ggpredict(model_4, terms = c("PC2")) %>% 
-    plot(colors = "blue")
+    plot(colors = "blue") +
+    ylab("Predicted values of weight loss")
 
 pc2_current_infection
 
 ggsave(filename = "figures/pc2_current_infection.jpeg", 
        plot = pc2_current_infection, 
-       width = 12, height = 6, dpi = 600)
+       width = 6, height = 4, dpi = 1000)
+
+
+plot_summs(model_4)
 
 
 # produce the table without levels (immunization and mouse_strains)
@@ -296,7 +506,7 @@ ggsave(filename = "figures/pc2_current_infection.jpeg",
 figure_panel_1 <- 
     plot_grid(pca_variables, pca_individuals, 
               pc1_current_infection, pc2_current_infection,
-              cols  = 2, rel_heights = c(3, 2), 
+              ncol  = 2, rel_heights = c(3, 2), 
               labels = c("A", "B", "C", "D"))
 
 ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
