@@ -1,4 +1,3 @@
-## ---------------------------------------------------------------------------------------------------
 library(tidyverse)
 library(dplyr)
 library(stringr)
@@ -12,52 +11,11 @@ library(janitor)
 library(pheatmap)
 
 
-## ---------------------------------------------------------------------------------------------------
-hm <- read.csv("output_data/2.imputed_MICE_data_set.csv")
+hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
-
-## ---------------------------------------------------------------------------------------------------
-Gene_field   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
-                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                "TICAM1", "TNF") #"IL.12", "IRG6")
-
-#add a suffix to represent changes in data file
-Gene_field_imp <- paste(Gene_field, "imp", sep = "_")
-
-Genes_wild   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10", 
-                  "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
-                  "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
-                  "TICAM1", "TNF") #, "IL.12", "IRG6")
-
-Genes_wild_imp <- paste(Genes_wild, "imp", sep = "_")
-
-Facs_field <- c("Position", "CD4", "Treg", "Div_Treg", "Treg17", "Th1", 
-                    "Div_Th1", "Th17", "Div_Th17", "CD8", "Act_CD8", 
-                    "Div_Act_CD8", "IFNy_CD4", "IFNy_CD8","Treg_prop", 
-                    "IL17A_CD4")  
-
-Facs_field_imp <- paste(Facs_field, "imp", sep = "_")
-
-Facs_wild <- c( "Treg", "CD4", "Treg17", "Th1", "Th17", "CD8",
-                     "Act_CD8", "IFNy_CD4", "IL17A_CD4", "IFNy_CD8")
-
-Facs_wild_imp <- paste(Facs_wild, "imp", sep = "_")
-
-
-## ---------------------------------------------------------------------------------------------------
-# somehow the field samples have the origin na,
-# fix that
-hm$origin[is.na(hm$origin)] <- "Field"
 
 field <- hm %>%
-  dplyr::filter(origin == "Field") 
-
-field <- unique(field)
-
-#make a factor out of the melting curves (important for later visualization)
-field <- field %>%
-  dplyr::mutate(MC.Eimeria = as.factor(MC.Eimeria))
+    filter(origin == "Field")
 
 genes_mouse <- field %>%
   dplyr::select(c(Mouse_ID, "IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10", removed IL.10 
@@ -70,54 +28,28 @@ genes_mouse <- field %>%
 genes <- genes_mouse %>%
   dplyr::select(-Mouse_ID)
 
-
-#remove rows with only nas
-genes <- genes[,colSums(is.na(genes))<nrow(genes)]
-
-#remove colums with only nas 
-genes <- genes[rowSums(is.na(genes)) != ncol(genes), ]
-
-
-##select same rows in the first table
-field <- field[row.names(genes), ]
-
-
 # we can now run a normal pca on the complete data set
 res.pca <- PCA(genes)
 
-
-## ---------------------------------------------------------------------------------------------------
 fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 70))
 
-
-## ---------------------------------------------------------------------------------------------------
 fviz_pca_var(res.pca, col.var = "cos2",
              gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
              repel = TRUE)
 
-## ---------------------------------------------------------------------------------------------------
 fviz_pca_ind(res.pca, col.ind = "cos2", 
                   gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
                   repel = TRUE)
 
-
-## ----dimensions, include = FALSE, echo = FALSE, warnings = FALSE------------------------------------
 #Description of the dimensions
 # We get a correlation between each variable and the first dimension
 dimdesc(res.pca)
 
-
-## ---- echo = FALSE, include = FALSE-----------------------------------------------------------------
 str(res.pca)
-
-
-## ---- echo = FALSE----------------------------------------------------------------------------------
-
 
 field$pc1 <- res.pca$ind$coord[, 1] # indexing the first column
 
 field$pc2 <- res.pca$ind$coord[, 2]  # indexing the second column
-
 
 
 
@@ -129,35 +61,23 @@ pca.vars$vars <- rownames(pca.vars)
 
 pca.vars.m <- melt(pca.vars, id.vars = "vars")
 
-source("r_scripts/functions/circle_fun.R")
+source("R/Functions/circle_fun.R")
 
 circ <- circleFun(c(0,0),2,npoints = 500)
 
-
-
-## ----correlations_genes_dimensions, echo = FALSE----------------------------------------------------
 #It’s possible to use the function corrplot() [corrplot package] to highlight 
 #the most contributing variables for each dimension:
 var.contrib <- res.pca$var$contrib
 corrplot(var.contrib, is.corr=FALSE) 
 
-
-## ----contr_var_pc_genes, echo = FALSE---------------------------------------------------------------
 # Contributions of variables to PC1
 fviz_contrib(res.pca, choice = "var", axes = 1, top = 18)
 
-
-
-## ---------------------------------------------------------------------------------------------------
 # Contributions of variables to PC2
 fviz_contrib(res.pca, choice = "var", axes = 2, top = 18)
 
 
-## ----contr_var_pc1_2_genes, echo = FALSE------------------------------------------------------------
 fviz_contrib(res.pca, choice = "var", axes = 1:2, top = 18)
-
-
-## ----pca_contribution_genes, echo = FALSE-----------------------------------------------------------
 
 #The most important (or, contributing) variables can be highlighted on the 
 #correlation plot as follow:
@@ -166,12 +86,8 @@ fviz_pca_var(res.pca, col.var = "contrib",
              )
 
 
-## ----contr_individuals_genes, echo = FALSE----------------------------------------------------------
 # Total contribution on PC1 and PC2
 fviz_contrib(res.pca, choice = "ind", axes = 1:2)
-
-
-## ----pca_biplot_genes, echo = FALSE-----------------------------------------------------------------
 
 
 fviz_pca_biplot(res.pca, 
@@ -180,15 +96,6 @@ fviz_pca_biplot(res.pca,
                 col.var = "black", repel = TRUE,
                 legend.title = "Infected with Eimeria") 
 
-
-
-## ---------------------------------------------------------------------------------------------------
-genes_mouse <- genes_mouse %>%
-  rename_with(~str_remove(., '_imp'))
-
- #select same rows in the first table
-genes_mouse <- genes_mouse[row.names(genes), ]
- 
  # turn the data frame into a matrix and transpose it. We want to have each cell 
  # type as a row name 
  genes_mouse <- t(as.matrix(genes_mouse))
@@ -236,6 +143,6 @@ annotation_df <- annotation_df %>% dplyr::select(-Mouse_ID)
 
 
 
-## ---- echo = FALSE----------------------------------------------------------------------------------
+## heatmap
 pheatmap(heatmap_data, annotation_col = annotation_df, scale = "row")
 
