@@ -47,7 +47,6 @@ predict_delta_cv <- rf.crossValidation(x = delta_predict_gene, xdata = train.dat
 par(mfrow=c(2,2))
 plot(predict_delta_cv) 
 
-# ... (remaining model evaluation plots, similar to your original code)
 
 # Making predictions on test data
 predictions <- predict(delta_predict_gene, test.data)
@@ -62,22 +61,18 @@ test_lab <- lab %>%
                                                         "IDO1", "IRGM1", "MPO", "MUC2", "MUC5AC", "MYD88", "NCR1", 
                                                         "PRF1", "RETNLB", "SOCS1", "TICAM1", "TNF")))
 
-# ... (plotting, correlation checks, etc., with updated variable names and context)
-
-# Training model on all data (assuming this was your intention with the "toa" comment)
-delta_predict_gene_all <- randomForest(delta_ct_cewe_MminusE ~., data = genes, 
-                                       proximity = TRUE, ntree = 1000) 
-saveRDS(delta_predict_gene_all, "R/Models/predict_delta_all.rds")
-
-# ... (After training the model and making predictions as shown above)
-
 # Correlation between predicted and actual data
 cor_result <- cor(result$delta_ct_cewe_MminusE, result$predictions, 
                   method = c("pearson", "kendall", "spearman"))
 
+cor_result
+
 cor_test <- cor.test(result$delta_ct_cewe_MminusE, result$predictions)
 
+cor_test
+
 spearman_cor <- cor(result$delta_ct_cewe_MminusE, result$predictions, method = "spearman")
+spearman_cor
 
 # Checking for ΔCt values
 test_lab <- test_lab %>%
@@ -122,9 +117,20 @@ plotting
 ggsave(filename = "figures/predictions_random_for_lab_delta_ct.jpeg", 
        plot = plotting, width = 8, height = 5, dpi = 1000)
 
+
+# Calculate linear model and visualize
+lm_fit <- lm(delta_ct_cewe_MminusE ~ predictions, data = test_lab)
+
+lm_fit
+
+formula_text <- paste0("delta_ct_cewe_MminusE = ", 
+                       round(coef(lm_fit)[1], 2), 
+                       ifelse(coef(lm_fit)[2] >= 0, " + ", " - "), 
+                       abs(round(coef(lm_fit)[2], 2)), 
+                       " * predictions")
 # Calculate Spearman's rank correlation (rho)
-rho <- cor(test_lab$delta_ct_cewe_MminusE, test_lab$predictions, use = "complete.obs")
-rho_text <- paste0("Rho = ", round(rho, 2))
+rho <- cor(test_lab$delta_ct_cewe_MminusE, test_lab$predictions, method = "spearman")
+rho_text <- paste0("Rho (Spearman) = ", round(rho, 2))
 
 # Linear regression formula annotation
 lm_coef <- coef(lm_fit)
@@ -132,27 +138,34 @@ formula_text <- paste0("ΔCt = ", round(lm_coef[1], 2),
                        ifelse(lm_coef[2] >= 0, " + ", " - "), 
                        abs(round(lm_coef[2], 2)), 
                        " * predictions")
-# Assuming you've already computed rho and formula_text above
 
-# Generate linear plot with annotations for ΔCt values
 test_lab %>%
-    ggplot(aes(x = predictions, y = delta_ct_cewe_MminusE)) +  # updated y aesthetic
+    ggplot(aes(x = predictions, y = WL_max)) +
     geom_smooth(method = lm, se = TRUE) +
-    labs(x = "Predictions: ΔCt Value",  # updated label
-         y = "Observed: ΔCt Value") +   # updated label
-    geom_point(aes(x = predictions, y = delta_ct_cewe_MminusE, size = 0.8, alpha = 0.3)) +
+    labs(x = "Predictions: Maximum weight loss", 
+         y = "Observed: Maximum weight loss") +
+    geom_point(aes(x = predictions, y = WL_max, size = 0.8, alpha = 0.3)) +
+    labs(x = "Predictions: Maximum weight loss", 
+         y = "Observed: Maximum weight loss") +
     theme_light() +
     theme(
         plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
         legend.position = "none") +
-    annotate("text", x = min(test_lab$predictions), y = max(test_lab$delta_ct_cewe_MminusE), 
-             label = formula_text, hjust = 0, vjust = 1.5, size = 4, color = "blue") + 
-    annotate("text", x = min(test_lab$predictions), y = max(test_lab$delta_ct_cewe_MminusE), 
-             label = cor_text, hjust = 0, vjust = 0.5, size = 4, color = "red") -> linear_plot_for_delta_ct
+    annotate("text", x = min(test_lab$predictions), y = max(test_lab$WL_max), 
+             label = formula_text, hjust = 0, vjust = 4, size = 4, color = "blue") +
+    annotate("text", x = min(test_lab$predictions), y = max(test_lab$WL_max), 
+             label = cor_text, hjust = 0, vjust = 1.5, size = 4, color = "blue") -> linear_plot
 
-linear_plot_for_delta_ct
+linear_plot
 
 
+linear_plot
 
 ggsave(filename = "figures/linear_model_of_delta_rf_with_annotations.jpeg", 
        plot = linear_plot, width = 10, height = 6, dpi = 1000)
+
+
+# Training model on all data (assuming this was your intention with the "toa" comment)
+delta_predict_gene_all <- randomForest(delta_ct_cewe_MminusE ~., data = genes, 
+                                       proximity = TRUE, ntree = 1000) 
+saveRDS(delta_predict_gene_all, "R/Models/predict_delta_all.rds")
