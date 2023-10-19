@@ -243,12 +243,14 @@ ggsave(filename = "figures/linear_model_of_random_forest.jpeg", plot = linear_pl
 
 
 #train the model
-WL_predict_gene <- randomForest(WL_max ~., data = gene, 
+WL_predict_gene <- randomForest(WL_max ~., data = gene_W, 
                                     proximity = TRUE, ntree = 1000) 
+
+WL_predict_gene
 # ntree = number of trees     
 # save the model 
 # toa = trained on all
-saveRDS(WL_predict_gene, "R/Models//predict_WL.rds")
+saveRDS(WL_predict_gene, "R/Models/predict_WL.rds")
 
 print(WL_predict_gene)
 

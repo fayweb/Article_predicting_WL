@@ -1,10 +1,12 @@
-## ----setup, include=FALSE---------------------------------------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
-
-
-## ----libraries, message = FALSE, warnings = FALSE---------------------------------------------------
 #install.packages("optimx", version = "2021-10.12") # this package is required for 
 #the parasite load package to work
+require(devtools)
+
+## install the pacakage of Alice Balard
+devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
+#force = TRUE)
+
+library(parasiteLoad)
 library(tidyverse)
 library(tidyr)
 library(dplyr)
@@ -16,130 +18,90 @@ library(mice) # imputing missing data without predictors
 library(ggpubr)
 library(optimx)
 library(rfUtilities) # Implements a permutation test cross-validation for 
-# Random Forests models
-library(mice) #imputations
 library(fitdistrplus) #testing distributions
 library(logspline)
 library(caret)
 
+# read the data
+hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
-## ---------------------------------------------------------------------------------------------------
-hm <- read.csv("output_data/2.imputed_MICE_data_set.csv")
-
-
-
-## ----summary_stats_field----------------------------------------------------------------------------
+# filter for the field mice
 Field <- hm %>%
   filter(origin == "Field") %>%
     drop_na(HI)
 
+# Create vectors for selecting relevant columns
+EqPCR.cols      <- c("delta_ct_cewe_MminusE", "MC.Eimeria", "Ct.Eimeria")
+#,"Ct.Mus")
 
-## ----genes------------------------------------------------------------------------------------------
-EqPCR.cols      <- c("delta_ct_cewe_MminusE", "MC.Eimeria", "Ct.Eimeria") #,"Ct.Mus""delta_ct_ilwe_MminusE", )
-
-Genes_wild   <- c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10", 
+Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10", 
                   "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                   "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                   "TICAM1", "TNF") #, "IL.12", "IRG6")
 
-
-
-
-## ---------------------------------------------------------------------------------------------------
-#select the imputed gene columns
+# select the gene columns
 gene <-  Field %>%
   dplyr::select(c(Mouse_ID, "IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10", 
                   "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                   "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                   "TICAM1", "TNF"))
 
+# data frame with only the genes
 genes <- gene %>%
   dplyr::select(-Mouse_ID)
 
-#remove rows with only nas
-genes <- genes[,colSums(is.na(genes))<nrow(genes)]
-
-#remove colums with only nas 
-genes <- genes[rowSums(is.na(genes)) != ncol(genes), ]
-
-# select the same rows from the gene data
-gene <- gene[row.names(genes),]
-
-# select the same rows from the field data
-Field <- Field[row.names(genes),]
-
-
-
-## ----predicting_field-------------------------------------------------------------------------------
-
 
 # load predicting weight loss model
-weight_loss_predict <- readRDS("r_scripts/models/predict_WL.rds")
+weight_loss_predict <- readRDS("R/Models/predict_WL.rds")
 
 set.seed(540)
 
 
 #The predict() function in R is used to predict the values based on the input data.
-predictions_field <- predict(weight_loss_predict, genes)
+predicted_WL <- predict(weight_loss_predict, genes)
 
 
 # assign test.data to a new object, so that we can make changes
 result_field <- genes
 
 #add the new variable of predictions to the result object
-result_field <- cbind(result_field, predictions_field)
+result_field <- cbind(result_field, predicted_WL)
 
 # add it to the field data 
-Field <- cbind(Field, predictions_field)
+Field <- cbind(Field, predicted_WL)
 
-Field <- Field %>%
-  dplyr::mutate(predictions_pos = (-1) * predictions_field)
+rm(gene,genes)
 
-
-
-## ---- warning=FALSE, echo=FALSE, message=FALSE------------------------------------------------------
-
-require(devtools)
-
-devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
-
-#force = TRUE)
-
-library(parasiteLoad)
-
-
-## ---------------------------------------------------------------------------------------------------
-
-Field %>% ggplot(aes(x = predictions_field)) +
+########## Analyzing the distribution of our data in order to 
+# go on with the anaylsis 
+Field %>% ggplot(aes(x = predicted_WL)) +
   geom_histogram(binwidth = 1.5)
 
 
-
-## ---------------------------------------------------------------------------------------------------
+##  predicted WL vs HI
 Field %>%
-    ggplot(aes(x = HI , y = predictions_field , color = Sex)) +
+    ggplot(aes(x = HI , y = predicted_WL , color = Sex)) +
+    geom_smooth() +
+    geom_point()
+
+## body length vs predicted WL
+Field %>%
+    ggplot(aes(x = Body_Length , y = predicted_WL , color = Sex)) +
     geom_smooth() +
     geom_point()
 
 
-Field %>%
-    ggplot(aes(x = Body_Length , y = predictions_field , color = Sex)) +
-    geom_smooth() +
-    geom_point()
-
-
-## ---------------------------------------------------------------------------------------------------
-
-x <- Field$predictions_pos
+## Let'S further analyse the distribution of WL
+x <- Field$predicted_WL
 
 descdist(data = x, discrete = FALSE)
 descdist(data = x, discrete = FALSE, #data is continuous
          boot = 1000)
 
 
+### quite close to normal distribution
 
-
-## ---------------------------------------------------------------------------------------------------
+## fitting different distributions
 set.seed(10)
 n = 25
 size = 27
@@ -219,33 +181,35 @@ Field$Sex <- as.factor(Field$Sex)
 
 
 
-parasiteLoad::getParamBounds("normal", data = Field, response = "predictions_pos")
+parasiteLoad::getParamBounds("normal", data = Field, response = "predicted_WL")
 
 
-speparam <- c(L1start = -10.510012081,
-                     L1LB = -13.335976577,
-                     L1UB = -4.233544127,
-                     L2start = -10.510012081,
-                     L2LB = -13.335976577,
-                     L2UB = -4.233544127,
+speparam <- c(L1start = 10.098368660  ,
+                     L1LB = 4.363865741 ,
+                     L1UB = 19.383819138 ,
+                     L2start = 10.098368660  ,
+                     L2LB = 4.363865741 ,
+                     L2UB = 19.383819138  ,
                      alphaStart = 0, alphaLB = -5, alphaUB = 5,
-                     myshapeStart = 1, myshapeLB = 1e-9, myshapeUB = 5)
+                     myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
 
 ##All
 fitWL_Sex <- parasiteLoad::analyse(data = Field,
-                        response = "predictions_pos",
+                        response = "predicted_WL",
                         model = "normal",
                         group = "Sex")
 
-Field$predictions_field
+Field$predicted_WL
 
 plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
              data = Field,
-             response = "predictions_pos",
+             response = "predicted_WL",
              group = "Sex") +
     scale_fill_manual(values = c("blueviolet", "limegreen")) +
   scale_color_manual(values = c("blueviolet", "limegreen")) +
   theme_bw() 
+
+plot_WL_Sex
 
 # Create HI bar
 HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
@@ -266,21 +230,143 @@ plot_grid(plot_WL_Sex,
 plot_WL_Sex
 
 
+fitWL_Sex <- parasiteLoad::analyse(data = Field,
+                        response = "predicted_WL",
+                        model = "normal",
+                        group = "Sex")
+
+Field$predicted_WL
+
+plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
+             data = Field,
+             response = "predicted_WL",
+             group = "Sex") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+  scale_color_manual(values = c("blueviolet", "limegreen")) +
+  theme_bw() 
+
+plot_WL_Sex
+
+
+###################### according to infection
+
+speparam <- c(L1start = 10.098368660  ,
+              L1LB = 4.363865741 ,
+              L1UB = 19.383819138 ,
+              L2start = 10.098368660  ,
+              L2LB = 4.363865741 ,
+              L2UB = 19.383819138  ,
+              alphaStart = 0, alphaLB = -5, alphaUB = 5,
+              myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
+
+mc_field <- Field %>%
+    drop_na(MC.Eimeria) %>%
+    filter(!MC.Eimeria == FALSE)
+
+ 
+
+##All
+fitWL_mc <- parasiteLoad::analyse(data = mc_field,
+                                   response = "predicted_WL",
+                                   model = "normal",
+                                   group = "Sex")
+
+
+plot_WL_MC_eimeria<- bananaPlot(mod = fitWL_mc$H3,
+                         data = mc_field,
+                         response = "predicted_WL",
+                         group = "Sex") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+    scale_color_manual(values = c("blueviolet", "limegreen")) +
+    theme_bw() 
+
+plot_WL_MC_eimeria
+
+
+#### oocysts
+speparam <- c(L1start = 10.098368660  ,
+              L1LB = 4.363865741 ,
+              L1UB = 19.383819138 ,
+              L2start = 10.098368660  ,
+              L2LB = 4.363865741 ,
+              L2UB = 19.383819138  ,
+              alphaStart = 0, alphaLB = -5, alphaUB = 5,
+              myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
+
+mc_field <- Field %>%
+    drop_na(MC.Eimeria) %>%
+    filter(!MC.Eimeria == FALSE)
+
+
+## oocysts
+oo_Field <- Field %>%
+    drop_na(OPG)
+
+##All
+fitWL_oo <- parasiteLoad::analyse(data = oo_Field,
+                                  response = "predicted_WL",
+                                  model = "normal",
+                                  group = "Sex")
+
+
+plot_WL_OOC<- bananaPlot(mod = fitWL_oo$H3,
+                                data = oo_Field,
+                                response = "predicted_WL",
+                                group = "Sex") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+    scale_color_manual(values = c("blueviolet", "limegreen")) +
+    theme_bw() 
+
+plot_WL_MC_eimeria
+
+## Infection according to delta ct
+Field_d <- Field %>%
+    mutate(infected_delta = case_when(
+        delta_ct_cewe_MminusE > -5 ~ "infected",
+        delta_ct_cewe_MminusE < -5 ~ "uninfected"
+    ))
+
+Field_d <- Field_d %>%
+    drop_na(infected_delta)
+
+
+Field_d$infected_delta <- as.factor(Field_d$infected_delta)
+
+Field_d <- Field_d %>%
+    filter(!infected_delta == "uninfected")
+
+##All
+fitWL_delta <- parasiteLoad::analyse(data = Field_d,
+                                  response = "predicted_WL",
+                                  model = "normal",
+                                  group = "Sex")
+
+
+plot_WL_delta<- bananaPlot(mod = fitWL_delta$H3,
+                                data = Field_d,
+                                response = "predicted_WL",
+                                group = "Sex") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+    scale_color_manual(values = c("blueviolet", "limegreen")) +
+    theme_bw() 
+
+plot_WL_delta
+
 
 ## ---------------------------------------------------------------------------------------------------
-Field <- Field %>%
-  dplyr::rename(WL = predictions_pos)
-ggplot(data = Field, aes(x = delta_ct_cewe_MminusE, y = WL)) +
+
+
+ggplot(data = Field, aes(x = delta_ct_cewe_MminusE, y = predicted_WL)) +
   geom_point() +
   stat_smooth(method= "lm") 
 
 Field2 <- Field %>%
   drop_na(delta_ct_cewe_MminusE)
 
-cor(Field2$WL, Field2$delta_ct_cewe_MminusE)
+cor(Field2$predicted_WL, Field2$delta_ct_cewe_MminusE)
 
 
-tolerance <- lm(WL ~  delta_ct_cewe_MminusE, data = Field)
+tolerance <- lm(predicted_WL ~  delta_ct_cewe_MminusE, data = Field)
 
 
 summary(tolerance)
@@ -298,10 +384,10 @@ ggplot(data = Field, aes(x = OPG, y = WL)) +
 Field2 <- Field %>%
   drop_na(OPG)
 
-cor(Field2$WL, Field2$OPG)
+cor(Field2$predicted_WL, Field2$OPG)
 
 
-tolerance <- lm(WL ~  OPG, data = Field)
+tolerance <- lm(predicted_WL ~  OPG, data = Field)
 
 
 summary(tolerance)
@@ -312,7 +398,7 @@ confint(tolerance)
 
 ## ---------------------------------------------------------------------------------------------------
 
-tolerance <- lm(WL ~  OPG * delta_ct_cewe_MminusE, data = Field)
+tolerance <- lm(predicted_WL ~  OPG * delta_ct_cewe_MminusE, data = Field)
 
 
 summary(tolerance)
@@ -326,13 +412,13 @@ Field <- Field %>%
   dplyr::mutate(BMI = Body_Weight / (Body_Length)) #^2) which is the correct
 # way to calculatebmi?
 
-ggplot(data = Field, aes(x = BMI, y = predictions_field)) +
+ggplot(data = Field, aes(x = BMI, y = predicted_WL)) +
   geom_point() +
   stat_smooth(method= "lm") 
 
-bmi <- lm(WL ~ BMI, data = Field)
+bmi <- lm(predicted_WL ~ BMI, data = Field)
 
-cor(Field$BMI, Field$WL, use = "complete.obs")
+cor(Field$BMI, Field$predicted_WL, use = "complete.obs")
 
 summary(bmi)
 
@@ -342,10 +428,10 @@ confint(bmi)
 
 ## ---------------------------------------------------------------------------------------------------
 # load predicting parasite model
-predict_parasite <- readRDS("r_scripts/models/predict_infecting_parasite.rds")
+predict_parasite <- readRDS("R/Models/predict_Eimeria.rds")
 
 Field_parasite <- Field %>%
-  dplyr::select(all_of(Genes_wild), eimeriaSpecies) %>%
+  dplyr::select(all_of(Genes_v), eimeriaSpecies) %>%
   dplyr::filter(!eimeriaSpecies == "NA") %>%
    dplyr::filter(!eimeriaSpecies == "E_falciformis")
 
@@ -385,21 +471,29 @@ conf_matrix_parasite$table
 plt <- as.data.frame(conf_matrix_parasite$table)
 plt$Prediction <- factor(plt$Prediction, levels=rev(levels(plt$Prediction)))
 
-ggplot(plt, aes(x = Prediction, y =  Reference, fill= Freq)) +
-        geom_tile() + geom_text(aes(label=Freq)) +
-        scale_fill_gradient(low="white", high="darkturquoise") +
-        labs(x = "Predictions",y = "Reference") 
 
+ggplot(plt, aes(x = Prediction, y = reorder(Reference, desc(Reference)))) +
+    geom_tile(aes(fill = Freq), colour = "white") +
+    geom_text(aes(label = sprintf("%d", Freq)), vjust = 1) +
+    scale_fill_gradient(low = "white", high = "Steelblue")  +
+    labs(x = 'Predicted', y = 'Actual', fill = 'Number of observations', 
+         title = 'Confusion Matrix') +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) -> confusion_plot
 
+confusion_plot
+
+ggsave(filename = "figures/confusion_matrix_predicting_ferrisi_field.jpeg", 
+       plot = confusion_plot, width = 6, height = 4, dpi = 1000)
 
 ## ---------------------------------------------------------------------------------------------------
-model_MC <- readRDS("r_scripts/models/predict_MC.rds")
+model_MC <- readRDS("R/Models/predict_MC_Eimeria.rds")
 
 set.seed(597)
 
 
 Field_mc <- Field %>%
-  dplyr::select(all_of(Genes_wild), MC.Eimeria) %>%
+  dplyr::select(all_of(Genes_v), MC.Eimeria) %>%
   dplyr::filter(!MC.Eimeria == "NA") 
 
 Field_mc$MC.Eimeria <- as.factor(Field_mc$MC.Eimeria)
@@ -433,40 +527,52 @@ ggplot(plt, aes(x = Prediction, y =  Reference, fill= Freq)) +
 
 
 ## ---------------------------------------------------------------------------------------------------
-Field <- Field %>%
-  mutate(tolerance = WL / delta_ct_cewe_MminusE)
-
-Field$tolerance
-
 Field_tol <- Field %>%
+    mutate(tolerance = predicted_WL / delta_ct_cewe_MminusE)
+
+Field_tol$tolerance
+
+Field_tol <- Field_tol %>%
   filter(!is.na(tolerance))
 
-Field_tol <- Field_tol[-37, ]
+summary(Field_tol$tolerance)
+
+Field_tol <- Field_tol  %>%
+    filter(!MC.Eimeria == FALSE)
+
+summary(Field_tol$tolerance)
+
+Field_tol
+ggplot(aes)
+row.names(Field_tol) <- 1:185
+Field_tol <- Field_tol %>%
+    filter(tolerance < 0)
 
 
 hist(Field_tol$tolerance)
 
-parasiteLoad::getParamBounds("normal", data = Field_tol, response = "tolerance")
+speparam <- parasiteLoad::getParamBounds("normal", data = Field_tol, response = "tolerance")
+
+x <- Field_tol$tolerance
+
+tryDistrib(x, "normal")
+tryDistrib(x, "binomial")
+tryDistrib(x, "student")
+tryDistrib(x, "weibull")
+tryDistrib(x, "weibullshifted")
 
 
-speparam <- c(L1start = 10,
-                     L1LB = 1e-9,
-                     L1UB = 20,
-                     L2start = 10,
-                     L2LB = 1e-9,
-                     L2UB = 20,
-                     alphaStart = 0, alphaLB = -5, alphaUB = 5,
-                     myshapeStart = 1, myshapeLB = 1e-9, myshapeUB = 5)
 
 ##All
-fitWL_Sex <- parasiteLoad::analyse(data = Field_tol,
+fitWL_tol <- parasiteLoad::analyse(data = Field_tol,
                         response = "tolerance",
                         model = "normal",
-                        group = "Sex")
+                        group = "Sex",
+                        myparamBounds = "speparam")
 
 
 
-plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
+plot_tolerance_Sex<- bananaPlot(mod = fitWL_Sex$H3,
              data = Field_tol,
              response = "tolerance",
              group = "Sex") +
@@ -474,6 +580,8 @@ plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
   scale_color_manual(values = c("blueviolet", "limegreen")) +
   theme_bw() 
 
+
+plot_tolerance_Sex
 # Create HI bar
 HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
                         aes(x=hi, y=1, fill = hi)) +
