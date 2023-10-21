@@ -142,8 +142,21 @@ fviz_contrib(res.pca, choice = "ind", axes = 1:2)
 #select same rows in the first table
 lab <- lab[row.names(genes), ]
 
+infecto <- lab %>% 
+    filter(!current_infection == "uninfected")
+
+
+#####################
+
+genes <- infecto[ ,colnames(lab) %in% Genes_v]
+
+
+# PCA
+## we can now run a normal pca on the complete data set
+res.pca <- PCA(genes)
+
 fviz_pca_biplot(res.pca, 
-                col.ind = lab$current_infection, palette = "jco", 
+                col.ind = infecto$current_infection, palette = "jco", 
                 addEllipses = TRUE, label = "var",
                 col.var = "black", repel = TRUE,
                 legend.title = "Infection groups",

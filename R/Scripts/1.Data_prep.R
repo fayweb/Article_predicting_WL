@@ -147,6 +147,7 @@ Challenge <- Challenge %>%
     dplyr::rename(Mouse_ID = EH_ID, delta_ct_cewe_MminusE = delta, 
                   MC.Eimeria = Eim_MC, Feces_Weight = feces_weight)
 
+
 # Here I create a new column, where we get the actual infection status
 # According to the melting curve for eimeria 
 Challenge <- Challenge %>%
@@ -157,8 +158,9 @@ Challenge <- Challenge %>%
     Parasite_challenge == "E_falciformis" & MC.Eimeria == "FALSE" ~ "uninfected",
     Parasite_challenge == "uninfected" & MC.Eimeria == "TRUE" ~ "E_falciformis",
     Parasite_challenge == "uninfected" & MC.Eimeria == "FALSE" ~ "uninfected",
-    TRUE ~ ""
+    TRUE ~ Parasite_challenge
   ))
+
 
 Challenge <- Challenge %>%
     dplyr::mutate(immunization = case_when(
@@ -196,6 +198,9 @@ length(outersect(colnames(Challenge), colnames(SOTA)))
 # now join the two data sets
 data <- full_join(Challenge, SOTA, 
                   by = intersect(colnames(SOTA), colnames(Challenge)))
+
+write.csv(x = data, file = "Data/Data_output/full_data_prior_imputation.csv", 
+          row.names = FALSE)
 
 data <- data %>%
   dplyr::select(-ends_with("_N"))
@@ -366,25 +371,18 @@ corrplot(gene_correlation,
 #Add significance level to the correlogram
 #remove the values that are insignificant
 
+hm_imp <- hm_imp %>%
+    mutate(GAPDH = GAPDH.y, PPIB = PPIB.y) %>%
+    dplyr::select(-c(GAPDH.x, GAPDH.y, PPIB.x, PPIB.y))
+
 # add missing infection intensities
 ii <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/CEWE_FECES_infection_intensities")
 
 ii$Mouse_ID <- gsub(pattern = "AA_", replacement = "AA", x = ii$Mouse_ID)
 
-ii <- ii %>%
-    dplyr::select(-c("OPG", "FEC_Eim_Ct", "MC.Eimeria.FEC" ))
 
 hm_imp <- hm_imp %>%
-    left_join(ii, by = c("Mouse_ID", "Year"))
-
-hm_imp <- hm_imp %>%
-    mutate(delta_ct_cewe_MminusE = ifelse(is.na(delta_ct_cewe_MminusE.x), delta_ct_cewe_MminusE.y, delta_ct_cewe_MminusE.x),
-           MC.Eimeria = ifelse(is.na(MC.Eimeria.x), MC.Eimeria.y, MC.Eimeria.x),
-           MCs = ifelse(is.na(MCs.x), MCs.y, MCs.x),
-           GAPDH = ifelse(is.na(GAPDH.x), GAPDH.y, GAPDH.x),
-           PPIB = ifelse(is.na(PPIB.x), PPIB.y, PPIB.x)) %>%
-    dplyr::select(-matches("\\.x$|\\.y$"))
-
+    left_join(ii, by = intersect(colnames(hm_imp), colnames(ii)))
 
 
 write.csv(hm_imp, "Data/Data_output/imputed_clean_data.csv", row.names = FALSE)
