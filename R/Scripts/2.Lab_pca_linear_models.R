@@ -30,7 +30,7 @@ lab <- hm %>%
   dplyr::filter(origin == "Lab")
 
 
-Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
+Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10",
                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                "TICAM1", "TNF") #"IL.12", "IRG6")
@@ -142,25 +142,73 @@ fviz_contrib(res.pca, choice = "ind", axes = 1:2)
 #select same rows in the first table
 lab <- lab[row.names(genes), ]
 
+
+fviz_pca_biplot(res.pca, 
+                col.ind = lab$current_infection, palette = "jco", 
+                addEllipses = TRUE, label = "var",
+                col.var = "black", repel = TRUE,
+                legend.title = "Infection groups",
+                title = "") 
+
+############################### res - tol? 
+
 infecto <- lab %>% 
-    filter(!current_infection == "uninfected")
+    filter(!current_infection == "uninfected", MC.Eimeria == "TRUE") %>%
+    dplyr::select(all_of(Genes_v), Mouse_ID, delta_ct_cewe_MminusE,
+                  MC.Eimeria, OOC, current_infection, pc1, pc2) %>%
+    drop_na(delta_ct_cewe_MminusE)
 
 
-#####################
+genes <- infecto %>%
+    dplyr::select(all_of(Genes_v)) 
 
-genes <- infecto[ ,colnames(lab) %in% Genes_v]
 
-
-# PCA
-## we can now run a normal pca on the complete data set
+# Perform PCA on cleaned data
 res.pca <- PCA(genes)
 
+infecto$current_infection <- as.factor(infecto$current_infection)
+
+# Biplot: Color by 'current_infection' and adjust size by 'delta_ct_cewe_MminusE'
 fviz_pca_biplot(res.pca, 
                 col.ind = infecto$current_infection, palette = "jco", 
                 addEllipses = TRUE, label = "var",
                 col.var = "black", repel = TRUE,
                 legend.title = "Infection groups",
-                title = "") 
+                title = "",
+                pointsize = infecto$OOC) # adjust point size
+                #palette = c("E.ferrisi" = "blue", "E.falciformis" = "red"))
+
+    
+# For PC1
+infecto_pc1_summary <- infecto %>%
+    group_by(current_infection, pc1_sign = ifelse(pc1 > 0, "PC1 Positive", "PC1 Negative")) %>%
+    summarise(
+        mean_OOC = mean(OOC, na.rm = TRUE),
+        sd_OOC = sd(OOC, na.rm = TRUE),
+        count = n(),
+        .groups = "drop"
+    )
+
+# For PC2
+infecto_pc2_summary <- infecto %>%
+    group_by(current_infection, pc2_sign = ifelse(pc2 > 0, "PC2 Positive", "PC2 Negative")) %>%
+    summarise(
+        mean_OOC = mean(OOC, na.rm = TRUE),
+        sd_OOC = sd(OOC, na.rm = TRUE),
+        count = n(),
+        .groups = "drop"
+    )
+
+print(infecto_pc1_summary)
+print(infecto_pc2_summary)
+
+
+
+
+
+
+
+
 
 
 

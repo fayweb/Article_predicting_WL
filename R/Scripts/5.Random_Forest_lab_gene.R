@@ -144,26 +144,14 @@ test_lab <- test_lab %>%
 cor(result$WL_max, result$predictions, 
     method = c("pearson", "kendall", "spearman"))
 
-### delta ct We considered ΔCt  = −5 our limit of detection
-test_lab <- test_lab %>%
-    mutate(infected_delta = 
-               case_when(
-                   delta_ct_cewe_MminusE > -5 ~ "infected",
-                   delta_ct_cewe_MminusE < -5 ~ "uninfected"
-               ))
+
 
 
 ### plotting
 test_lab %>%
-    drop_na(delta_ct_cewe_MminusE) %>%
-    mutate(infected_delta = 
-               case_when(
-                   delta_ct_cewe_MminusE > -5 ~ "infected",
-                   delta_ct_cewe_MminusE < -5 ~ "uninfected"
-               )) %>%
     ggplot(aes(x = predictions, y = WL_max, color = current_infection)) +
     # Geom
-    geom_point(aes(size = delta_ct_cewe_MminusE, shape = infected_delta), alpha = 0.7) +
+    geom_point(aes(size = delta_ct_cewe_MminusE), alpha = 0.7) +
     
     # Labels
     labs(

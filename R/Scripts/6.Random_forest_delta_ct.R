@@ -87,7 +87,7 @@ test_lab <- test_lab %>%
 plotting <- test_lab %>%
     drop_na(delta_ct_cewe_MminusE) %>%
     ggplot(aes(x = predictions, y = delta_ct_cewe_MminusE, color = current_infection)) +
-    geom_point(aes(size = delta_ct_cewe_MminusE, shape = infected_delta), alpha = 0.7) +
+    geom_point(aes(size = delta_ct_cewe_MminusE), alpha = 0.7) +
     labs(
         x = "Predictions: ΔCt Value", 
         y = "Observed: ΔCt Value",
