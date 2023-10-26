@@ -307,3 +307,35 @@ ggplot(subset(primary, dpi != 0), aes(x = dpi, y = OOC, color = current_infectio
     
     # Theme adjustments for publication quality
     
+
+    
+    # data frame with only the genes
+    genes <- gene %>%
+    dplyr::select(-Mouse_ID)
+
+
+# load predicting weight loss model
+weight_loss_predict <- readRDS("R/Models/predict_WL.rds")
+
+set.seed(540)
+
+
+#The predict() function in R is used to predict the values based on the input data.
+predicted_WL <- predict(weight_loss_predict, genes)
+
+
+# assign test.data to a new object, so that we can make changes
+result_field <- genes
+
+#add the new variable of predictions to the result object
+result_field <- cbind(result_field, predicted_WL)
+
+# add it to the field data 
+Field <- cbind(Field, predicted_WL)
+
+rm(gene,genes)
+
+ggplot(Field, aes(x = HI, y = predicted_WL)) +
+    geom_point() +
+    geom_jitter() +
+    geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE)

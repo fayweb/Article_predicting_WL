@@ -1,3 +1,5 @@
+#BiocManager::install("limma")
+
 library(mice)
 library(stringr)
 library(gridExtra)
@@ -10,6 +12,7 @@ library(corrplot)
 library(RColorBrewer)
 library(ggplot2)
 library(VIM)
+library(limma)
 
 
 # Import data 
@@ -313,6 +316,17 @@ hm_genes <- hm[,c("Mouse_ID", Genes_v, "GAPDH", "PPIB")]
 sapply(hm_genes, function(x) sum(is.na(x)))
 
 genes <- hm_genes[, !colnames(hm_genes) %in% "Mouse_ID"]
+
+##########################################################
+#Normalization
+
+genes_matrix <- as.matrix(genes)
+
+
+genes_matrix <- limma::normalizeQuantiles(genes_matrix)
+
+
+genes <- as.data.frame(genes_matrix)
 
 # The frequency distribution !f the missing cases per variable can be obtained 
 # as:

@@ -159,12 +159,12 @@ infecto <- lab %>%
     drop_na(delta_ct_cewe_MminusE)
 
 
-genes <- infecto %>%
+genes_inf <- infecto %>%
     dplyr::select(all_of(Genes_v)) 
 
 
 # Perform PCA on cleaned data
-res.pca <- PCA(genes)
+res.pca <- PCA(genes_inf)
 
 infecto$current_infection <- as.factor(infecto$current_infection)
 

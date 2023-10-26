@@ -21,6 +21,8 @@ library(rfUtilities) # Implements a permutation test cross-validation for
 library(fitdistrplus) #testing distributions
 library(logspline)
 library(caret)
+library(dplyr)
+library(tidyr)
 
 # read the data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -180,36 +182,25 @@ summary(weibull_)
 Field$Sex <- as.factor(Field$Sex)
 
 
-
-parasiteLoad::getParamBounds("normal", data = Field, response = "predicted_WL")
-
-
-speparam <- c(L1start = 10.098368660  ,
-                     L1LB = 4.363865741 ,
-                     L1UB = 19.383819138 ,
-                     L2start = 10.098368660  ,
-                     L2LB = 4.363865741 ,
-                     L2UB = 19.383819138  ,
-                     alphaStart = 0, alphaLB = -5, alphaUB = 5,
-                     myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
-
 ##All
 fitWL_Sex <- parasiteLoad::analyse(data = Field,
                         response = "predicted_WL",
                         model = "normal",
                         group = "Sex")
 
-Field$predicted_WL
 
 plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
              data = Field,
              response = "predicted_WL",
              group = "Sex") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-  scale_color_manual(values = c("blueviolet", "limegreen")) +
+    scale_fill_manual(values = c("brown", "forestgreen")) +
+  scale_color_manual(values = c("brown", "forestgreen")) +
   theme_bw() 
 
 plot_WL_Sex
+
+ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
+       height = 8, dpi = 1000)
 
 # Create HI bar
 HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
@@ -221,67 +212,56 @@ HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
   scale_y_continuous(expand=c(0,0)) +
   theme(legend.position = 'none')
 
-plot_grid(plot_WL_Sex, 
+plot_WL_Sex <- 
+    plot_grid(plot_WL_Sex, 
           HIgradientBar,
           nrow = 2,
           align = "v",
           axis = "tlr",
           rel_heights = c(13, 1))
-plot_WL_Sex
 
 
-fitWL_Sex <- parasiteLoad::analyse(data = Field,
-                        response = "predicted_WL",
-                        model = "normal",
-                        group = "Sex")
+ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
+       height = 8, dpi = 1000)
 
-Field$predicted_WL
-
-plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
-             data = Field,
-             response = "predicted_WL",
-             group = "Sex") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-  scale_color_manual(values = c("blueviolet", "limegreen")) +
-  theme_bw() 
-
-plot_WL_Sex
 
 
 ###################### according to infection
 
-speparam <- c(L1start = 10.098368660  ,
-              L1LB = 4.363865741 ,
-              L1UB = 19.383819138 ,
-              L2start = 10.098368660  ,
-              L2LB = 4.363865741 ,
-              L2UB = 19.383819138  ,
-              alphaStart = 0, alphaLB = -5, alphaUB = 5,
-              myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
-
 mc_field <- Field %>%
-    drop_na(MC.Eimeria) %>%
-    filter(!MC.Eimeria == FALSE)
+    drop_na(MC.Eimeria) 
 
+mc_field$MC.Eimeria <- as.factor(mc_field$MC.Eimeria)
  
 
 ##All
 fitWL_mc <- parasiteLoad::analyse(data = mc_field,
                                    response = "predicted_WL",
                                    model = "normal",
-                                   group = "Sex")
+                                   group = "MC.Eimeria")
 
 
 plot_WL_MC_eimeria<- bananaPlot(mod = fitWL_mc$H3,
                          data = mc_field,
                          response = "predicted_WL",
-                         group = "Sex") +
+                         group = "MC.Eimeria") +
     scale_fill_manual(values = c("blueviolet", "limegreen")) +
     scale_color_manual(values = c("blueviolet", "limegreen")) +
     theme_bw() 
 
 plot_WL_MC_eimeria
 
+plot_WL_MC_eimeria <- 
+    plot_grid(plot_WL_MC_eimeria, 
+              HIgradientBar,
+              nrow = 2,
+              align = "v",
+              axis = "tlr",
+              rel_heights = c(13, 1))
+
+ggsave(plot = plot_WL_MC_eimeria, filename = "figures/hybrid_mc_eimeria.jpeg", 
+       width = 10, 
+       height = 8, dpi = 1000)
 
 #### oocysts
 speparam <- c(L1start = 10.098368660  ,
@@ -293,14 +273,12 @@ speparam <- c(L1start = 10.098368660  ,
               alphaStart = 0, alphaLB = -5, alphaUB = 5,
               myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
 
-mc_field <- Field %>%
-    drop_na(MC.Eimeria) %>%
-    filter(!MC.Eimeria == FALSE)
 
 
 ## oocysts
 oo_Field <- Field %>%
-    drop_na(OPG)
+    drop_na(OPG) %>%
+    filter(!OPG == 0)
 
 ##All
 fitWL_oo <- parasiteLoad::analyse(data = oo_Field,
@@ -317,40 +295,8 @@ plot_WL_OOC<- bananaPlot(mod = fitWL_oo$H3,
     scale_color_manual(values = c("blueviolet", "limegreen")) +
     theme_bw() 
 
-plot_WL_MC_eimeria
+plot_WL_OOC
 
-## Infection according to delta ct
-Field_d <- Field %>%
-    mutate(infected_delta = case_when(
-        delta_ct_cewe_MminusE > -5 ~ "infected",
-        delta_ct_cewe_MminusE < -5 ~ "uninfected"
-    ))
-
-Field_d <- Field_d %>%
-    drop_na(infected_delta)
-
-
-Field_d$infected_delta <- as.factor(Field_d$infected_delta)
-
-Field_d <- Field_d %>%
-    filter(!infected_delta == "uninfected")
-
-##All
-fitWL_delta <- parasiteLoad::analyse(data = Field_d,
-                                  response = "predicted_WL",
-                                  model = "normal",
-                                  group = "Sex")
-
-
-plot_WL_delta<- bananaPlot(mod = fitWL_delta$H3,
-                                data = Field_d,
-                                response = "predicted_WL",
-                                group = "Sex") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-    scale_color_manual(values = c("blueviolet", "limegreen")) +
-    theme_bw() 
-
-plot_WL_delta
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -376,7 +322,7 @@ confint(tolerance)
 
 
 ## ---------------------------------------------------------------------------------------------------
-ggplot(data = Field, aes(x = OPG, y = WL)) +
+ggplot(data = Field, aes(x = OPG, y = predicted_WL)) +
   geom_point() +
   stat_smooth(method= "lm") +
   scale_x_log10()
@@ -530,28 +476,25 @@ ggplot(plt, aes(x = Prediction, y =  Reference, fill= Freq)) +
 Field_tol <- Field %>%
     mutate(tolerance = predicted_WL / delta_ct_cewe_MminusE)
 
-Field_tol$tolerance
 
 Field_tol <- Field_tol %>%
-  filter(!is.na(tolerance))
+  filter(!is.na(tolerance), MC.Eimeria == TRUE)
 
 summary(Field_tol$tolerance)
 
-Field_tol <- Field_tol  %>%
-    filter(!MC.Eimeria == FALSE)
+Field_tol <- Field_tol %>%
+    filter(tolerance > -5, tolerance < 30)
+
 
 summary(Field_tol$tolerance)
-
-Field_tol
-ggplot(aes)
-row.names(Field_tol) <- 1:185
-Field_tol <- Field_tol %>%
-    filter(tolerance < 0)
-
 
 hist(Field_tol$tolerance)
 
-speparam <- parasiteLoad::getParamBounds("normal", data = Field_tol, response = "tolerance")
+Field_tol %>%
+    ggplot(aes(tolerance)) +
+    geom_histogram()
+
+parasiteLoad::getParamBounds("normal", data = Field_tol, response = "tolerance")
 
 x <- Field_tol$tolerance
 
@@ -567,12 +510,11 @@ tryDistrib(x, "weibullshifted")
 fitWL_tol <- parasiteLoad::analyse(data = Field_tol,
                         response = "tolerance",
                         model = "normal",
-                        group = "Sex",
-                        myparamBounds = "speparam")
+                        group = "Sex")
 
 
 
-plot_tolerance_Sex<- bananaPlot(mod = fitWL_Sex$H3,
+plot_tolerance_Sex<- bananaPlot(mod = fitWL_tol$H3,
              data = Field_tol,
              response = "tolerance",
              group = "Sex") +
@@ -582,6 +524,7 @@ plot_tolerance_Sex<- bananaPlot(mod = fitWL_Sex$H3,
 
 
 plot_tolerance_Sex
+
 # Create HI bar
 HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
                         aes(x=hi, y=1, fill = hi)) +
@@ -600,3 +543,52 @@ plot_grid(plot_WL_Sex,
           rel_heights = c(13, 1))
 plot_WL_Sex
 
+
+################## hybrid effect
+Field <- Field %>%
+    mutate(HI_2 = 2*HI*(1-HI), #linearize HI
+           tolerance = predicted_WL / delta_ct_cewe_MminusE) 
+# tolerance = health impact / infection intensity
+
+i <- Field %>%
+    filter(Sex == "M") %>%
+    drop_na(tolerance)
+
+cor(i$HI, i$tolerance, method = "spearman")
+cor(i$HI, i$predicted_WL, method = "spearman")
+
+i <- Field %>%
+    filter(Sex == "F") %>%
+    drop_na(tolerance)
+
+cor(i$HI, i$tolerance, method = "spearman")
+cor(i$HI, i$predicted_WL, method = "spearman")
+
+
+ggplot(Field, aes(x = HI, HI_2)) +
+    geom_point() +
+    geom_line()
+
+ggplot(Field, aes(x = HI_2, predicted_WL, color = Sex)) +
+    geom_smooth(method = lm, se = TRUE) 
+
+ggplot(Field, aes(x = HI_2, tolerance, color = Sex)) +
+    geom_jitter() +
+    geom_smooth(method = lm, se = TRUE) 
+
+
+ggplot(Field, aes(x = HI_2, OPG)) +
+    geom_point() +
+    geom_line()
+
+lm(formula = predicted_WL ~ HI_2 * Sex, data = Field)
+
+df <- Field %>%
+    filter(MC.Eimeria == TRUE)
+
+model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
+                      data = df)
+
+summary(model_tolerance)
+
+# lm(tolerance ~ hi + hi_2 * Sex)

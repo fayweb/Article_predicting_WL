@@ -169,3 +169,4 @@ ggsave(filename = "figures/linear_model_of_delta_rf_with_annotations.jpeg",
 delta_predict_gene_all <- randomForest(delta_ct_cewe_MminusE ~., data = genes, 
                                        proximity = TRUE, ntree = 1000) 
 saveRDS(delta_predict_gene_all, "R/Models/predict_delta_all.rds")
+
