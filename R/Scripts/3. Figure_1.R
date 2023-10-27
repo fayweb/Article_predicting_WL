@@ -1,5 +1,6 @@
 library(ggrepel)
 library(tidyverse)
+library(tidyr)
 library(dplyr)
 library(scales)
 library(cowplot)
@@ -24,6 +25,8 @@ library(sjmisc)
 library(sjlabelled)
 library(jtools)
 library(sjPlot)
+library(FactoMineR)
+
 
 
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -86,23 +89,23 @@ color_palette <- c("E_ferrisi" = "#66C2A5", "uninfected" = "#8DA0CB",
 
 # PCA graph of individuals
 pca_individuals <-
-  ggplot(lab, aes(x = PC1, y = PC2, color = current_infection, 
-                  shape = current_infection)) +
-  geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") + 
-  geom_vline(xintercept = 0, linetype = "dotted", color = "gray50") +
-  geom_point(size = 3, alpha = 0.8) +
-  labs(x = "PC1 (32.83%)", y = "PC2 (16.25%)", #title = "PCA graph of individuals",
-       colour = "Current infection", shape ="Current infection") +
-  theme_minimal() +
-  theme(#plot.title = element_text(size = 12, face = "bold"),
+    ggplot(lab, aes(x = PC1, y = PC2, color = current_infection, 
+                    shape = current_infection)) +
+    geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dotted", color = "gray50") +
+    geom_point(size = 3, alpha = 0.8) +
+    labs(x = "PC1 (32.83%)", y = "PC2 (16.25%)", #title = "PCA graph of individuals",
+         colour = "Current infection", shape ="Current infection") +
+    theme_minimal() +
+    theme(#plot.title = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 12),
         axis.text = element_text(size = 12),
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12),
         legend.position = "right") +
-  scale_color_manual(values = color_palette) +
-  scale_shape_manual(values = c("E_ferrisi" = 17, "uninfected" = 16, "E_falciformis" = 18)) +
-  guides(color = guide_legend(override.aes = list(size = 4)))
+    scale_color_manual(values = color_palette) +
+    scale_shape_manual(values = c("E_ferrisi" = 17, "uninfected" = 16, "E_falciformis" = 18)) +
+    guides(color = guide_legend(override.aes = list(size = 4))) 
 
 pca_individuals
 
