@@ -26,6 +26,11 @@ library(sjlabelled)
 library(jtools)
 library(sjPlot)
 library(FactoMineR)
+library(Polychrome)
+library(gridExtra)
+library(cowplot)
+library(patchwork)
+library(ggpubr)
 
 
 
@@ -89,13 +94,12 @@ color_palette <- c("E_ferrisi" = "#66C2A5", "uninfected" = "#8DA0CB",
 
 # PCA graph of individuals
 pca_individuals <-
-    ggplot(lab, aes(x = PC1, y = PC2, color = current_infection, 
-                    shape = current_infection)) +
-    geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") + 
-    geom_vline(xintercept = 0, linetype = "dotted", color = "gray50") +
-    geom_point(size = 3, alpha = 0.8) +
-    labs(x = "PC1 (32.83%)", y = "PC2 (16.25%)", #title = "PCA graph of individuals",
-         colour = "Current infection", shape ="Current infection") +
+    ggplot(lab, aes(x = PC1, y = PC2, color = current_infection)) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "black") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
+    geom_point(size = 5, alpha = 0.5, color = "black",  shape = 21, aes(fill = current_infection)) +
+    labs(x = "PC1 (34.37%)", y = "PC2 (16.03%)",# title = "PCA graph of individuals",
+         colour = "Current infection") +
     theme_minimal() +
     theme(#plot.title = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 12),
@@ -104,7 +108,6 @@ pca_individuals <-
         legend.text = element_text(size = 12),
         legend.position = "right") +
     scale_color_manual(values = color_palette) +
-    scale_shape_manual(values = c("E_ferrisi" = 17, "uninfected" = 16, "E_falciformis" = 18)) +
     guides(color = guide_legend(override.aes = list(size = 4))) 
 
 pca_individuals
@@ -131,11 +134,13 @@ labels <- c("0", "50", "100", "150")
 pca_variables <-
   ggplot(vpg, aes(x = PC1, y = PC2, color = cos2)) +
   geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
   geom_point(size = 3) +
   geom_label_repel(aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
   coord_equal() +
-  xlab("PC1 (32.83%)") +
-  ylab("PC2 (16.25%)") +
+  xlab("PC1 (34.37%)") +
+  ylab("PC2 (16.03%") +
   #ggtitle("PCA Plot of Variables") +
   theme_minimal() + 
   #theme(legend.position = "right",
@@ -145,231 +150,42 @@ pca_variables <-
 
 pca_variables
 
+
+################################################################
+# Create a custom color palette for 19 genes
+# build-in color palette
+display.brewer.all(colorblindFriendly = TRUE)
+
+color_palette <- colorRampPalette(brewer.pal(12, "Paired"))(19)
+
+pca_variables <-
+    ggplot(vpg, aes(x = PC1, y = PC2, color = Variable)) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+    # Segment and points
+    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
+    geom_point(size = 3,  color = "black", shape = 21, aes(fill = Variable)) +
+    # Labels
+    geom_label_repel(
+        aes(label = Variable, fill = Variable), size = 3.5, box.padding = 0.5, 
+        max.overlaps = Inf,
+        color = "white",  # Color for the text inside the label
+        segment.color = "black") +  # Color for the connecting lines
+    # Axes and theme
+    coord_equal() +
+    xlab("PC1 (34.37%)") +
+    ylab("PC2 (16.03%)") +
+    theme_minimal() + 
+    theme(legend.position = "none") +
+   # labs(title = "PCA graph of variabes") +
+    # Coloring for the 19 genes
+    scale_color_manual(values = color_palette)
+
+print(pca_variables)
+
+
 ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
        width = 12, height = 6, dpi = 600)
-
-################### IRGM1, SOCS1, MUC2
-#focus on some variables for the presentations
-# Variables you want to focus on
-focus_vars <- c("IRGM1", "SOCS1", "MUC2")
-
-vpg <- vpg %>%
-    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
-
-pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
-    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-    
-    # Plot faded variables first
-    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
-    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
-    
-    # Plot focus variables on top
-    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
-    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    
-    coord_equal() +
-    xlab("PC1 (32.83%)") +
-    ylab("PC2 (16.25%)") +
-    theme_minimal() + 
-    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-    scale_color_gradientn(colors = gradient_colors, guide = "none")
-
-print(pca_variables)
-
-ggsave(filename = "figures/pca_variables_SOC1_IRGM1_MUC2.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
-
-################### MUC5AC, IL1RN, MPO
-#focus on some variables for the presentations
-# Variables you want to focus on
-focus_vars <- c("MUC5AC", "IL1RN", "MPO")
-
-vpg <- vpg %>%
-    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
-
-pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
-    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-    
-    # Plot faded variables first
-    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
-    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
-    
-    # Plot focus variables on top
-    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
-    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    
-    coord_equal() +
-    xlab("PC1 (32.83%)") +
-    ylab("PC2 (16.25%)") +
-    theme_minimal() + 
-    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-    scale_color_gradientn(colors = gradient_colors, guide = "none")
-
-print(pca_variables)
-
-ggsave(filename = "figures/pca_variables_MUC5AC_IL1RN_MPO.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
-
-################### IL13
-#focus on some variables for the presentations
-# Variables you want to focus on
-focus_vars <- "IL.13"
-
-vpg <- vpg %>%
-    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
-
-pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
-    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-    
-    # Plot faded variables first
-    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
-    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
-    
-    # Plot focus variables on top
-    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
-    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    
-    coord_equal() +
-    xlab("PC1 (32.83%)") +
-    ylab("PC2 (16.25%)") +
-    theme_minimal() + 
-    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-    scale_color_gradientn(colors = gradient_colors, guide = "none")
-
-print(pca_variables)
-
-ggsave(filename = "figures/pca_variables_IL.13.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
-
-################## TICAM1, NCR1, PRF1, CXCR3, RETNLB, IL.6, CXCL9, CASP1, MYD88, TNF
-#focus on some variables for the presentations
-# Variables you want to focus on
-focus_vars <- c("TICAM1", "NCR1", "PRF1", "CXCR3", "RETNLB", "IL.6", "CXCL9", 
-                "CASP1", "MYD88", "TNF")
-
-vpg <- vpg %>%
-    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
-
-pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
-    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-    
-    # Plot faded variables first
-    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.05) +
-    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
-    
-    # Plot focus variables on top
-    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
-    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    
-    coord_equal() +
-    xlab("PC1 (32.83%)") +
-    ylab("PC2 (16.25%)") +
-    theme_minimal() + 
-    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-    scale_color_gradientn(colors = gradient_colors, guide = "none")
-
-print(pca_variables)
-
-ggsave(filename = "figures/pca_variables_most_genes.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
-
-
-
-################################# pca variables focusing on pc1
-################## TNF, IDO1, RETNLB, CXCL9, TICAM1, CXCR3, IFNy, MYD88, IL1RN
-#focus on some variables for the presentations
-# Variables you want to focus on
-focus_vars <- c("TNF", "IDO1", "RETNLB", "CXCL9", "TICAM1", "CXCR3", "IFNy", 
-                "MYD88", "IL1RN")
-
-vpg <- vpg %>%
-    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
-
-pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
-    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-    
-    # Plot faded variables first
-    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.01) +
-    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
-    
-    # Plot focus variables on top
-    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
-    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    
-    coord_equal() +
-    xlab("PC1 (32.83%)") +
-    ylab("PC2 (16.25%)") +
-    theme_minimal() + 
-    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-    scale_color_gradientn(colors = gradient_colors, guide = "none")
-
-print(pca_variables)
-
-ggsave(filename = "figures/pca_variables_pc1.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
-
-
-
-################################# pca variables focusing on pc2
-################## IRGM1, SOCS1, MPO, MUC2, IL1RN
-#focus on some variables for the presentations
-# Variables you want to focus on
-focus_vars <- c("IRGM1", "SOCS1", "MPO", "MUC2", "IL1RN")
-
-vpg <- vpg %>%
-    mutate(focus = ifelse(Variable %in% focus_vars, "Focus", "Fade"))
-
-pca_variables <- ggplot(vpg, aes(x = PC1, y = PC2)) +
-    geom_segment(aes(xend = 0, yend = 0), color = "gray50") +
-    
-    # Plot faded variables first
-    geom_point(data = filter(vpg, focus == "Fade"), aes(color = cos2), size = 3, alpha = 0.01) +
-    geom_label_repel(data = filter(vpg, focus == "Fade"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf, alpha = 0.3) +
-    
-    # Plot focus variables on top
-    geom_point(data = filter(vpg, focus == "Focus"), aes(color = cos2), size = 3) +
-    geom_label_repel(data = filter(vpg, focus == "Focus"), aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    
-    coord_equal() +
-    xlab("PC1 (32.83%)") +
-    ylab("PC2 (16.25%)") +
-    theme_minimal() + 
-    guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-    scale_color_gradientn(colors = gradient_colors, guide = "none")
-
-print(pca_variables)
-
-ggsave(filename = "figures/pca_variables_pc2.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
-
-######################## Enriched Terms data frame
-enriched_terms_df <- read.csv("Data/Data_output/enriched_sorted_terms.csv")
-
-
-# First, transform the p-values to -log10 scale
-enriched_terms_df$p_value_log <- -log10(enriched_terms_df$p_value)
-
-
-# Create the lollipop plot using ggplot2
-enrichment_terms_plot <- 
-  ggplot(enriched_terms_df[1:15,], aes(x = reorder(GO_Term, p_value_log), y = p_value_log)) +
-  geom_segment(aes(xend = GO_Term, yend = 0, color = p_value_log), linewidth = 1.5) +
-  geom_point(aes(fill = p_value_log), size = 3, shape = 21, color = "mediumvioletred") +
-  scale_fill_gradientn(colours = rev(gradient_colors)) +
-  scale_color_gradientn(colours = rev(gradient_colors)) +
-  coord_flip() +
-  labs(x = "Enriched GO Terms", y = "-log10(p-value)",
-       title = "Gene Ontology Enrichment Analysis") +
-  theme_minimal() +
-    theme( plot.title = element_text(size = 12, face = "bold")) 
-
-enrichment_terms_plot
-
-ggsave(filename = "figures/enrichment_terms_plot.jpeg", plot = enrichment_terms_plot, 
-       width = 12, height = 6, dpi = 600)
-
-
-pca_individuals <- pca_individuals + coord_fixed(ratio = 1)
 
 
 
@@ -406,7 +222,8 @@ residuals_1 <-
     stat_qq(color = "blue") +
     ggtitle("QQ Plot of Residuals") +
     xlab("Theoretical Quantiles") +
-    ylab("Sample Quantiles")
+    ylab("Sample Quantiles") +
+    theme_minimal()
 
 residuals_1
 
@@ -426,7 +243,8 @@ residuals_vs_fitted <-
     geom_point(color = "blue") +
     ggtitle("Residuals vs Fitted Values") +
     xlab("Fitted Values") +
-    ylab("Residuals")
+    ylab("Residuals") +
+    theme_minimal()
 
 residuals_vs_fitted
 
@@ -476,8 +294,24 @@ effects <- ggpredict(model_4)
 
 pc1_current_infection <- 
     ggpredict(model_4, terms = c("PC1")) %>% 
-    plot(colors = "blue") +
-    ylab("Predicted values of weight loss")
+    plot(colors = "darkorchid") +   # Use a refined shade of blue
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+    labs(title = NULL) +  # This removes the title
+  #  ggtitle("Effect of PC1 on Predicted Weight Loss") +
+    xlab("Principal Component 1 (PC1)") +
+    ylab("Predicted values of weight loss") +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12)
+    )
+
 
 pc1_current_infection
 
@@ -487,8 +321,23 @@ ggsave(filename = "figures/pc1_current_infection.jpeg",
 
 pc2_current_infection <- 
     ggpredict(model_4, terms = c("PC2")) %>% 
-    plot(colors = "blue") +
-    ylab("Predicted values of weight loss")
+    plot(colors = "darkorchid") +   # Use a refined shade of blue
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+    labs(title = NULL) +  # This removes the title
+   # ggtitle("Effect of PC2 on Predicted Weight Loss") +
+    xlab("Principal Component 2 (PC2)") +
+    ylab("Predicted values of weight loss") +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12)
+    )
 
 pc2_current_infection
 
@@ -506,12 +355,19 @@ plot_summs(model_4)
 
 # Combine the figures
 
-figure_panel_1 <- 
-    plot_grid(pca_variables, pca_individuals, 
-              pc1_current_infection, pc2_current_infection,
-              ncol  = 2, rel_heights = c(3, 2), 
-              labels = c("A", "B", "C", "D"))
+figure_panel_1 <- ggarrange(pca_variables, pca_individuals, pc1_current_infection, pc2_current_infection,
+                            labels = c("A", "B", "C", "D"),
+                            ncol = 2, nrow = 2, 
+                            heights = c(4,3))
+
+# Adding the title "Figure 1" to the entire arrangement
+figure_panel_1 <- annotate_figure(figure_panel_1, 
+                                  top = text_grob("Figure 1", size = 14, 
+                                                  face = "bold"))
+
+print(figure_panel_1)
+
 
 ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
-       width = 16, height = 10, dpi = 300)
+       width = 16, height = 10, dpi = 1000)
 
