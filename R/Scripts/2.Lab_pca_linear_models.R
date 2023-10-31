@@ -66,6 +66,7 @@ fviz_pca_ind(res.pca, col.ind = "cos2",
              gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"), 
              repel = TRUE, title = "")
 
+
 ## Description of the dimensions
 ## We get a correlation between each variable and the first dimension
 dimdesc(res.pca)
@@ -79,6 +80,9 @@ mouse_id <- data.frame(Mouse_ID = lab[,1])
 mouse$pc1 <- res.pca$ind$coord[, 1]
 
 mouse$pc2 <- res.pca$ind$coord[, 2]  # indexing the second column
+mouse$pc3 <-  res.pca$ind$coord[, 3]
+mouse$pc4 <-  res.pca$ind$coord[, 4]
+mouse$pc5 <-  res.pca$ind$coord[, 5]
 
 lab <- lab %>% 
   left_join(mouse, by = "Mouse_ID")
@@ -102,7 +106,6 @@ circ <- circleFun(c(0,0),2,npoints = 500)
 var.contrib <- as.data.frame(res.pca$var$contrib)
 var.contrib.matrix <- data.matrix(var.contrib)
 corrplot(var.contrib.matrix, is.corr=FALSE) 
-
 
 pca_var <- as.data.frame(pca.vars)
 
@@ -149,6 +152,54 @@ fviz_pca_biplot(res.pca,
                 col.var = "black", repel = TRUE,
                 legend.title = "Infection groups",
                 title = "") 
+
+
+#Determine the Number of Clusters Using the Elbow Method:
+# unsupervised learning technique
+ #K-means clustering
+# ++++++++++++++++++++
+# scale the data to have a more balanced data set
+#pc_scale <- scale(lab %>% dplyr::select(pc1,pc2))
+#pc_scale_dist <- dist(pc_scale)
+#kmeans <- kmeans(pc_scale)
+
+#fviz_nbclust(pc_scale, kmeans, method = "wss") +
+ #   labs(subtitle = "Elbow method")
+
+#km.out <- kmeans(pc_scale, 3, nstart = 100)
+
+
+# Visualize kmeans clustering
+#km.cluster <- km.out$cluster
+#rownames(pc_scale) <- paste(lab$current_infection, 1:dim(lab)[1], sep = "_")
+#fviz_cluster(km.res, pc_scale, 
+ #            ellipse.type = "convex", repel = "TRUE")
+
+#table(km.cluster, lab$current_infection)
+
+
+###################clustering pca results
+df <- lab %>%
+    dplyr::select(pc1, pc2, current_infection)
+
+
+set.seed(123)  # Setting seed for reproducibility
+wss <- (nrow(df) - 1) * sum(apply(df[,1:2], 2, var))
+for (i in 2:15) wss[i] <- sum(kmeans(df[,1:2], centers=i)$tot.withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+
+# Choose a number of clusters based on the elbow plot
+k <- 3  # Replace 3 with the optimal number you observe from the elbow method
+km <- kmeans(df[,1:2], centers=k, nstart=25)
+df$cluster <- as.factor(km$cluster)
+
+ggplot(df, aes(x=pc1, y=pc2, color=cluster, shape = current_infection)) +
+    geom_point(alpha=0.6, size=3) +
+    theme_minimal() +
+    labs(title="K-means Clustering of PCA Results", color="Cluster")
+
+table(km$cluster)
+
 
 ############################### res - tol? 
 
@@ -209,10 +260,6 @@ print(infecto_pc2_summary)
 
 
 
-
-
-
-
 ################## Linear models: Predicting weight loss with the PCA eigenvectors
 # predicting weight loss with the pc1 and pc2
 model_1_pc1_pc2 <- lm(WL_max ~ pc1 + pc2, data = lab)
@@ -220,7 +267,9 @@ summary(model_1_pc1_pc2)
 AIC(model_1_pc1_pc2)
 
 ### use the ggefects package
-# 
+model_pc1_5 <- lm(WL_max ~ pc1 + pc2 + pc3 + pc4 + pc5, data = lab)
+summary(model_pc1_5)
+AIC(model_pc1_5)
 
 # predicting weight loss with pc1
 model_1_pc1 <- lm(WL_max ~ pc1, data = lab)
@@ -320,7 +369,7 @@ ggplot(lab, aes(x = current_infection, y = residuals_pc1_pc2)) +
 
 
 # First, make sure infection is a factor
-lab$current_infection <- as.factor(lab$infection)
+lab$current_infection <- as.factor(lab$current_infection)
 
 # Then, define the color for each level of infection
 color_mapping <- c("E_falciformis" = "salmon", 
@@ -726,8 +775,8 @@ ggsave(filename = "figures/IRGM1_SOCS1_MUC2.jpeg", plot = plotA,
 
 ####################  MUC5AC, IL1Rn, MPO 
 gene_ens <- c("ENSMUSG00000026981", #IL1RN
-              "ENSMUSG00000009350", #MPO"
-              "ENSMUSG00000037974") #MUC5AC
+              "ENSMUSG00000009350") #MPO"
+             # "ENSMUSG00000037974") #MUC5AC
 
 # Perform gene ontology enrichment analysis
 enrich_result <- enrichGO(gene = gene_ens,

@@ -88,9 +88,10 @@ vpg <- vpg %>%
 # add cos2 to lab
 lab <- lab %>% mutate(cos2 = lab$PC1^2 + lab$PC2^2)
 
-# Define color palette
-color_palette <- c("E_ferrisi" = "#66C2A5", "uninfected" = "#8DA0CB", 
-                   "E_falciformis" = "#FC8D62")
+# Then, define the color for each level of infection
+color_mapping <- c("E_falciformis" = "salmon", 
+                   "E_ferrisi" = "forestgreen", 
+                   "uninfected" = "cornflowerblue")
 
 # PCA graph of individuals
 pca_individuals <-
@@ -107,7 +108,7 @@ pca_individuals <-
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12),
         legend.position = "right") +
-    scale_color_manual(values = color_palette) +
+    scale_color_manual(values = color_mapping) +
     guides(color = guide_legend(override.aes = list(size = 4))) 
 
 pca_individuals
@@ -187,6 +188,46 @@ print(pca_variables)
 ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
        width = 12, height = 6, dpi = 600)
 
+
+fviz_pca_biplot(res.pca, 
+                col.ind = lab$current_infection, palette = c("E_falciformis" = "salmon", 
+                                                             "E_ferrisi" = "forestgreen", 
+                                                             "uninfected" = "cornflowerblue"),
+                addEllipses = TRUE, label = "var",
+                col.var = "black", repel = TRUE,
+                legend.title = "Infection groups",
+                title = "") -> biplot
+
+biplot
+
+ggsave(filename = "figures/biplot.jpeg", plot = biplot, 
+       width = 12, height = 6, dpi = 600)
+
+
+
+# Contributions of variables to PC1
+fviz_contrib(res.pca, choice = "var", axes = 1, top = 18, 
+             title = "Contribution of immune genes to the first dimension of the PCA", 
+             fill =  "seagreen2") -> contributions_pc1
+
+contributions_pc1
+
+ggsave(filename = "figures/contributions_pc1.jpeg", plot = contributions_pc1, 
+       width = 6, height = 4, dpi = 1000)
+# res.pca$var$contrib
+
+
+### Contributions to the second dimension
+
+## Contributions of variables to PC2
+fviz_contrib(res.pca, choice = "var", axes = 2, top = 18, 
+             title = "Contribution of immune genes to the second dimension of the PCA",
+             fill =  "seagreen2") -> contributions_pc2
+
+contributions_pc2
+
+ggsave(filename = "figures/contributions_pc2.jpeg", plot = contributions_pc2, 
+       width = 6, height = 4, dpi = 1000)
 
 
 ##################################################################################################
@@ -348,6 +389,58 @@ ggsave(filename = "figures/pc2_current_infection.jpeg",
 
 plot_summs(model_4)
 
+## divided by infections
+model_4 <- lm(WL_max ~ PC1 + PC2, data = lab %>% drop_na(delta_ct_cewe_MminusE))
+
+
+# Now create the scatter plot using this color mapping
+ggplot(lab, aes(x = PC1, y = WL_max, color = current_infection)) +
+    geom_point(alpha = 0.5, color = "black", shape = 21, size = 4, aes(fill = current_infection)) +
+    geom_smooth(method = "lm", se = FALSE,  aes(color = current_infection)) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+    scale_color_manual(values = color_mapping) +
+    labs(x = "PC1", y = "Maximum Weight Loss") +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12)
+    ) -> pc1_WL_current_infection
+
+pc1_WL_current_infection
+
+ggsave("figures/pc1_WL_current_infection.jpeg", pc1_WL_current_infection, width = 8, height = 6, dpi = 1000)
+
+
+# Now create the scatter plot using this color mapping
+ggplot(lab, aes(x = PC2, y = WL_max, color = current_infection)) +
+    geom_point(alpha = 0.5, color = "black", shape = 21, size = 4, aes(fill = current_infection)) +
+    geom_smooth(method = "lm", se = FALSE,  aes(color = current_infection)) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+    scale_color_manual(values = color_mapping) +
+    labs(x = "PC2", y = "Maximum Weight Loss") +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12)
+    ) -> pc2_WL_current_infection
+
+pc2_WL_current_infection
+
+ggsave("figures/pc2_WL_current_infection.jpeg", pc2_WL_current_infection, width = 8, height = 6, dpi = 1000)
+
+
 
 # produce the table without levels (immunization and mouse_strains)
 #not possible
@@ -355,10 +448,12 @@ plot_summs(model_4)
 
 # Combine the figures
 
-figure_panel_1 <- ggarrange(pca_variables, pca_individuals, pc1_current_infection, pc2_current_infection,
-                            labels = c("A", "B", "C", "D"),
-                            ncol = 2, nrow = 2, 
-                            heights = c(4,3))
+figure_panel_1 <- ggarrange(pca_variables, biplot, 
+                            contributions_pc1, contributions_pc2,
+                            pc1_current_infection, pc2_current_infection,
+                            pc1_WL_current_infection, pc2_WL_current_infection,
+                            labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
+                            ncol = 2, nrow = 4)
 
 # Adding the title "Figure 1" to the entire arrangement
 figure_panel_1 <- annotate_figure(figure_panel_1, 
@@ -369,5 +464,5 @@ print(figure_panel_1)
 
 
 ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
-       width = 16, height = 10, dpi = 1000)
+       width = 20, height = 22, dpi = 300)
 
