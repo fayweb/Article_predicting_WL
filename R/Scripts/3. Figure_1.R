@@ -31,32 +31,36 @@ library(gridExtra)
 library(cowplot)
 library(patchwork)
 library(ggpubr)
+library(factoextra)
 
 
-
+# read the data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
 
-# WOrking with laboratory data only
+# Select laboratory data 
 # Select genes
 lab <- hm %>%
     dplyr::filter(origin == "Lab")
 
-
+# create a vector to select genes
 Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                "TICAM1", "TNF") #"IL.12", "IRG6")
 
-
+# create a data frame containing the continuous gene expression variables
 genes <- lab[ ,colnames(lab) %in% Genes_v]
 
+
+# increase maximum overlaps
+options(ggrepel.max.overlaps = Inf)
 
 # PCA
 ## we can now run a normal pca on the complete data set
 res.pca <- PCA(genes)
 
-# Convert mouse_id to a data frame
+# Convert mouse_id to a data frame (to facilitate data joining)
 mouse <- data.frame(Mouse_ID = lab[,1])
 
 # Add the new column pc1 to the mouse_id data frame
@@ -64,18 +68,12 @@ mouse$PC1 <- res.pca$ind$coord[, 1]
 
 mouse$PC2 <- res.pca$ind$coord[, 2]  # indexing the second column
 
-
+# join the coordinates
 lab <- lab %>% 
     left_join(mouse, by = "Mouse_ID")
 
 ## We also need to extract the data for the variable contributions to each of 
-## the pc axes.
-pca.vars <- res.pca$var$coord %>% data.frame
-
-pca.vars$vars <- rownames(pca.vars)
-
-# variance explained
-vpg <- as.data.frame(pca.vars)
+## the pc axes
 
 # read the variance explained by each gene for the pca 
 vpg <- read.csv("Data/Data_output/variance_contr_gene_lab.csv")
@@ -108,8 +106,8 @@ pca_individuals <-
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 12),
         legend.position = "right") +
-    scale_color_manual(values = color_mapping) +
-    guides(color = guide_legend(override.aes = list(size = 4))) 
+    scale_color_manual(values = color_mapping)# +
+    #guides(color = guide_legend(override.aes = list(size = 4))) 
 
 pca_individuals
 
@@ -155,7 +153,7 @@ pca_variables
 ################################################################
 # Create a custom color palette for 19 genes
 # build-in color palette
-display.brewer.all(colorblindFriendly = TRUE)
+#display.brewer.all(colorblindFriendly = TRUE)
 
 color_palette <- colorRampPalette(brewer.pal(12, "Paired"))(19)
 
@@ -390,18 +388,21 @@ ggsave(filename = "figures/pc2_current_infection.jpeg",
 plot_summs(model_4)
 
 ## divided by infections
-model_4 <- lm(WL_max ~ PC1 + PC2, data = lab %>% drop_na(delta_ct_cewe_MminusE))
-
+model_5 <- lm(WL_max ~ PC1*current_infection + PC2*current_infection, data = lab) #, data = lab %>% drop_na(delta_ct_cewe_MminusE))
+summary(model_5)
 
 # Now create the scatter plot using this color mapping
-ggplot(lab, aes(x = PC1, y = WL_max, color = current_infection)) +
-    geom_point(alpha = 0.5, color = "black", shape = 21, size = 4, aes(fill = current_infection)) +
-    geom_smooth(method = "lm", se = FALSE,  aes(color = current_infection)) +
+ggpredict(model_5, terms = c("PC1", "current_infection")) %>% 
+    plot() +  
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
-    scale_color_manual(values = color_mapping) +
-    labs(x = "PC1", y = "Maximum Weight Loss") +
+    labs(title = NULL) +  # This removes the title
+    # ggtitle("Effect of PC2 on Predicted Weight Loss") +
+    xlab("Principal Component 1 (PC1)") +
+    ylab("Predicted values of weight loss") +
     theme_minimal() +
+    scale_color_manual(values = color_mapping) +
+    scale_fill_manual(values = color_mapping) +
     theme(
         plot.title = element_text(size = 16, hjust = 0.5),
         axis.title.x = element_text(size = 12),
@@ -418,14 +419,18 @@ ggsave("figures/pc1_WL_current_infection.jpeg", pc1_WL_current_infection, width 
 
 
 # Now create the scatter plot using this color mapping
-ggplot(lab, aes(x = PC2, y = WL_max, color = current_infection)) +
-    geom_point(alpha = 0.5, color = "black", shape = 21, size = 4, aes(fill = current_infection)) +
-    geom_smooth(method = "lm", se = FALSE,  aes(color = current_infection)) +
+# Now create the scatter plot using this color mapping
+ggpredict(model_5, terms = c("PC2", "current_infection")) %>% 
+    plot() +  
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
-    scale_color_manual(values = color_mapping) +
-    labs(x = "PC2", y = "Maximum Weight Loss") +
+    labs(title = NULL) +  # This removes the title
+    # ggtitle("Effect of PC2 on Predicted Weight Loss") +
+    xlab("Principal Component 2 (PC2)") +
+    ylab("Predicted values of weight loss") +
     theme_minimal() +
+    scale_color_manual(values = color_mapping) +
+    scale_fill_manual(values = color_mapping) +
     theme(
         plot.title = element_text(size = 16, hjust = 0.5),
         axis.title.x = element_text(size = 12),

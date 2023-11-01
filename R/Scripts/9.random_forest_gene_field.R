@@ -259,6 +259,8 @@ plot_WL_MC_eimeria <-
               axis = "tlr",
               rel_heights = c(13, 1))
 
+plot_WL_MC_eimeria
+
 ggsave(plot = plot_WL_MC_eimeria, filename = "figures/hybrid_mc_eimeria.jpeg", 
        width = 10, 
        height = 8, dpi = 1000)
