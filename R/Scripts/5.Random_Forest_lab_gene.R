@@ -1,11 +1,13 @@
-#install.packages("optimx", version = "2021-10.12") # this package is required for 
-#the parasite load package to work
+# Load libraries
 library(tidyverse)
 library(tidyr)
 library(dplyr)
 library(cowplot)
 library(randomForest)
+library(varImp)
 library(ggplot2)
+library(gridGraphics)
+library(caret)
 library(caret)
 library(ggpubr)
 library(rfUtilities) # Implements a permutation test cross-validation for 
@@ -14,12 +16,11 @@ library(rfUtilities) # Implements a permutation test cross-validation for
 #import data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
-
+#vectors for gene selection
 Gene_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10",
                 "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                 "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                 "TICAM1", "TNF") #"IL.12", "IRG6")
-
 
 # prepare the lab data
 lab <- hm %>% 
@@ -30,15 +31,19 @@ lab <- hm %>%
 gene_m <-  lab %>%
   dplyr::select(c(Mouse_ID, all_of(Gene_v), WL_max))
 
+# select only the genes
 genes <- gene_m %>%
   dplyr::select(-Mouse_ID)
 
+# select the genes and the weight loss
 gene_W <- lab  %>%
     dplyr::select(c(all_of(Gene_v), WL_max))
 
 repeat_cv <- trainControl(method = "repeatedcv", #repeated cross validation
                            number = 5, # 5 fold cross validation
                            repeats = 3)
+
+
 
 # split data into training and test
 set.seed(333) # this will help us reproduce this random assignment
@@ -59,6 +64,7 @@ set.seed(333)
 #train the model
 WL_predict_gene <- randomForest(WL_max ~., data = train.data, 
                                     proximity = TRUE, ntree = 1000) 
+
 # ntree = number of trees     
 # save the model 
 save(WL_predict_gene, file =  "R/Models/WL_predict_gene.RData")
@@ -71,22 +77,26 @@ predict_WL_cv$fit.var.exp
 
 par(mfrow=c(2,2))
 
-plot(predict_WL_cv) 
+
+##################
+##################
+########## Plots
+
+root_mean <- plot(predict_WL_cv)
 
 # Root Mean Squared Error (observed vs. predicted) from each Bootstrap 
 # iteration (cross-validation)
-plot(predict_WL_cv, stat = "mse")
+mean_error <- plot(predict_WL_cv, stat = "mse")
 
 #Percent variance explained from specified fit model
-plot(predict_WL_cv, stat = "var.exp")
+model_var <- plot(predict_WL_cv, stat = "var.exp")
 
 #Mean Absolute Error from each Bootstrapped model
-plot(predict_WL_cv, stat = "mae")
+abs_error <- plot(predict_WL_cv, stat = "mae")
 
 
-## ---------------------------------------------------------------------------------------------------
-plot(WL_predict_gene)
-
+#d# ---------------------------------------------------------------------------------------------------
+error_random  <- plot(WL_predict_gene)
 
 ## ---------------------------------------------------------------------------------------------------
 # number of trees with lowest MSE
@@ -95,21 +105,31 @@ which.min(WL_predict_gene$mse)
 # RMSE of this optimal random forest
 sqrt(WL_predict_gene$mse[which.min(WL_predict_gene$mse)])
 
+WL_predict_gene$mtry
+oob_error_rate <- WL_predict_gene$mse[WL_predict_gene$ntree]
+oob_error_rate <- 1 - sum(diag(WL_predict_gene$confusion)) / sum(WL_predict_gene$confusion)
+
 
 ### Visualize variable importance ---
 #Call importance() function on the model model to check how the attributes used 
 # as predictors affect our WL_predict_gene
-importance(WL_predict_gene)
+ImpData <- as.data.frame(importance(WL_predict_gene))
+ImpData$Var.Names <- row.names(ImpData)
+varImp(WL_predict_gene)
 
 #WL_predict_gene$mse
 
 ## S3 method for class 'randomForest'
 plot(WL_predict_gene, type = "l", main=deparse(substitute(x)))
-varImpPlot(WL_predict_gene)
+
+variable_importance <- varImpPlot(WL_predict_gene)
+
+
+ggsave(filename = "figures/variable_imporance_random.jpeg", width = 10, height = 8, dpi = 300)
+
 
 # Get variable importance from the WL_predict_gene fit
 ImpData <- as.data.frame(importance(WL_predict_gene))
-ImpData$Var.Names <- row.names(ImpData)
 
 #The predict() function in R is used to predict the values based on the 
 # input data.

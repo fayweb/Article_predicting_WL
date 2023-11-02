@@ -1,16 +1,18 @@
-library(ggrepel)
-library(tidyverse)
-library(tidyr)
-library(dplyr)
-library(scales)
-library(cowplot)
-library(ggthemes)
-library(grid)
-library(ggplot2)
-library(ggpmisc)
-library(broom)
-library(knitr)
-library(kableExtra)
+---
+title: "Article"
+author: "Fay"
+date: "2023-11-02"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r pca_gene_expression_lab, error=FALSE, warning=FALSE, message=FALSE, include = FALSE}
 library(webshot)
 library(RColorBrewer)
 library(ggeffects)
@@ -20,7 +22,6 @@ library(broom)
 library(reshape2)
 library(knitr)
 library(stargazer)
-library(kableExtra)
 library(sjmisc)
 library(sjlabelled)
 library(jtools)
@@ -32,7 +33,9 @@ library(cowplot)
 library(patchwork)
 library(ggpubr)
 library(factoextra)
-
+library(ggrepel)
+library(tidyr)
+library(dplyr)
 
 # read the data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -450,8 +453,10 @@ ggsave("figures/pc2_WL_current_infection.jpeg", pc2_WL_current_infection, width 
 # produce the table without levels (immunization and mouse_strains)
 #not possible
 
+```
 
-# Combine the figures
+
+```{r figure1, error=FALSE, warning=FALSE, message=FALSE, echo = FALSE, fig.width= 20, fig.height= 22, dpi= 300}
 
 figure_panel_1 <- ggarrange(pca_variables, biplot, 
                             contributions_pc1, contributions_pc2,
@@ -470,4 +475,14 @@ print(figure_panel_1)
 
 ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
        width = 20, height = 22, dpi = 300)
+
+```
+Fig.1 Principal component analysis of immune gene expression in laboratory infections: Predicting weight loss and differentiating treatment groups. 
+A. Principal Component Analysis (PCA) variable graph Principal Component Analysis (PCA) condenses the complexity of multivariate data into two dimensions, allowing for graphical representation with minimal information loss. PCA of immune gene expression from mice treated with Eimeria ferrisi, Eimeria falciformis, or placebo. Expression of 19 immune genes relevant to Eimeria spp. infections are analysed on day 8 post-treatment. PC1 and PC2 explain 34.37% and 16.03% of the variance, respectively. B. PCA biplot: Each point denotes a mouse plotted against PC1 and PC2. Closely positioned points indicate mice with similar PCA scores. Notably, E. falciformis-infected mice exhibit pronounced variation along the PC1 axis. C. Contribution of immune genes to PC1: Genes such as TNF, IDO1, RETNLB, and IFN-gamma show notable coordinates on Dim.1, indicating their significant influence on this component. D. Influence of immune genes on PC2: IRGM1, SOCS1, and MUC2 manifest pronounced coordinates on Dim.2. E. Model Predicting Weight Loss using PCA Components: Maximum weight loss is represented by the equation: Maximum weight loss = β0 + β1(PC1) + β2(PC2). Higher PC1 values correlate with greater weight loss, quantified as the largest percentage decrease from the original weight during the study. The genes contributing significantly to the PCA's first dimension are linked to the positive regulation of cytokine production in immune responses, including responses to bacteria or parasites. These genes exhibit strong positive loadings. Given that positive loadings align with increased weight loss, it's evident that genes associated with intense inflammatory processes drive weight loss. F. Increased PC1 values correlate with greater weight loss, whereas higher PC2 values are linked to lesser weight loss. The genes IRGM1, SOCS1, and MUC2, associated with the type II response and regulation of the innate immune response, have positive loadings on PC2 and are related to decreased weight loss. In contrast, genes IL1RN and MPO, involved in pathways like interleukin-1-mediated signalling and inflammatory responses to antigenic stimulus, exhibit strong negative loadings on PC2 and correlate with increased weight loss in mice. G. PC1's Influence on Weight Loss by Treatment Group, predicted from the model: Maximum weight loss = β0 + β1(PC1 * current_infection) + β2(PC2 * current_infection): In E. falciformis-infected mice, an increase in PC1 values suggests more substantial weight loss. For E. ferrisi, a rise in PC1 corresponds to decreased weight loss. Generally, E. ferrisi infections present milder symptoms, hinting at a tolerance mechanism. Conversely, E. falciformis, with its extended life cycle, could cause tissue damage, emphasizing the importance of resistance. A heightened immune response, as indicated by elevated PC1, can be detrimental for E. falciformis but beneficial for E. ferrisi. H. Influence of PC2 on weight loss by treatment, predicted from the model: Maximum weight loss = β0 + β1(PC1 * current_infection) + β2(PC2 * current_infection): Both E. falciformis and E. ferrisi infections exhibit a negative correlation between maximum weight loss and PC2. While E. ferrisi demonstrates a more pronounced relationship, it remains broadly consistent with E. falciformis.
+
+```{r error=FALSE, warning=FALSE, message=FALSE, echo = FALSE}
+
+stargazer(model_1, model_2, model_3, model_4, 
+          title = "Linear models - Predicting maximum weight loss")
+```
 

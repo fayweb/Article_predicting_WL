@@ -1,0 +1,79 @@
+
+<table style="text-align:center"><caption><strong>Linear models - Predicting maximum weight loss</strong></caption>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="4"><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="4" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="4">WL_max</td></tr>
+<tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">PC1</td><td>0.145</td><td>0.277</td><td>0.316</td><td>0.494<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.234)</td><td>(0.287)</td><td>(0.204)</td><td>(0.244)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">PC2</td><td>-0.693<sup>**</sup></td><td>-0.760<sup>**</sup></td><td>-1.105<sup>***</sup></td><td>-1.728<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.301)</td><td>(0.374)</td><td>(0.280)</td><td>(0.366)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">current_infectionE_ferrisi</td><td>-2.803<sup>**</sup></td><td></td><td>-3.088<sup>**</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(1.382)</td><td></td><td>(1.387)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">current_infectionuninfected</td><td>-1.324</td><td></td><td>-1.823</td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(1.594)</td><td></td><td>(1.563)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">delta_ct_cewe_MminusE</td><td>0.629<sup>***</sup></td><td></td><td>0.704<sup>***</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(0.128)</td><td></td><td>(0.118)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainBUSNA_PWD</td><td>0.056</td><td>0.095</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(4.623)</td><td>(5.646)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainBUSNA_STRA</td><td>0.268</td><td>-0.637</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(3.707)</td><td>(4.608)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainNMRI</td><td>-6.186</td><td>-1.313</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(5.151)</td><td>(6.356)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainPWD_BUSNA</td><td>1.145</td><td>0.200</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(4.039)</td><td>(4.997)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainPWD_PWD</td><td>5.859<sup>*</sup></td><td>11.299<sup>***</sup></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(3.047)</td><td>(3.654)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainPWD_SCHUNT</td><td>-0.469</td><td>0.044</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(4.018)</td><td>(5.003)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainSCHUNT_PWD</td><td>-2.845</td><td>-2.694</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(3.760)</td><td>(4.622)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainSCHUNT_SCHUNT</td><td>2.642</td><td>5.658</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(2.965)</td><td>(3.642)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainSCHUNT_STRA</td><td>5.212</td><td>5.107</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(4.132)</td><td>(5.142)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainSTRA_BUSNA</td><td>-1.414</td><td>-0.943</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(3.857)</td><td>(4.775)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainSTRA_SCHUNT</td><td>0.793</td><td>0.788</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(3.831)</td><td>(4.739)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mouse_strainSTRA_STRA</td><td>-3.139</td><td>-3.639</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(3.798)</td><td>(4.699)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">immunizationhomologous</td><td>-0.947</td><td></td><td>-0.457</td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(1.417)</td><td></td><td>(1.388)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">immunizationnaive</td><td>-0.642</td><td></td><td>0.452</td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(1.789)</td><td></td><td>(1.765)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">immunizationuninfected</td><td>-3.369<sup>*</sup></td><td></td><td>-3.162<sup>*</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(1.766)</td><td></td><td>(1.745)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">weight_dpi0</td><td>0.298<sup>**</sup></td><td>0.220</td><td>0.023</td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(0.131)</td><td>(0.158)</td><td>(0.043)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>6.561<sup>*</sup></td><td>0.246</td><td>14.757<sup>***</sup></td><td>9.780<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(3.931)</td><td>(4.546)</td><td>(1.743)</td><td>(0.635)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>128</td><td>128</td><td>128</td><td>128</td></tr>
+<tr><td style="text-align:left">R<sup>2</sup></td><td>0.631</td><td>0.391</td><td>0.569</td><td>0.173</td></tr>
+<tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.557</td><td>0.310</td><td>0.536</td><td>0.160</td></tr>
+<tr><td style="text-align:left">Residual Std. Error</td><td>5.218 (df = 106)</td><td>6.516 (df = 112)</td><td>5.344 (df = 118)</td><td>7.189 (df = 125)</td></tr>
+<tr><td style="text-align:left">F Statistic</td><td>8.614<sup>***</sup> (df = 21; 106)</td><td>4.796<sup>***</sup> (df = 15; 112)</td><td>17.281<sup>***</sup> (df = 9; 118)</td><td>13.072<sup>***</sup> (df = 2; 125)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="4" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>
