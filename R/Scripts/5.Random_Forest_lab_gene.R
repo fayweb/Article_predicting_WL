@@ -7,9 +7,11 @@ library(randomForest)
 library(varImp)
 library(ggplot2)
 library(gridGraphics)
-library(caret)
+library(ggpmisc)
 library(caret)
 library(ggpubr)
+library(ggiraphExtra)
+library(ggeffects)
 library(rfUtilities) # Implements a permutation test cross-validation for 
 # Random Forests models
 
@@ -147,8 +149,6 @@ cor(result$WL_max, result$predictions,
 
 cor.test(result$WL_max, result$predictions)
 
-cor(result$WL_max, result$predictions, 
-    method = "spearman")
 
 test_lab <- lab %>%
   left_join(result, by = c("WL_max", "IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10",
@@ -165,26 +165,94 @@ cor(result$WL_max, result$predictions,
     method = c("pearson", "kendall", "spearman"))
 
 
+model <- lm(predictions ~ WL_max, data = test_lab)
 
+ggpredict(model, terms = c("WL_max")) %>% 
+    plot(colors = "blue") +
+    labs(title = NULL) +  # This removes the title
+    # ggtitle("Effect of PC2 on Predicted Weight Loss") +
+    xlab("Observed maximum weight loss during infections") +
+    ylab("Predicted maximum weight loss during infections") +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12))-> lm_short
+
+lm_short
+
+
+
+model <- lm(predictions ~ WL_max * current_infection, data = test_lab)    
+summary(model)
+
+#### Plotting
+# Then, define the color for each level of infection
+color_mapping <- c("E_falciformis" = "salmon", 
+                   "E_ferrisi" = "forestgreen", 
+                   "uninfected" = "cornflowerblue")
+
+ggpredict(model, terms = c("WL_max", "current_infection")) %>% 
+    plot(colors = "darkorchid") +
+    labs(title = NULL) +  # This removes the title
+    # ggtitle("Effect of PC2 on Predicted Weight Loss") +
+    xlab("Observed maximum weight loss during infections") +
+    ylab("Predicted maximum weight loss during infections") +
+    theme_minimal() +
+    scale_color_manual(values = color_mapping) +
+    scale_fill_manual(values = color_mapping) +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12)
+    ) -> lm_weight_loss_predictions
+
+lm_weight_loss_predictions
+
+
+model <- lm(predictions ~ WL_max * delta_ct_cewe_MminusE , data = test_lab)
+
+ggpredict(model, terms = c("WL_max", "delta_ct_cewe_MminusE"), interactive=TRUE) %>% 
+    plot() +
+    labs(title = NULL) +  # This removes the title
+    # ggtitle("Effect of PC2 on Predicted Weight Loss") +
+    xlab("Observed maximum weight loss during infections") +
+    ylab("Predicted maximum weight loss during infections") +
+    theme_minimal() +
+    scale_color_manual(values = color_mapping) +
+    scale_fill_manual(values = color_mapping) +
+    theme(
+        plot.title = element_text(size = 16, hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12))-> lm_short
+
+lm_short
 
 ### plotting
 test_lab %>%
     ggplot(aes(x = predictions, y = WL_max, color = current_infection)) +
-    # Geom
     geom_point(aes(size = delta_ct_cewe_MminusE), alpha = 0.7) +
-    
-    # Labels
     labs(
         x = "Predictions: Maximum weight loss", 
         y = "Observed: Maximum weight loss",
-        title = "Relationship between Predicted and Observed Weight Loss",
+      #  title = "Relationship between Predicted and Observed Weight Loss",
         #subtitle = "Grouped by Current Infection and Sized by Delta CT Value",
         color = "Current Infection",
         size = "Delta Ct value",
         shape = "Delta Ct treshold"
     ) +
-    
-    # Theme adjustments
     theme_minimal() +
     theme(
         legend.position = "right",
@@ -196,16 +264,13 @@ test_lab %>%
         panel.grid.major = element_line(color = "gray90"),
         panel.grid.minor = element_blank()
     ) +
-    
-    # Color adjustments as per given values
     scale_color_manual(values = c(E_falciformis = "salmon", 
                                   E_ferrisi = "forestgreen", 
                                   uninfected = "deepskyblue")) +
-    
-    # Size adjustments
     scale_size_continuous(range = c(2, 10)) -> predictions_random_for_lab
-
-predictions_random_for_lab
+    
+    predictions_random_for_lab
+    
 
 ggsave(plot = predictions_random_for_lab, 
        filename = "figures/predictions_random_for_lab.jpeg", width = 8, height = 5,
