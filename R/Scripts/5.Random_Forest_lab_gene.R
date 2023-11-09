@@ -164,7 +164,6 @@ test_lab <- test_lab %>%
 cor(result$WL_max, result$predictions, 
     method = c("pearson", "kendall", "spearman"))
 
-
 model <- lm(predictions ~ WL_max, data = test_lab)
 
 ggpredict(model, terms = c("WL_max")) %>% 
@@ -219,6 +218,7 @@ lm_weight_loss_predictions
 
 
 model <- lm(predictions ~ WL_max * delta_ct_cewe_MminusE , data = test_lab)
+summary(model)
 
 ggpredict(model, terms = c("WL_max", "delta_ct_cewe_MminusE"), interactive=TRUE) %>% 
     plot() +
@@ -227,8 +227,8 @@ ggpredict(model, terms = c("WL_max", "delta_ct_cewe_MminusE"), interactive=TRUE)
     xlab("Observed maximum weight loss during infections") +
     ylab("Predicted maximum weight loss during infections") +
     theme_minimal() +
-    scale_color_manual(values = color_mapping) +
-    scale_fill_manual(values = color_mapping) +
+   scale_color_manual(values = c("darkred", "gold", "violet")) +
+    scale_fill_manual(values = c("darkred", "gold", "violet")) +
     theme(
         plot.title = element_text(size = 16, hjust = 0.5),
         axis.title.x = element_text(size = 12),
@@ -249,8 +249,9 @@ test_lab %>%
         y = "Observed: Maximum weight loss",
       #  title = "Relationship between Predicted and Observed Weight Loss",
         #subtitle = "Grouped by Current Infection and Sized by Delta CT Value",
-        color = "Current Infection",
-        size = "Delta Ct value",
+        color = "Treatment group",
+        size = "Caecal infection intensities,
+      Delta Ct value",
         shape = "Delta Ct treshold"
     ) +
     theme_minimal() +
@@ -269,7 +270,7 @@ test_lab %>%
                                   uninfected = "deepskyblue")) +
     scale_size_continuous(range = c(2, 10)) -> predictions_random_for_lab
     
-    predictions_random_for_lab
+predictions_random_for_lab
     
 
 ggsave(plot = predictions_random_for_lab, 
@@ -326,5 +327,28 @@ WL_predict_gene
 saveRDS(WL_predict_gene, "R/Models/predict_WL.rds")
 
 print(WL_predict_gene)
+
+
+
+
+
+figure_panel_2 <- ggarrange(predictions_random_for_lab,
+                            ggarrange(lm_weight_loss_predictions, lm_short, 
+                            labels = c("B", "C"), ncol = 2),
+                            nrow = 2, labels = "A")
+
+
+
+# Adding the title "Figure 1" to the entire arrangement
+figure_panel_2 <- annotate_figure(figure_panel_2, 
+                                  top = text_grob("Figure 2", size = 14, 
+                                                  face = "bold"))
+
+print(figure_panel_2)
+
+
+ggsave("figure_panels/figure_panel_2.jpeg", figure_panel_2, 
+       width = 18, height = 18, dpi = 300)
+
 
 
