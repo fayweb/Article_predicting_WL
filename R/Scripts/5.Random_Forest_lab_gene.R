@@ -165,6 +165,7 @@ cor(result$WL_max, result$predictions,
     method = c("pearson", "kendall", "spearman"))
 
 model <- lm(predictions ~ WL_max, data = test_lab)
+summary(model)
 
 ggpredict(model, terms = c("WL_max")) %>% 
     plot(colors = "blue") +
