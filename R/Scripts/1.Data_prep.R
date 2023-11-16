@@ -13,6 +13,7 @@ library(RColorBrewer)
 library(ggplot2)
 library(VIM)
 library(limma)
+library(latticeExtra)
 
 
 # Import data 
@@ -335,6 +336,32 @@ init <- mice(genes, maxit = 0)
 #we want to impute only the specific variables
 meth <- init$method
 
+
+######################### Quality control plots 
+jpeg("figures/aggregation_plot.jpeg", width = 8, height = 6, units = "in", res = 300)
+# Aggregation plot 
+aggr_plot <- aggr(hm_genes %>%
+                      dplyr::select(-c("PPIB", "GAPDH")), col=c('navyblue','red'), 
+                  numbers=TRUE, sortVars=TRUE, 
+                  labels=names(hm_genes), cex.axis=.7, 
+                  gap=3, ylab=c("Histogram of missing data","Pattern"))
+
+dev.off()
+
+
+# Creating the plots
+jpeg("figure_panels/margin_plots.jpeg", 
+     width = 16, height = 12, units = "in", res = 300)
+par(mfrow = c(2,2))
+plot1 <- marginplot(hm_genes[,c("IFNy", "IRGM1")])
+plot2 <- marginplot(hm_genes[,c("IL.6", "IRGM1")])
+plot3 <- marginplot(hm_genes[,c("TICAM1", "IRGM1")])
+plot4 <- marginplot(hm_genes[,c("MUC5AC", "IRGM1")])
+
+par(mfrow = c(1,1))
+dev.off()
+
+
 # removing il 10
 genes <- genes[, !(names(genes) %in% "IL.10")]
 
@@ -343,6 +370,52 @@ genes <- genes[, !(names(genes) %in% "IL.10")]
 igf <- mice(genes, m = 5, seed = 500) # method = meth,
 
 summary(igf)
+
+# plot the iterations
+jpeg("figures/igf_plot.jpeg", 
+     width = 8, height = 6, units = "in", res = 300)
+plot(igf)
+dev.off()
+
+jpeg("figure_panels/xy_1_plot.jpeg", 
+     width = 8, height = 6, units = "in", res = 300)
+xyplot(igf, IRGM1 ~ IFNy + CXCR3 + IL.6 + IL.13 + IL1RN + CASP1 + CXCL9,
+       IDO1 + MPO, pch = 18, cex = 1)
+dev.off()
+
+
+jpeg("figure_panels/xy_2_plot.jpeg", 
+     width = 8, height = 6, units = "in", res = 300)
+xyplot(igf, IRGM1 ~  MUC2 + MUC5AC + MYD88 + NCR1 + PRF1 + 
+           RETNLB + SOCS1 + TICAM1 + TNF, pch = 18, cex = 1)
+dev.off()
+
+
+xyplot(igf, IRGM1 ~ IL.13 + PRF1 + CASP1, pch=18, cex=1)
+
+# stirplot
+jpeg("figures/stirrplot_plot.jpeg", 
+     width = 8, height = 6, units = "in", res = 300)
+stripplot(igf, pch = c(20,21), cex = 1.2)
+dev.off()
+
+# plot of sd after each iteration
+jpeg("figures/bw_plot.jpeg", 
+     width = 8, height = 6, units = "in", res = 300)
+bwplot(igf)
+dev.off()
+
+# density plot after each iteration
+jpeg("figures/density_plot.jpeg", width = 8, height = 6, units = "in", res = 300)
+densityplot(igf)
+dev.off()
+
+
+xyplot(igf, IRGM1 ~ IL.13 + MYD88 + IFNy, pch=18, cex=1)
+xyplot(igf, IRGM1 ~ IL.13 + PRF1 + CASP1, pch=18, cex=1)
+
+
+
 
 ## igf$imp$IFNy
 #Now we can get back the completed dataset using the complete()
