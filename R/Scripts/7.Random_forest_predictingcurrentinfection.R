@@ -68,14 +68,15 @@ ggplot(data = confusion_melted, aes(x = Predicted, y = reorder(Reference, desc(R
     geom_text(aes(label = sprintf("%d", n)), vjust = 1) +
     scale_fill_gradient(low = "white", high = "steelblue") +
     labs(x = 'Predicted', y = 'Actual', fill = 'Number of observations', 
-         title = 'Confusion Matrix') +
+         title = "Confusion Matrix: Trained and tested on laboratory data") +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) -> confusion_plot
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) -> confusion_plot1
 
-confusion_plot
+confusion_plot1
 
 ggsave(filename = "figures/confusion_matrix_predicting_ferrisi.jpeg", 
-       plot = confusion_plot, width = 6, height = 4, dpi = 1000)
+       plot = confusion_plot1, width = 6, height = 4, dpi = 1000)
+
 # Extract Feature Importance
 feature_importance <- importance(rf_model)
 feature_importance_ordered <- feature_importance[order(-feature_importance[,1]),]
@@ -87,3 +88,77 @@ print(rf_model)
 
 
 saveRDS(rf_model, "R/Models/predict_Eimeria.rds")
+
+
+################################# TEsting the field infections
+
+Field <- hm %>%
+    dplyr::filter(origin == "Field") %>%
+    dplyr::select(all_of(Gene_v), eimeriaSpecies) %>%
+    dplyr::filter(!eimeriaSpecies == "NA") %>%
+    dplyr::filter(!eimeriaSpecies == "E_falciformis")
+
+
+# rename to match the model
+Field <- Field %>%
+    dplyr::rename(current_infection = eimeriaSpecies)
+
+# current infection should be a factor
+Field$current_infection <- as.factor(Field$current_infection)
+
+
+#The predict() function in R is used to predict the values based on the input data.
+predictions <- predict(rf_model, Field)
+
+
+#add the new variable of predictions to the result object
+result_parasite <- cbind(Field, predictions)
+
+# Plotting 
+conf_matrix_parasite <- 
+    confusionMatrix(
+        result_parasite$predictions,
+        reference = result_parasite$current_infection)
+
+print(conf_matrix_parasite)
+
+conf_matrix_parasite$table
+
+plt <- as.data.frame(conf_matrix_parasite$table)
+plt$Prediction <- factor(plt$Prediction, levels=rev(levels(plt$Prediction)))
+
+
+ggplot(plt, aes(x = Prediction, y = reorder(Reference, desc(Reference)))) +
+    geom_tile(aes(fill = Freq), colour = "white") +
+    geom_text(aes(label = sprintf("%d", Freq)), vjust = 1) +
+    scale_fill_gradient(low = "white", high = "coral")  +
+    labs(x = 'Predicted', y = 'Actual', fill = 'Number of observations', 
+         title = 'Confusion Matrix: Tested on field data') +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) -> confusion_plot2
+
+confusion_plot2
+
+ggsave(filename = "figures/confusion_matrix_predicting_ferrisi_field.jpeg", 
+       plot = confusion_plot2, width = 6, height = 4, dpi = 1000)
+
+
+# creating figure for paper
+
+figure_panel_3 <- ggarrange(confusion_plot1, confusion_plot2, 
+                            labels = c("A", "B"), ncol = 1)
+
+figure_panel_3
+
+# Adding the title "Figure 1" to the entire arrangement
+figure_panel_2 <- annotate_figure(figure_panel_3, 
+                                  top = text_grob("Figure 3", size = 14, 
+                                                  face = "bold"))
+
+print(figure_panel_3)
+
+
+ggsave("figure_panels/figure_panel_3.jpeg", figure_panel_3, 
+       width = 6, height = 8, dpi = 300)
+
+
