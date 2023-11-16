@@ -70,3 +70,43 @@ rf_model <- randomForest(MC.Eimeria ~ ., data = data, ntree = 1000)
 print(rf_model)
 
 saveRDS(rf_model, "R/Models/predict_MC_Eimeria.rds")
+
+
+
+set.seed(597)
+
+
+Field_mc <- hm %>%
+    dplyr::filter(origin == "Field") %>%
+    dplyr::select(all_of(Gene_v), MC.Eimeria) %>%
+    dplyr::filter(!MC.Eimeria == "NA") 
+
+Field_mc$MC.Eimeria <- as.factor(Field_mc$MC.Eimeria)
+
+#The predict() function in R is used to predict the values based on the input 
+# data.
+predictions_MC <- predict(rf_model, Field_mc)
+
+
+#add the new variable of predictions to the result object
+result_MC <- cbind(Field_mc, predictions_MC)
+
+
+## ---------------------------------------------------------------------------------------------------
+
+conf_matrix_MC <- 
+    confusionMatrix(result_MC$predictions_MC, reference = result_MC$MC.Eimeria)
+
+print(conf_matrix_MC)
+
+conf_matrix_MC$table
+
+plt <- as.data.frame(conf_matrix_MC$table)
+plt$Prediction <- factor(plt$Prediction, levels=rev(levels(plt$Prediction)))
+
+ggplot(plt, aes(x = Prediction, y =  Reference, fill= Freq)) +
+    geom_tile() + geom_text(aes(label=Freq)) +
+    scale_fill_gradient(low="white", high="darkturquoise") +
+    labs(x = "Predictions",y = "Reference") 
+
+
