@@ -23,6 +23,12 @@ library(logspline)
 library(caret)
 library(dplyr)
 library(tidyr)
+library(leaflet)
+library(webshot)
+library(htmlwidgets)
+library(cowplot)
+library(gridExtra)
+library(magick)
 
 # read the data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -147,37 +153,91 @@ fitWL_Sex <- parasiteLoad::analyse(data = Field,
 plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
              data = Field,
              response = "predicted_WL",
-             group = "Sex") +
-    scale_fill_manual(values = c("brown", "forestgreen")) +
-  scale_color_manual(values = c("brown", "forestgreen")) +
-  theme_bw() 
+             group = "Sex",
+  cols = c("white", "white")) +
+    scale_fill_manual(values = c("orange", "forestgreen")) +
+  scale_color_manual(values = c("orange", "forestgreen")) +
+  theme_bw() +
+    theme(legend.position="none",
+         axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
 
 plot_WL_Sex
 
 ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
        height = 8, dpi = 1000)
 
-# Create HI bar
-HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
+# Create a gradient bar
+HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)), 
                         aes(x=hi, y=1, fill = hi)) +
-  geom_tile() +
-  theme_void() +
-  scale_fill_gradient(low = "blue", high = "red")  + 
-  scale_x_continuous(expand=c(.01,0)) + 
-  scale_y_continuous(expand=c(0,0)) +
-  theme(legend.position = 'none')
+    geom_tile() +
+    theme_void() +
+    scale_fill_gradient(low = "blue", high = "red") +
+  #scale_x_continuous(expand=c(.01,0)) + 
+   # scale_y_continuous(expand=c(0,0)) +
+   theme(legend.position = 'none')
 
-plot_WL_Sex <- 
-    plot_grid(plot_WL_Sex, 
-          HIgradientBar,
-          nrow = 2,
-          align = "v",
-          axis = "tlr",
-          rel_heights = c(13, 1))
 
-plot_WL_Sex
 
-ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_Sex_combined <- 
+    plot_grid(plot_WL_Sex ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2)) 
+   
+# Display the combined plot
+plot_WL_Sex_combined
+
+
+ggsave(plot = plot_WL_Sex_combined, filename = "figures/hybrid_sex.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+
+####################### Mapping ######################################
+leaflet(data = Field) %>%
+    addTiles() %>%
+    addMarkers(lng = ~Longitude, lat = ~Latitude, popup = ~as.character(Mouse_ID))
+
+colorPalette <- colorRampPalette(c("blue", "red"))
+
+
+colors <- colorPalette(100)[as.numeric(cut(Field$HI, breaks = 100))]
+
+leaflet_map <-
+    leaflet(data = Field) %>%
+    addTiles() %>%
+    addCircleMarkers(lng = ~Longitude, lat = ~Latitude, color = ~colors, 
+                     radius = 5, fillOpacity = 0.8, stroke = FALSE, 
+                     popup = ~as.character(HI))
+
+
+#Read the Leaflet map image
+leaflet_image <- magick::image_read("figures/Hybrid_map.jpeg")
+
+# Convert to a raster for grid plotting
+leaflet_raster <- rasterGrob(leaflet_image, interpolate = TRUE)
+
+# Combine the ggplot and raster image
+combined_plot <- grid.arrange(
+    leaflet_raster,
+    plot_WL_Sex_combined,
+    ncol = 2, # Set the number of columns to 2 for horizontal alignment
+    widths = c(1, 1))
+
+# Add annotations
+grid.text("A", x = unit(0.1, "npc"), y = unit(0.95, "npc"), gp = gpar(fontface = "bold", cex = 1.5))
+grid.text("B", x = unit(0.51, "npc"), y = unit(0.95, "npc"), gp = gpar(fontface = "bold", cex = 1.5))
+
+# Display combined plot
+print(combined_plot)
+ggsave(plot = combined_plot, filename = "figure_panels/banana_map_immune_signature.jpeg", width = 16, 
        height = 8, dpi = 1000)
 
 
@@ -187,7 +247,7 @@ ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10,
 Field <- Field %>%
     mutate(EH = 2*HI*(1-HI))
 
-wl <- lm(predicted_WL ~ EH, data = Field)
+wl <- lm(predicted_WL ~ EH*MC.Eimeria + MC.Eimeria, data = Field)
 summary(wl)
 
 
@@ -293,26 +353,57 @@ plot_WL_OOC<- bananaPlot(mod = fitWL_oo$H3,
 plot_WL_OOC
 
 
+##All
+fitWL_mc <- parasiteLoad::analyse(data = mc_field,
+                                  response = "predicted_WL",
+                                  model = "normal",
+                                  group = "EH")
 
+
+plot_WL_MC_eimeria<- bananaPlot(mod = fitWL_mc$H3,
+                                data = mc_field,
+                                response = "predicted_WL",
+                                group = "MC.Eimeria") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+    scale_color_manual(values = c("blueviolet", "limegreen")) +
+    theme_bw() 
+
+plot_WL_MC_eimeria
 ## ---------------------------------------------------------------------------------------------------
 
 
-ggplot(data = Field, aes(x = delta_ct_cewe_MminusE, y = predicted_WL)) +
+ggplot(data = Field %>% 
+           filter(MC.Eimeria = TRUE), 
+       aes(x = delta_ct_cewe_MminusE, y = predicted_WL)) +
   geom_point() +
   stat_smooth(method= "lm") 
 
 Field2 <- Field %>%
-  drop_na(delta_ct_cewe_MminusE)
+  drop_na(delta_ct_cewe_MminusE) %>%
+    filter(MC.Eimeria = TRUE)
 
 cor(Field2$predicted_WL, Field2$delta_ct_cewe_MminusE)
 
 
-tolerance <- lm(predicted_WL ~  delta_ct_cewe_MminusE, data = Field)
+tolerance <- lm(predicted_WL ~ HI * delta_ct_cewe_MminusE + EH *delta_ct_cewe_MminusE,
+                data = Field %>% filter(MC.Eimeria = TRUE))
+
+a <- lm(predicted_WL ~ HI * delta_ct_cewe_MminusE,
+     data = Field %>% filter(MC.Eimeria = TRUE))
+
+summary(a)
 
 
-summary(tolerance)
+b <- lm(predicted_WL ~  EH *delta_ct_cewe_MminusE,
+        data = Field %>% filter(MC.Eimeria = TRUE))
 
-confint(tolerance)
+summary(b)
+
+c <- lm(predicted_WL ~  delta_ct_cewe_MminusE,
+        data = Field %>% filter(MC.Eimeria = TRUE))
+
+summary(c)
+
 
 
 
@@ -353,16 +444,15 @@ Field <- Field %>%
   dplyr::mutate(BMI = Body_Weight / (Body_Length)) #^2) which is the correct
 # way to calculatebmi?
 
-ggplot(data = Field, aes(x = BMI, y = predicted_WL)) +
+ggplot(data = Field, aes(x = predicted_WL, y = BMI)) +
   geom_point() +
   stat_smooth(method= "lm") 
 
-bmi <- lm(predicted_WL ~ BMI, data = Field)
+bmi <- lm(BMI ~ predicted_WL, data = Field)
 
 cor(Field$BMI, Field$predicted_WL, use = "complete.obs")
 
 summary(bmi)
-
 confint(bmi)
 
 
