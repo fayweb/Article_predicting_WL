@@ -103,7 +103,10 @@ descdist(data = x, discrete = FALSE)
 descdist(data = x, discrete = FALSE, #data is continuous
          boot = 1000)
 
-
+## ---------------------------------------------------------------------------------------------------
+normal_ <- fitdist(x, "norm")
+weibull_ <- fitdist(x, "weibull")
+gamma_ <- fitdist(x, "gamma")
 
 
 # Define function to be used to test, get the log lik and aic
@@ -116,6 +119,24 @@ tryDistrib <- function(x, distrib){
 }
 
 
+findGoodDist <- function(x, distribs, distribs2){
+    l =lapply(distribs, function(i) tryDistrib(x, i))
+    names(l) <- distribs
+    print(l)
+    listDistr <- lapply(distribs2, function(i){
+        if (i %in% "t"){
+            fitdistrplus::fitdist(x, i, start = list(df =2))
+        } else {
+            fitdistrplus::fitdist(x,i)
+        }}
+    ) 
+    par(mfrow=c(2,2))
+    denscomp(listDistr, legendtext=distribs2)
+    cdfcomp(listDistr, legendtext=distribs2)
+    qqcomp(listDistr, legendtext=distribs2)
+    ppcomp(listDistr, legendtext=distribs2)
+    par(mfrow=c(1,1))
+}
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -139,14 +160,16 @@ plot(weibull_)
 summary(weibull_)
 
 
-## ---------------------------------------------------------------------------------------------------
+# Testing differences between female and male hybrids of M.m. musculus and 
+#m.m.domesticus
+## ------------------
 Field$Sex <- as.factor(Field$Sex)
 
 
 ##All
 fitWL_Sex <- parasiteLoad::analyse(data = Field,
                         response = "predicted_WL",
-                        model = "normal",
+                        model = "weibull",
                         group = "Sex")
 
 
@@ -241,373 +264,85 @@ ggsave(plot = combined_plot, filename = "figure_panels/banana_map_immune_signatu
        height = 8, dpi = 1000)
 
 
-#############################################################################
-
-#hybridicity / expected heterozygosity EH
-Field <- Field %>%
-    mutate(EH = 2*HI*(1-HI))
-
-wl <- lm(predicted_WL ~ EH*MC.Eimeria + MC.Eimeria, data = Field)
-summary(wl)
+##############################################################################
+### Testing diffences between infected and uninfected hybrid mice
+## ------------------
 
 
-ggplot(Field, aes(x = EH, y = predicted_WL)) +
-    geom_jitter() +
-    geom_smooth(method = lm, se = TRUE) 
 
-
-#see the ggefects
-effects <- ggpredict(wl)
-
-
-    ggpredict(wl, terms = c("EH")) %>% 
-    plot(colors = "darkorchid") # This removes the title
-    
-cor(Field$predicted_WL, Field$EH)
-    
-#  ggtitle("Effect of PC1 on Predicted Weight Loss") +
-   # xlab("Principal Component 1 (PC1)") +
-    ylab("Predicted values of weight loss") +
-    theme_minimal() +
-    theme(
-        plot.title = element_text(size = 16, hjust = 0.5),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        legend.title = element_text(size = 12),
-        legend.text = element_text(size = 12)
-    )
-
-###################### according to infection
-
-mc_field <- Field %>%
+##################### getting the correct eimeria melting curve data
+Field_corrected <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv")
+Field_corrected <- Field_corrected %>% 
+    dplyr::select(c(Mouse_ID, MC.Eimeria)) %>%
     drop_na(MC.Eimeria) 
 
-mc_field$MC.Eimeria <- as.factor(mc_field$MC.Eimeria)
- 
+Field_corrected$Mouse_ID <- gsub("_", "", Field_corrected$Mouse_ID)
+
+Field_mc <- Field %>%
+    dplyr::select(-MC.Eimeria) %>%
+    left_join(Field_corrected, by = "Mouse_ID") %>%
+    drop_na(MC.Eimeria)
+
+Field_mc$MC.Eimeria <- as.factor(Field_mc$MC.Eimeria)
 
 ##All
-fitWL_mc <- parasiteLoad::analyse(data = mc_field,
+fitWL_mc <- parasiteLoad::analyse(data = Field_mc,
                                    response = "predicted_WL",
-                                   model = "normal",
+                                   model = "weibull",
                                    group = "MC.Eimeria")
 
 
-plot_WL_MC_eimeria<- bananaPlot(mod = fitWL_mc$H3,
-                         data = mc_field,
+plot_WL_mc <- 
+    bananaPlot(mod = fitWL_mc$H3,
+                         data = Field_mc,
                          response = "predicted_WL",
-                         group = "MC.Eimeria") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-    scale_color_manual(values = c("blueviolet", "limegreen")) +
-    theme_bw() 
+                         group = "MC.Eimeria",
+                         cols = c("white", "white")) +
+    scale_fill_manual(values = c("orange", "forestgreen")) +
+    scale_color_manual(values = c("orange", "forestgreen")) +
+    theme_bw() +
+  #  theme(legend.position="none",
+   #       axis.title.x=element_blank(),
+   #       axis.text.x=element_blank(),
+   #       axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
 
-plot_WL_MC_eimeria
-
-plot_WL_MC_eimeria <- 
-    plot_grid(plot_WL_MC_eimeria, 
-              HIgradientBar,
-              nrow = 2,
-              align = "v",
-              axis = "tlr",
-              rel_heights = c(13, 1))
-
-plot_WL_MC_eimeria
-
-ggsave(plot = plot_WL_MC_eimeria, filename = "figures/hybrid_mc_eimeria.jpeg", 
-       width = 10, 
-       height = 8, dpi = 1000)
-
-#### oocysts
-speparam <- c(L1start = 10.098368660  ,
-              L1LB = 4.363865741 ,
-              L1UB = 19.383819138 ,
-              L2start = 10.098368660  ,
-              L2LB = 4.363865741 ,
-              L2UB = 19.383819138  ,
-              alphaStart = 0, alphaLB = -5, alphaUB = 5,
-              myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
+plot_WL_mc
 
 
+Field_mc <- Field_mc %>%
+    dplyr::mutate(delta_infection = 
+                      case_when(delta_ct_cewe_MminusE > -5 ~ "infected",
+                                delta_ct_cewe_MminusE < -5 ~ "uninfected"))
 
-## oocysts
-oo_Field <- Field %>%
-    drop_na(OPG) %>%
-    filter(!OPG == 0)
+Field_mc$delta_infection <- as.factor(Field_mc$delta_infection)
 
 ##All
-fitWL_oo <- parasiteLoad::analyse(data = oo_Field,
+fitWL_delta <- parasiteLoad::analyse(data = Field_mc,
                                   response = "predicted_WL",
-                                  model = "normal",
-                                  group = "Sex")
-
-
-plot_WL_OOC<- bananaPlot(mod = fitWL_oo$H3,
-                                data = oo_Field,
-                                response = "predicted_WL",
-                                group = "Sex") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-    scale_color_manual(values = c("blueviolet", "limegreen")) +
-    theme_bw() 
-
-plot_WL_OOC
-
-
-##All
-fitWL_mc <- parasiteLoad::analyse(data = mc_field,
-                                  response = "predicted_WL",
-                                  model = "normal",
-                                  group = "EH")
-
-
-plot_WL_MC_eimeria<- bananaPlot(mod = fitWL_mc$H3,
-                                data = mc_field,
-                                response = "predicted_WL",
-                                group = "MC.Eimeria") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-    scale_color_manual(values = c("blueviolet", "limegreen")) +
-    theme_bw() 
-
-plot_WL_MC_eimeria
-## ---------------------------------------------------------------------------------------------------
-
-
-ggplot(data = Field %>% 
-           filter(MC.Eimeria = TRUE), 
-       aes(x = delta_ct_cewe_MminusE, y = predicted_WL)) +
-  geom_point() +
-  stat_smooth(method= "lm") 
-
-Field2 <- Field %>%
-  drop_na(delta_ct_cewe_MminusE) %>%
-    filter(MC.Eimeria = TRUE)
-
-cor(Field2$predicted_WL, Field2$delta_ct_cewe_MminusE)
-
-
-tolerance <- lm(predicted_WL ~ HI * delta_ct_cewe_MminusE + EH *delta_ct_cewe_MminusE,
-                data = Field %>% filter(MC.Eimeria = TRUE))
-
-a <- lm(predicted_WL ~ HI * delta_ct_cewe_MminusE,
-     data = Field %>% filter(MC.Eimeria = TRUE))
-
-summary(a)
-
-
-b <- lm(predicted_WL ~  EH *delta_ct_cewe_MminusE,
-        data = Field %>% filter(MC.Eimeria = TRUE))
-
-summary(b)
-
-c <- lm(predicted_WL ~  delta_ct_cewe_MminusE,
-        data = Field %>% filter(MC.Eimeria = TRUE))
-
-summary(c)
-
-
-
-
-## ---------------------------------------------------------------------------------------------------
-ggplot(data = Field, aes(x = OPG, y = predicted_WL)) +
-  geom_point() +
-  stat_smooth(method= "lm") +
-  scale_x_log10()
-
-Field2 <- Field %>%
-  drop_na(OPG)
-
-cor(Field2$predicted_WL, Field2$OPG)
-
-
-tolerance <- lm(predicted_WL ~  OPG, data = Field)
-
-
-summary(tolerance)
-
-confint(tolerance)
-
-
-
-## ---------------------------------------------------------------------------------------------------
-
-tolerance <- lm(predicted_WL ~  OPG * delta_ct_cewe_MminusE, data = Field)
-
-
-summary(tolerance)
-
-confint(tolerance)
-
-
-
-## ---------------------------------------------------------------------------------------------------
-Field <- Field %>%
-  dplyr::mutate(BMI = Body_Weight / (Body_Length)) #^2) which is the correct
-# way to calculatebmi?
-
-ggplot(data = Field, aes(x = predicted_WL, y = BMI)) +
-  geom_point() +
-  stat_smooth(method= "lm") 
-
-bmi <- lm(BMI ~ predicted_WL, data = Field)
-
-cor(Field$BMI, Field$predicted_WL, use = "complete.obs")
-
-summary(bmi)
-confint(bmi)
-
-
-
-## ---------------------------------------------------------------------------------------------------
-# load predicting parasite model
-predict_parasite <- readRDS("R/Models/predict_Eimeria.rds")
-
-Field_parasite <- Field %>%
-  dplyr::select(all_of(Genes_v), eimeriaSpecies) %>%
-  dplyr::filter(!eimeriaSpecies == "NA") %>%
-   dplyr::filter(!eimeriaSpecies == "E_falciformis")
-
-
-# rename to match the model
-Field_parasite <- Field_parasite %>%
-  dplyr::rename(current_infection = eimeriaSpecies)
-
-# current infection should be a factor
-Field_parasite$current_infection <- as.factor(Field_parasite$current_infection)
-
-
-#The predict() function in R is used to predict the values based on the input data.
-
-predictions_parasite <- predict(predict_parasite, Field_parasite)
-
-# assign test.data to a new object, so that we can make changes
-result_parasite <- Field_parasite
-
-#add the new variable of predictions to the result object
-result_parasite <- cbind(result_parasite, predictions_parasite)
-
-
-
-
-
-
-
-## ---------------------------------------------------------------------------------------------------
-Field_tol <- Field %>%
-    mutate(tolerance = predicted_WL / delta_ct_cewe_MminusE)
-
-
-Field_tol <- Field_tol %>%
-  filter(!is.na(tolerance), MC.Eimeria == TRUE)
-
-summary(Field_tol$tolerance)
-
-Field_tol <- Field_tol %>%
-    filter(tolerance > -5, tolerance < 30)
-
-
-summary(Field_tol$tolerance)
-
-hist(Field_tol$tolerance)
-
-Field_tol %>%
-    ggplot(aes(tolerance)) +
-    geom_histogram()
-
-parasiteLoad::getParamBounds("normal", data = Field_tol, response = "tolerance")
-
-x <- Field_tol$tolerance
-
-tryDistrib(x, "normal")
-tryDistrib(x, "binomial")
-tryDistrib(x, "student")
-tryDistrib(x, "weibull")
-tryDistrib(x, "weibullshifted")
-
-
-
-##All
-fitWL_tol <- parasiteLoad::analyse(data = Field_tol,
-                        response = "tolerance",
-                        model = "normal",
-                        group = "Sex")
-
-
-
-plot_tolerance_Sex<- bananaPlot(mod = fitWL_tol$H3,
-             data = Field_tol,
-             response = "tolerance",
-             group = "Sex") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-  scale_color_manual(values = c("blueviolet", "limegreen")) +
-  theme_bw() 
-
-
-plot_tolerance_Sex
-
-# Create HI bar
-HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
-                        aes(x=hi, y=1, fill = hi)) +
-  geom_tile() +
-  theme_void() +
-  scale_fill_gradient(low = "blue", high = "red")  + 
-  scale_x_continuous(expand=c(.01,0)) + 
-  scale_y_continuous(expand=c(0,0)) +
-  theme(legend.position = 'none')
-
-plot_grid(plot_WL_Sex, 
-          HIgradientBar,
-          nrow = 2,
-          align = "v",
-          axis = "tlr",
-          rel_heights = c(13, 1))
-plot_WL_Sex
-
-
-################## hybrid effect
-Field <- Field %>%
-    mutate(HI_2 = 2*HI*(1-HI), #linearize HI
-           tolerance = predicted_WL / delta_ct_cewe_MminusE) 
-# tolerance = health impact / infection intensity
-
-i <- Field %>%
-    filter(Sex == "M") %>%
-    drop_na(tolerance)
-
-cor(i$HI, i$tolerance, method = "spearman")
-cor(i$HI, i$predicted_WL, method = "spearman")
-
-i <- Field %>%
-    filter(Sex == "F") %>%
-    drop_na(tolerance)
-
-cor(i$HI, i$tolerance, method = "spearman")
-cor(i$HI, i$predicted_WL, method = "spearman")
-
-
-ggplot(Field, aes(x = HI, HI_2)) +
-    geom_point() +
-    geom_line()
-
-ggplot(Field, aes(x = HI_2, predicted_WL, color = Sex)) +
-    geom_smooth(method = lm, se = TRUE) 
-
-ggplot(Field, aes(x = HI_2, tolerance, color = Sex)) +
-    geom_jitter() +
-    geom_smooth(method = lm, se = TRUE) 
-
-
-ggplot(Field, aes(x = HI_2, OPG)) +
-    geom_point() +
-    geom_line()
-
-lm(formula = predicted_WL ~ HI_2 * Sex, data = Field)
-
-df <- Field %>%
-    filter(MC.Eimeria == TRUE)
-
-model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
-                      data = df)
-
-summary(model_tolerance)
-
-# lm(tolerance ~ hi + hi_2 * Sex)
+                                  model = "weibull",
+                                  group = "M")
+
+
+plot_WL_mc <- 
+    bananaPlot(mod = fitWL_mc$H3,
+               data = Field_mc,
+               response = "predicted_WL",
+               group = "delta_infection",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("orange", "forestgreen")) +
+    scale_color_manual(values = c("orange", "forestgreen")) +
+    theme_bw() +
+    #theme(legend.position="none",
+     #     axis.title.x=element_blank(),
+      #    axis.text.x=element_blank(),
+       #   axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_mc
+
+
+###################################
+#################################
