@@ -62,7 +62,8 @@ weight_loss_predict <- readRDS("R/Models/predict_WL.rds")
 set.seed(540)
 
 
-#The predict() function in R is used to predict the values based on the input data.
+#The predict() function in R is used to predict the values 
+#based on the input data.
 predicted_WL <- predict(weight_loss_predict, genes)
 
 
@@ -103,7 +104,7 @@ descdist(data = x, discrete = FALSE)
 descdist(data = x, discrete = FALSE, #data is continuous
          boot = 1000)
 
-## ---------------------------------------------------------------------------------------------------
+## 
 normal_ <- fitdist(x, "norm")
 weibull_ <- fitdist(x, "weibull")
 gamma_ <- fitdist(x, "gamma")
@@ -112,7 +113,8 @@ gamma_ <- fitdist(x, "gamma")
 # Define function to be used to test, get the log lik and aic
 tryDistrib <- function(x, distrib){
   # deals with fitdistr error:
-  fit <- tryCatch(MASS::fitdistr(x, distrib), error=function(err) "fit failed")
+  fit <- 
+      tryCatch(MASS::fitdistr(x, distrib), error=function(err) "fit failed")
   return(list(fit = fit,
               loglik = tryCatch(fit$loglik, error=function(err) "no loglik computed"), 
               AIC = tryCatch(fit$aic, error=function(err) "no aic computed")))
@@ -139,19 +141,19 @@ findGoodDist <- function(x, distribs, distribs2){
 }
 
 
-## ---------------------------------------------------------------------------------------------------
-tryDistrib(x, "normal")
-tryDistrib(x, "binomial")
+## Now fit the distributions to the predicted weight loss data
+tryDistrib(x, "normal") # -782.4131
+tryDistrib(x, "binomial") #-784.7632
 tryDistrib(x, "student")
 tryDistrib(x, "weibull")
 tryDistrib(x, "weibullshifted")
 
 
-## ---------------------------------------------------------------------------------------------------
+## Compare again between normal and weibull
 findGoodDist(x, "normal", "weibull")
 
 
-## ----normal-----------------------------------------------------------------------------------------
+## plot the distributions
 plot(normal_)
 summary(normal_)
 plot(gamma_)
@@ -161,15 +163,14 @@ summary(weibull_)
 
 
 # Testing differences between female and male hybrids of M.m. musculus and 
-#m.m.domesticus
-## ------------------
+#m.m.domesticus in predicted weight loss
 Field$Sex <- as.factor(Field$Sex)
 
 
 ##All
 fitWL_Sex <- parasiteLoad::analyse(data = Field,
                         response = "predicted_WL",
-                        model = "weibull",
+                        model = "normal",
                         group = "Sex")
 
 
@@ -193,17 +194,23 @@ plot_WL_Sex
 ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
        height = 8, dpi = 1000)
 
-# Create a gradient bar
+
+# Adjust the gradient bar plot to include axis labels and remove space
 HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)), 
                         aes(x=hi, y=1, fill = hi)) +
     geom_tile() +
-    theme_void() +
+    scale_x_continuous(breaks=seq(0, 1, by=0.25), 
+                       labels=c("0", "0.25", "0.5", "0.75", "1")) +
     scale_fill_gradient(low = "blue", high = "red") +
-  #scale_x_continuous(expand=c(.01,0)) + 
-   # scale_y_continuous(expand=c(0,0)) +
-   theme(legend.position = 'none')
+    theme_void() +
+    theme(legend.position = 'none', 
+          plot.margin = unit(c(-1, 0, 0, 0), "npc"), 
+          # This removes space around the plot
+          axis.text.x = element_text(color = "black", 
+                                     angle = 0, vjust = 0.5, hjust=0.5)) 
+        # Adjust text vjust for positioning
 
-
+HIgradientBar
 
 # Create the combined plot with the gradient bar as the "axis"
 plot_WL_Sex_combined <- 
@@ -213,20 +220,23 @@ plot_WL_Sex_combined <-
               rel_heights = c(1.3, 1/8),
               align = "hv",
               axis = "tb",
-              vjust = c(-1,2)) 
+              vjust = c(-1,2),
+              scale = 1.1) 
    
 # Display the combined plot
 plot_WL_Sex_combined
 
 
-ggsave(plot = plot_WL_Sex_combined, filename = "figures/hybrid_sex.jpeg", width = 10, 
+ggsave(plot = plot_WL_Sex_combined, 
+       filename = "figures/hybrid_sex.jpeg", width = 10, 
        height = 8, dpi = 1000)
 
 
 ####################### Mapping ######################################
 leaflet(data = Field) %>%
     addTiles() %>%
-    addMarkers(lng = ~Longitude, lat = ~Latitude, popup = ~as.character(Mouse_ID))
+    addMarkers(
+        lng = ~Longitude, lat = ~Latitude, popup = ~as.character(Mouse_ID))
 
 colorPalette <- colorRampPalette(c("blue", "red"))
 
@@ -254,41 +264,41 @@ combined_plot <- grid.arrange(
     ncol = 2, # Set the number of columns to 2 for horizontal alignment
     widths = c(1, 1))
 
-# Add annotations
-grid.text("A", x = unit(0.1, "npc"), y = unit(0.95, "npc"), gp = gpar(fontface = "bold", cex = 1.5))
-grid.text("B", x = unit(0.51, "npc"), y = unit(0.95, "npc"), gp = gpar(fontface = "bold", cex = 1.5))
+# Add the annotations to the grob
+combined_grob <- arrangeGrob(
+    grobs = list(combined_plot,
+                 textGrob("A", x = unit(0.1, "npc"), y = unit(0.95, "npc"), 
+                          gp = gpar(fontface = "bold", cex = 1.5)),
+                 textGrob("B", x = unit(0.51, "npc"), y = unit(0.95, "npc"), 
+                          gp = gpar(fontface = "bold", cex = 1.5))),
+    ncol = 3
+)
 
-# Display combined plot
-print(combined_plot)
-ggsave(plot = combined_plot, filename = "figure_panels/banana_map_immune_signature.jpeg", width = 16, 
+
+# Add annotations
+grid.text("A", x = unit(0.1, "npc"), y = unit(0.95, "npc"), 
+          gp = gpar(fontface = "bold", cex = 1.5))
+grid.text("B", x = unit(0.51, "npc"), y = unit(0.95, "npc"), 
+          gp = gpar(fontface = "bold", cex = 1.5))
+
+
+ggsave(plot = combined_plot, 
+       filename = "figure_panels/banana_map_immune_signature.jpeg", width = 16, 
        height = 8, dpi = 1000)
 
 
 ##############################################################################
 ### Testing diffences between infected and uninfected hybrid mice
-## ------------------
 
-
-
-##################### getting the correct eimeria melting curve data
-Field_corrected <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv")
-Field_corrected <- Field_corrected %>% 
-    dplyr::select(c(Mouse_ID, MC.Eimeria)) %>%
-    drop_na(MC.Eimeria) 
-
-Field_corrected$Mouse_ID <- gsub("_", "", Field_corrected$Mouse_ID)
-
+# Melting Curve analysis
 Field_mc <- Field %>%
-    dplyr::select(-MC.Eimeria) %>%
-    left_join(Field_corrected, by = "Mouse_ID") %>%
     drop_na(MC.Eimeria)
 
 Field_mc$MC.Eimeria <- as.factor(Field_mc$MC.Eimeria)
 
-##All
 fitWL_mc <- parasiteLoad::analyse(data = Field_mc,
                                    response = "predicted_WL",
-                                   model = "weibull",
+                                   model = "normal",
                                    group = "MC.Eimeria")
 
 
@@ -298,51 +308,139 @@ plot_WL_mc <-
                          response = "predicted_WL",
                          group = "MC.Eimeria",
                          cols = c("white", "white")) +
-    scale_fill_manual(values = c("orange", "forestgreen")) +
-    scale_color_manual(values = c("orange", "forestgreen")) +
-    theme_bw() +
-  #  theme(legend.position="none",
-   #       axis.title.x=element_blank(),
-   #       axis.text.x=element_blank(),
-   #       axis.ticks.x=element_blank()) +
+    scale_fill_manual(values = c("steelblue1", "indianred3"), 
+                       name = "Melting Curve analysis") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Melting Curve analysis") +
+    theme_bw()  +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
     labs(y = "Predicted detrimental health impact, 
          Immune signature")
 
 plot_WL_mc
 
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_mc_combined <- 
+    plot_grid(plot_WL_mc ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
 
-Field_mc <- Field_mc %>%
+# Display the combined plot
+plot_WL_mc_combined
+
+
+ggsave(plot = plot_WL_mc_combined, 
+       filename = "figures/hybrid_infected.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+
+
+############ Testing according to delta ct (not recommended, just validating)
+Field_ct <-  Field %>%
+    drop_na(delta_ct_cewe_MminusE) %>%
     dplyr::mutate(delta_infection = 
-                      case_when(delta_ct_cewe_MminusE > -5 ~ "infected",
-                                delta_ct_cewe_MminusE < -5 ~ "uninfected"))
+                      case_when(delta_ct_cewe_MminusE < -5 ~ "uninfected"),delta_ct_cewe_MminusE > -5 ~ "infected")
 
-Field_mc$delta_infection <- as.factor(Field_mc$delta_infection)
+Field_ct$delta_infection <- as.factor(Field_ct$delta_infection)
 
 ##All
-fitWL_delta <- parasiteLoad::analyse(data = Field_mc,
+fitWL_ct<- parasiteLoad::analyse(data = Field_ct,
                                   response = "predicted_WL",
-                                  model = "weibull",
-                                  group = "M")
+                                  model = "normal",
+                                  group = "delta_infection")
 
 
-plot_WL_mc <- 
-    bananaPlot(mod = fitWL_mc$H3,
-               data = Field_mc,
+plot_WL_ct <- 
+    bananaPlot(mod = fitWL_ct$H3,
+               data = Field_ct,
                response = "predicted_WL",
                group = "delta_infection",
                cols = c("white", "white")) +
-    scale_fill_manual(values = c("orange", "forestgreen")) +
-    scale_color_manual(values = c("orange", "forestgreen")) +
+    scale_fill_manual(values = c("indianred3","steelblue1"),
+                      name = "qPCR values - Eimeria detection in Caecum") +
+    scale_color_manual(values = c("indianred3", "steelblue1"),
+                       name = "qPCR values - Eimeria detection in Caecum") +
     theme_bw() +
-    #theme(legend.position="none",
-     #     axis.title.x=element_blank(),
-      #    axis.text.x=element_blank(),
-       #   axis.ticks.x=element_blank()) +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
     labs(y = "Predicted detrimental health impact, 
          Immune signature")
 
-plot_WL_mc
+plot_WL_ct
+
+
+# Create the combined plot with the gradient bar as the "axis"
+combined_plot <- 
+    plot_grid(plot_WL_ct ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+combined_plot
+
+
+ggsave(plot = plot_WL_mc_combined, 
+       filename = "figures/hybrid_infected.jpeg", width = 10, 
+       height = 8, dpi = 1000)
 
 
 ###################################
 #################################
+
+
+# cryüp
+Field <- Field %>%
+    mutate(crypto_infected = 
+               case_when(
+                   Oocyst_Predict_Crypto == 0 ~ "uninfected",
+                   Oocyst_Predict_Crypto > 0 ~ "infected",
+                   ILWE_Crypto_Ct == NA ~ NA
+               ))
+
+Field_crypto <- Field %>%
+    drop_na(crypto_infected)
+
+Field_crypto$crypto_infected <- as.factor(Field_crypto$crypto_infected)
+
+##All
+fitWL_crypto <- parasiteLoad::analyse(data = Field_crypto,
+                                     response = "predicted_WL",
+                                     model = "normal",
+                                     group = "crypto_infected")
+
+
+# plot it
+plot_WL_crypto <- 
+    bananaPlot(mod = fitWL_crypto$H3,
+               data = Field_crypto,
+               response = "predicted_WL",
+               group = "crypto_infected",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("steelblue1", "indianred3")) +
+    scale_color_manual(values = c("steelblue1", "indianred3")) +
+    theme_bw()  +
+    theme(legend.position="none",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_mc
