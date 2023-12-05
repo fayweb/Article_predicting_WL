@@ -1,9 +1,9 @@
 #install.packages("optimx", version = "2021-10.12") # this package is required for 
 #the parasite load package to work
-require(devtools)
+#require(devtools)
 
 ## install the pacakage of Alice Balard
-devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
+#devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
 #force = TRUE)
 
 library(parasiteLoad)
@@ -339,7 +339,7 @@ plot_WL_mc_combined
 
 
 ggsave(plot = plot_WL_mc_combined, 
-       filename = "figures/hybrid_infected.jpeg", width = 10, 
+       filename = "figures/hybrid_meltingcurve.jpeg", width = 10, 
        height = 8, dpi = 1000)
 
 
@@ -348,7 +348,8 @@ ggsave(plot = plot_WL_mc_combined,
 Field_ct <-  Field %>%
     drop_na(delta_ct_cewe_MminusE) %>%
     dplyr::mutate(delta_infection = 
-                      case_when(delta_ct_cewe_MminusE < -5 ~ "uninfected"),delta_ct_cewe_MminusE > -5 ~ "infected")
+                      case_when(delta_ct_cewe_MminusE < -5 ~ "uninfected",
+                                delta_ct_cewe_MminusE > -5 ~ "infected"))
 
 Field_ct$delta_infection <- as.factor(Field_ct$delta_infection)
 
@@ -396,51 +397,407 @@ combined_plot <-
 combined_plot
 
 
-ggsave(plot = plot_WL_mc_combined, 
-       filename = "figures/hybrid_infected.jpeg", width = 10, 
+ggsave(plot = combined_plot, 
+       filename = "figures/hybrid_infected_ct.jpeg", width = 10, 
        height = 8, dpi = 1000)
 
 
-###################################
-#################################
+##################### Eimeria oocysts
+Field_ooc_eim <-  Field %>%
+    drop_na(OPG) %>%
+    dplyr::mutate(oocysts_present = 
+                      case_when(OPG > 0 ~ "TRUE",
+                                OPG == 0 ~ "FALSE"))
 
-
-# cryüp
-Field <- Field %>%
-    mutate(crypto_infected = 
-               case_when(
-                   Oocyst_Predict_Crypto == 0 ~ "uninfected",
-                   Oocyst_Predict_Crypto > 0 ~ "infected",
-                   ILWE_Crypto_Ct == NA ~ NA
-               ))
-
-Field_crypto <- Field %>%
-    drop_na(crypto_infected)
-
-Field_crypto$crypto_infected <- as.factor(Field_crypto$crypto_infected)
+Field_ooc_eim$oocysts_present <- as.factor(Field_ooc_eim$oocysts_present)
 
 ##All
-fitWL_crypto <- parasiteLoad::analyse(data = Field_crypto,
-                                     response = "predicted_WL",
-                                     model = "normal",
-                                     group = "crypto_infected")
+fitWL_ooc<- parasiteLoad::analyse(data = Field_ooc_eim,
+                                 response = "predicted_WL",
+                                 model = "normal",
+                                 group = "oocysts_present")
 
 
-# plot it
-plot_WL_crypto <- 
-    bananaPlot(mod = fitWL_crypto$H3,
-               data = Field_crypto,
+plot_WL_ooc <- 
+    bananaPlot(mod = fitWL_ooc$H3,
+               data = Field_ooc_eim,
                response = "predicted_WL",
-               group = "crypto_infected",
+               group = "oocysts_present",
                cols = c("white", "white")) +
-    scale_fill_manual(values = c("steelblue1", "indianred3")) +
-    scale_color_manual(values = c("steelblue1", "indianred3")) +
-    theme_bw()  +
-    theme(legend.position="none",
+    scale_fill_manual(values = c("steelblue1","indianred3"),
+                      name = "Eimeria oocysts present") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Eimeria oocysts present") +
+    theme_bw() +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
           axis.title.x=element_blank(),
           axis.text.x=element_blank(),
           axis.ticks.x=element_blank()) +
     labs(y = "Predicted detrimental health impact, 
          Immune signature")
 
-plot_WL_mc
+plot_WL_ooc
+
+
+# Create the combined plot with the gradient bar as the "axis"
+combined_plot_ooc <- 
+    plot_grid(plot_WL_ooc ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+combined_plot_ooc
+
+
+ggsave(plot = combined_plot_ooc, 
+       filename = "figures/hybrid_eimeria_ooc.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+###################################
+
+
+####################################################
+#####  crpyto ct
+Field_crypto <- Field %>%
+    mutate(crypto_infected_ct = 
+               case_when(
+                   ILWE_Crypto_Ct > 0 ~ "TRUE",
+                   ILWE_Crypto_Ct == 0 ~ "FALSE",
+                   ILWE_Crypto_Ct == NA ~ NA
+               ))
+
+Field_crypto <- Field_crypto %>%
+    drop_na(crypto_infected)
+
+Field_crypto$crypto_infected_ct <- as.factor(Field_crypto$crypto_infected_ct)
+
+fitWL_crypto_ct <- parasiteLoad::analyse(data = Field_crypto,
+                                      response = "predicted_WL",
+                                      model = "normal",
+                                      group = "crypto_infected_ct")
+
+
+# plot it
+plot_WL_crypto_ct <- 
+    bananaPlot(mod = fitWL_crypto_ct$H3,
+               data = Field_crypto,
+               response = "predicted_WL",
+               group = "crypto_infected_ct",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("steelblue1", "indianred3"),
+                      name = "Cryptosporidum detected in qPCR") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Cryptosporidum detected in qPCR") +
+    theme_bw()  +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_crypto_ct
+
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_crypto_Ct <- 
+    plot_grid(plot_WL_crypto_ct ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+plot_WL_crypto_Ct
+
+
+ggsave(plot = plot_WL_crypto_Ct, 
+       filename = "figures/hybrid_crypto_qpcr.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+rm(Field_crypto, Field_ct, Field_mc, gamma_, normal_, weibull_)
+
+################################################
+##############
+######Worms?
+##################First aspiculuris
+Field %>%
+    pivot_longer(cols = c("Trichuris_muris", "Mastophorus_muris", 
+                          "Catenotaenia_pusilla", "Heligmosomoides_polygurus",
+                          "Heterakis_sp", "Aspiculuris_sp", "Syphacia_sp",
+                          "Taenia_sp", "Hymenolepis_sp"), names_to = "Worms", 
+                 values_to = "Counts_worms") %>%
+    ggplot(aes(x = Worms, y = Counts_worms)) +
+    geom_violin()
+
+
+
+
+#####  Aspiculuris_sp
+wormy_field <- Field %>%
+    mutate(wormy_asp = 
+               case_when(
+                   Aspiculuris_sp > 0 ~ "TRUE",
+                   Aspiculuris_sp == 0 ~ "FALSE",
+                   Aspiculuris_sp == NA ~ NA
+               ))
+
+wormy_field <- wormy_field %>%
+    drop_na(wormy_asp)
+
+wormy_field$wormy_asp <- as.factor(wormy_field$wormy_asp)
+
+fitWL_worm <- parasiteLoad::analyse(data = wormy_field,
+                                         response = "predicted_WL",
+                                         model = "normal",
+                                         group = "wormy_asp")
+
+
+# plot it
+plot_WL_worms <- 
+    bananaPlot(mod = fitWL_worm$H3,
+               data = wormy_field,
+               response = "predicted_WL",
+               group = "wormy_asp",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("steelblue1", "indianred3"),
+                      name = "Detected Aspiculuris") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Detected Aspiculuris") +
+    theme_bw()  +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_worms
+
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_worms <- 
+    plot_grid(plot_WL_worms ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+plot_WL_worms
+
+
+ggsave(plot = plot_WL_worms, 
+       filename = "figures/hybrid_aspiculuris.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+##############################################################
+#####  Syphacia
+wormy_field <- Field %>%
+    mutate(wormy_asp = 
+               case_when(
+                   Syphacia_sp > 0 ~ "TRUE",
+                   Syphacia_sp == 0 ~ "FALSE",
+                   Syphacia_sp == NA ~ NA
+               ))
+
+wormy_field <- wormy_field %>%
+    drop_na(wormy_asp)
+
+wormy_field$wormy_asp <- as.factor(wormy_field$wormy_asp)
+
+fitWL_worm <- parasiteLoad::analyse(data = wormy_field,
+                                    response = "predicted_WL",
+                                    model = "normal",
+                                    group = "wormy_asp")
+
+
+# plot it
+plot_WL_syphacia <- 
+    bananaPlot(mod = fitWL_worm$H3,
+               data = wormy_field,
+               response = "predicted_WL",
+               group = "wormy_asp",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("steelblue1", "indianred3"),
+                      name = "Detected Syphacia") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Detected Syphacia") +
+    theme_bw()  +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_syphacia
+
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_syphacia <- 
+    plot_grid(plot_WL_syphacia ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+plot_WL_syphacia
+
+
+ggsave(plot = plot_WL_syphacia, 
+       filename = "figures/hybrid_syphacia.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+##############  Trichuris
+wormy_field <- Field %>%
+    mutate(wormy_asp = 
+               case_when(
+                   Trichuris_muris > 0 ~ "TRUE",
+                   Trichuris_muris == 0 ~ "FALSE",
+                   Trichuris_muris == NA ~ NA
+               ))
+
+wormy_field <- wormy_field %>%
+    drop_na(wormy_asp)
+
+wormy_field$wormy_asp <- as.factor(wormy_field$wormy_asp)
+
+fitWL_worm <- parasiteLoad::analyse(data = wormy_field,
+                                    response = "predicted_WL",
+                                    model = "normal",
+                                    group = "wormy_asp")
+
+
+# plot it
+plot_WL_trichuris <- 
+    bananaPlot(mod = fitWL_worm$H3,
+               data = wormy_field,
+               response = "predicted_WL",
+               group = "wormy_asp",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("steelblue1", "indianred3"),
+                      name = "Detected Trichuris") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Detected Trichuris") +
+    theme_bw()  +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_trichuris
+
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_trichuris <- 
+    plot_grid(plot_WL_trichuris ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+plot_WL_trichuris
+
+
+ggsave(plot = plot_WL_trichuris, 
+       filename = "figures/hybrid_trichuris.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+
+##############  Heterakis
+wormy_field <- Field %>%
+    mutate(wormy_asp = 
+               case_when(
+                   Heterakis_sp > 0 ~ "TRUE",
+                   Heterakis_sp == 0 ~ "FALSE",
+                   Heterakis_sp == NA ~ NA
+               ))
+
+wormy_field <- wormy_field %>%
+    drop_na(wormy_asp)
+
+wormy_field$wormy_asp <- as.factor(wormy_field$wormy_asp)
+
+fitWL_worm <- parasiteLoad::analyse(data = wormy_field,
+                                    response = "predicted_WL",
+                                    model = "normal",
+                                    group = "wormy_asp")
+
+
+# plot it
+plot_WL_heterakis <- 
+    bananaPlot(mod = fitWL_worm$H3,
+               data = wormy_field,
+               response = "predicted_WL",
+               group = "wormy_asp",
+               cols = c("white", "white")) +
+    scale_fill_manual(values = c("steelblue1", "indianred3"),
+                      name = "Detected Heterakis") +
+    scale_color_manual(values = c("steelblue1", "indianred3"),
+                       name = "Detected Heterakis") +
+    theme_bw()  +
+    theme(legend.position = c(0.5, 0.05),
+          legend.direction = "horizontal",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank()) +
+    labs(y = "Predicted detrimental health impact, 
+         Immune signature")
+
+plot_WL_heterakis
+
+# Create the combined plot with the gradient bar as the "axis"
+plot_WL_heterakis <- 
+    plot_grid(plot_WL_heterakis ,
+              HIgradientBar,  
+              nrow = 2, 
+              rel_heights = c(1.3, 1/8),
+              align = "hv",
+              axis = "tb",
+              vjust = c(-1,2),
+              scale = 1) 
+
+# Display the combined plot
+plot_WL_heterakis
+
+
+ggsave(plot = plot_WL_heterakis, 
+       filename = "figures/hybrid_heterakis.jpeg", width = 10, 
+       height = 8, dpi = 1000)
+
+
+
+
+
+
+infection_plots <- 
+    plot_grid(plot_WL_mc_combined, combined_plot, combined_plot_ooc, 
+          plot_WL_crypto_Ct, plot_WL_worms, plot_WL_syphacia, plot_WL_trichuris,
+          plot_WL_heterakis,
+        nrow = 4, align = c("hv"), labels = LETTERS[1:8])
+
+ggsave(infection_plots, filename = "figure_panels/infection_panel.jpeg",
+       width = 12, height = 24, dpi = 1000)
