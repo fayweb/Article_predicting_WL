@@ -1,9 +1,9 @@
 #install.packages("optimx", version = "2021-10.12") # this package is required for 
 #the parasite load package to work
-require(devtools)
+#require(devtools)
 
 ## install the pacakage of Alice Balard
-devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
+#devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
 #force = TRUE)
 
 library(parasiteLoad)
@@ -23,8 +23,9 @@ library(logspline)
 library(caret)
 library(dplyr)
 library(tidyr)
+library(ggeffects)# read the data
 
-# read the data
+
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
 # filter for the field mice
@@ -74,253 +75,40 @@ Field <- cbind(Field, predicted_WL)
 
 rm(gene,genes)
 
-########## Analyzing the distribution of our data in order to 
-# go on with the anaylsis 
-Field %>% ggplot(aes(x = predicted_WL)) +
-  geom_histogram(binwidth = 1.5)
+## ----------------------------------------------------------------------------
 
-
-##  predicted WL vs HI
-Field %>%
-    ggplot(aes(x = HI , y = predicted_WL , color = Sex)) +
-    geom_smooth() +
-    geom_point()
-
-## body length vs predicted WL
-Field %>%
-    ggplot(aes(x = Body_Length , y = predicted_WL , color = Sex)) +
-    geom_smooth() +
-    geom_point()
-
-
-## Let'S further analyse the distribution of WL
-x <- Field$predicted_WL
-
-descdist(data = x, discrete = FALSE)
-descdist(data = x, discrete = FALSE, #data is continuous
-         boot = 1000)
-
-
-### quite close to normal distribution
-
-## fitting different distributions
-set.seed(10)
-n = 25
-size = 27
-prob = .4
-data = rbinom(x, size = size, prob = prob)
-fit = fitdist(data = data, dist="binom", 
-                   fix.arg=list(size = size), 
-                   start=list(prob = 0.1))
-
-summary(fit)
-
-
-plot(fit)
-
-
-## ---------------------------------------------------------------------------------------------------
-normal_ <- fitdist(x, "norm")
-weibull_ <- fitdist(x, "weibull")
-gamma_ <- fitdist(x, "gamma")
-
-
-# Define function to be used to test, get the log lik and aic
-tryDistrib <- function(x, distrib){
-  # deals with fitdistr error:
-  fit <- tryCatch(MASS::fitdistr(x, distrib), error=function(err) "fit failed")
-  return(list(fit = fit,
-              loglik = tryCatch(fit$loglik, error=function(err) "no loglik computed"), 
-              AIC = tryCatch(fit$aic, error=function(err) "no aic computed")))
-}
-
-
-
-findGoodDist <- function(x, distribs, distribs2){
-  l =lapply(distribs, function(i) tryDistrib(x, i))
-  names(l) <- distribs
-  print(l)
-  listDistr <- lapply(distribs2, function(i){
-    if (i %in% "t"){
-      fitdistrplus::fitdist(x, i, start = list(df =2))
-    } else {
-      fitdistrplus::fitdist(x,i)
-    }}
-  ) 
-  par(mfrow=c(2,2))
-  denscomp(listDistr, legendtext=distribs2)
-  cdfcomp(listDistr, legendtext=distribs2)
-  qqcomp(listDistr, legendtext=distribs2)
-  ppcomp(listDistr, legendtext=distribs2)
-  par(mfrow=c(1,1))
-}
-
-
-## ---------------------------------------------------------------------------------------------------
-tryDistrib(x, "normal")
-tryDistrib(x, "binomial")
-tryDistrib(x, "student")
-tryDistrib(x, "weibull")
-tryDistrib(x, "weibullshifted")
-
-
-
-## ---------------------------------------------------------------------------------------------------
-findGoodDist(x, "normal", "weibull")
-
-
-## ----normal-----------------------------------------------------------------------------------------
-plot(normal_)
-summary(normal_)
-plot(gamma_)
-summary(gamma_)
-plot(weibull_)
-summary(weibull_)
-
-
-## ---------------------------------------------------------------------------------------------------
-Field$Sex <- as.factor(Field$Sex)
-
-
-##All
-fitWL_Sex <- parasiteLoad::analyse(data = Field,
-                        response = "predicted_WL",
-                        model = "normal",
-                        group = "Sex")
-
-
-plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
-             data = Field,
-             response = "predicted_WL",
-             group = "Sex") +
-    scale_fill_manual(values = c("brown", "forestgreen")) +
-  scale_color_manual(values = c("brown", "forestgreen")) +
-  theme_bw() 
-
-plot_WL_Sex
-
-ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
-       height = 8, dpi = 1000)
-
-# Create HI bar
-HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
-                        aes(x=hi, y=1, fill = hi)) +
-  geom_tile() +
-  theme_void() +
-  scale_fill_gradient(low = "blue", high = "red")  + 
-  scale_x_continuous(expand=c(.01,0)) + 
-  scale_y_continuous(expand=c(0,0)) +
-  theme(legend.position = 'none')
-
-plot_WL_Sex <- 
-    plot_grid(plot_WL_Sex, 
-          HIgradientBar,
-          nrow = 2,
-          align = "v",
-          axis = "tlr",
-          rel_heights = c(13, 1))
-
-
-ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
-       height = 8, dpi = 1000)
-
-
-
-###################### according to infection
-
-mc_field <- Field %>%
-    drop_na(MC.Eimeria) 
-
-mc_field$MC.Eimeria <- as.factor(mc_field$MC.Eimeria)
- 
-
-##All
-fitWL_mc <- parasiteLoad::analyse(data = mc_field,
-                                   response = "predicted_WL",
-                                   model = "normal",
-                                   group = "MC.Eimeria")
-
-
-plot_WL_MC_eimeria<- bananaPlot(mod = fitWL_mc$H3,
-                         data = mc_field,
-                         response = "predicted_WL",
-                         group = "MC.Eimeria") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-    scale_color_manual(values = c("blueviolet", "limegreen")) +
-    theme_bw() 
-
-plot_WL_MC_eimeria
-
-plot_WL_MC_eimeria <- 
-    plot_grid(plot_WL_MC_eimeria, 
-              HIgradientBar,
-              nrow = 2,
-              align = "v",
-              axis = "tlr",
-              rel_heights = c(13, 1))
-
-plot_WL_MC_eimeria
-
-ggsave(plot = plot_WL_MC_eimeria, filename = "figures/hybrid_mc_eimeria.jpeg", 
-       width = 10, 
-       height = 8, dpi = 1000)
-
-#### oocysts
-speparam <- c(L1start = 10.098368660  ,
-              L1LB = 4.363865741 ,
-              L1UB = 19.383819138 ,
-              L2start = 10.098368660  ,
-              L2LB = 4.363865741 ,
-              L2UB = 19.383819138  ,
-              alphaStart = 0, alphaLB = -5, alphaUB = 5,
-              myshapeStart = 1, myshapeLB = 0.000000001, myshapeUB = 10)
-
-
-
-## oocysts
-oo_Field <- Field %>%
-    drop_na(OPG) %>%
-    filter(!OPG == 0)
-
-##All
-fitWL_oo <- parasiteLoad::analyse(data = oo_Field,
-                                  response = "predicted_WL",
-                                  model = "normal",
-                                  group = "Sex")
-
-
-plot_WL_OOC<- bananaPlot(mod = fitWL_oo$H3,
-                                data = oo_Field,
-                                response = "predicted_WL",
-                                group = "Sex") +
-    scale_fill_manual(values = c("blueviolet", "limegreen")) +
-    scale_color_manual(values = c("blueviolet", "limegreen")) +
-    theme_bw() 
-
-plot_WL_OOC
-
-
-
-## ---------------------------------------------------------------------------------------------------
-
-
-ggplot(data = Field, aes(x = delta_ct_cewe_MminusE, y = predicted_WL)) +
-  geom_point() +
-  stat_smooth(method= "lm") 
-
+# Can the predicted weight loss be predicted by infection intensities
 Field2 <- Field %>%
-  drop_na(delta_ct_cewe_MminusE)
+  drop_na(delta_ct_cewe_MminusE) %>%
+    filter(MC.Eimeria == TRUE)
+
+ggplot(data = Field2, aes(x = delta_ct_cewe_MminusE, y = predicted_WL)) +
+    geom_point() +
+    stat_smooth(method= "lm") 
+
 
 cor(Field2$predicted_WL, Field2$delta_ct_cewe_MminusE)
 
 
-tolerance <- lm(predicted_WL ~  delta_ct_cewe_MminusE, data = Field)
+model_WL <- lm(predicted_WL ~  delta_ct_cewe_MminusE, data = Field2)
+
+summary(model_WL)
+confint(model_WL)
 
 
-summary(tolerance)
+model_WL_infection <- 
+    ggpredict(model_WL) %>% 
+    plot(colors = "darkorange2") +   # Use a refined shade of blue
+    labs(title = NULL) +  
+    xlab("Infection intensity of Eimeria spp. in the caecum") +
+    ylab("Predicted values of weight loss") +
+    theme_bw()
 
-confint(tolerance)
+model_WL_infection
 
+ggsave(filename = "figures/linear_model_WL_infection_field.jpeg", 
+       plot = model_WL_infection, 
+       width = 6, height = 4, dpi = 1000)
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -332,27 +120,30 @@ ggplot(data = Field, aes(x = OPG, y = predicted_WL)) +
 Field2 <- Field %>%
   drop_na(OPG)
 
+ggplot(data = Field2, aes(x = OPG, y = predicted_WL)) +
+    geom_point() +
+    stat_smooth(method= "lm") +
+    scale_x_log10()
+
+
 cor(Field2$predicted_WL, Field2$OPG)
+model <- lm(predicted_WL ~  OPG, data = Field)
 
 
-tolerance <- lm(predicted_WL ~  OPG, data = Field)
+summary(model)
 
-
-summary(tolerance)
-
-confint(tolerance)
+confint(model)
 
 
 
 ## ---------------------------------------------------------------------------------------------------
 
-tolerance <- lm(predicted_WL ~  OPG * delta_ct_cewe_MminusE, data = Field)
+model <- lm(predicted_WL ~  OPG * delta_ct_cewe_Mminus, data = Field)
 
 
-summary(tolerance)
+summary(model)
 
-confint(tolerance)
-
+confint(model)
 
 
 ## ---------------------------------------------------------------------------------------------------
@@ -500,12 +291,44 @@ parasiteLoad::getParamBounds("normal", data = Field_tol, response = "tolerance")
 
 x <- Field_tol$tolerance
 
-tryDistrib(x, "normal")
+
+# Define function to be used to test, get the log lik and aic
+tryDistrib <- function(x, distrib){
+    # deals with fitdistr error:
+    fit <- 
+        tryCatch(MASS::fitdistr(x, distrib), error=function(err) "fit failed")
+    return(list(fit = fit,
+                loglik = tryCatch(fit$loglik, error=function(err) "no loglik computed"), 
+                AIC = tryCatch(fit$aic, error=function(err) "no aic computed")))
+}
+
+
+findGoodDist <- function(x, distribs, distribs2){
+    l =lapply(distribs, function(i) tryDistrib(x, i))
+    names(l) <- distribs
+    print(l)
+    listDistr <- lapply(distribs2, function(i){
+        if (i %in% "t"){
+            fitdistrplus::fitdist(x, i, start = list(df =2))
+        } else {
+            fitdistrplus::fitdist(x,i)
+        }}
+    ) 
+    par(mfrow=c(2,2))
+    denscomp(listDistr, legendtext=distribs2)
+    cdfcomp(listDistr, legendtext=distribs2)
+    qqcomp(listDistr, legendtext=distribs2)
+    ppcomp(listDistr, legendtext=distribs2)
+    par(mfrow=c(1,1))
+}
+
+tryDistrib(x, "normal") #-208.0489
 tryDistrib(x, "binomial")
 tryDistrib(x, "student")
 tryDistrib(x, "weibull")
 tryDistrib(x, "weibullshifted")
 
+Field_tol$Sex <- as.factor(Field_tol$Sex)
 
 
 ##All
@@ -543,7 +366,7 @@ plot_grid(plot_WL_Sex,
           align = "v",
           axis = "tlr",
           rel_heights = c(13, 1))
-plot_WL_Sex
+
 
 
 ################## hybrid effect
@@ -587,10 +410,128 @@ lm(formula = predicted_WL ~ HI_2 * Sex, data = Field)
 
 df <- Field %>%
     filter(MC.Eimeria == TRUE)
+###########################################################
+#########################################################
+model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
+                      data = df)
+
+summary(model_tolerance)
+
+model <- lm(tolerance ~ HI + HI_2 * Sex, df)
+summary(model)
+
+
+######################################################################
+Field_asp <- Field %>%
+    drop_na(Aspiculuris_sp) %>%
+    filter(Aspiculuris_sp != 0) %>%
+    mutate(tolerance = predicted_WL / Aspiculuris_sp) %>%
+    drop_na(tolerance)
+
+model <- lm(tolerance ~ Aspiculuris_sp, data = Field_asp)
+summary(model)
+
+
 
 model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
                       data = df)
 
 summary(model_tolerance)
 
-# lm(tolerance ~ hi + hi_2 * Sex)
+model <- lm(tolerance ~ HI + HI_2 * Sex, df)
+summary(model)
+####################################################################
+Field_asp <- Field %>%
+    drop_na(Aspiculuris_sp) %>%
+    filter(Aspiculuris_sp != 0) %>%
+    mutate(tolerance = predicted_WL / Aspiculuris_sp) %>%
+    drop_na(tolerance)
+
+model <- lm(tolerance ~ Aspiculuris_sp, data = Field_asp)
+summary(model)
+
+#########################################################################
+df <- Field %>%
+    filter(eimeriaSpecies == "E_falciformis")
+
+
+model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
+                      data = df)
+
+summary(model_tolerance)
+
+
+#################################
+df <- Field %>%
+    filter(eimeriaSpecies == "E_ferrisi")
+
+
+model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
+                      data = df)
+
+summary(model_tolerance)
+
+#################
+df <- Field %>%
+    filter(eimeriaSpecies == "E_falciformis")
+
+
+model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE, 
+                      data = df)
+
+summary(model_tolerance)
+
+
+#################################
+df <- Field %>%
+    drop_na(ILWE_Crypto_Ct) %>%
+    filter(ILWE_Crypto_Ct != 0) %>%
+    mutate(tolerance = predicted_WL / -ILWE_Crypto_Ct) %>%
+    drop_na(tolerance)
+
+
+model_tolerance <- lm(predicted_WL ~ ILWE_Crypto_Ct, 
+                      data = df)
+
+summary(model_tolerance)
+
+###################################
+df <- Field %>%
+    drop_na(Syphacia_sp) %>%
+    filter(Syphacia_sp != 0) %>%
+    mutate(tolerance = predicted_WL / Syphacia_sp) %>%
+    drop_na(tolerance)
+
+
+model_tolerance <- lm(predicted_WL ~ Syphacia_sp, 
+                      data = df)
+
+summary(model_tolerance)
+
+#####################################
+###################################
+df <- Field %>%
+    drop_na(Heterakis_sp) %>%
+    filter(Heterakis_sp != 0) %>%
+    mutate(tolerance = predicted_WL / Heterakis_sp) %>%
+    drop_na(tolerance)
+
+
+model_tolerance <- lm(predicted_WL ~ Heterakis_sp, 
+                      data = df)
+
+summary(model_tolerance)
+
+
+################################
+df <- Field %>%
+    drop_na(Trichuris_muris) %>%
+    filter(Trichuris_muris != 0) %>%
+    mutate(tolerance = predicted_WL / Trichuris_muris) %>%
+    drop_na(tolerance)
+
+
+model_tolerance <- lm(predicted_WL ~ Trichuris_muris, 
+                      data = df)
+
+summary(model_tolerance)
