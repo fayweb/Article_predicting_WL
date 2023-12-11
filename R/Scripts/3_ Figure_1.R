@@ -32,6 +32,7 @@ library(cowplot)
 library(patchwork)
 library(ggpubr)
 library(factoextra)
+library(jtools)
 
 
 # read the data
@@ -307,7 +308,22 @@ model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab)
 
 summary(model_4)
 
+plot_coefs(model_4, colors = "pink", plot.distributions = TRUE) -> coef_pc1_pc2
+
+ggsave(filename = "figures/Coef_pc1_pc2.jpeg", coef_pc1_pc2, width = 6, 
+       height = 4, dpi = 300)
+
 tab_model(model_4, file = "tables/pc1_pc2_lm.doc")
+
+plot_coefs(model_1, model_2, model_3, model_4)
+
+
+model_5 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE + 
+                  weight_dpi0, data = lab)
+
+summary(model_5)
+plot_coefs(model_1, model_2, model_3, model_4, model_5)
+
 ## Please cite as:
 ##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
 stargazer(model_1, model_2, model_3, model_4, 
