@@ -26,6 +26,7 @@ library(tidyr)
 library(ggeffects)
 library(ggbeeswarm)
 library(ggdist)
+library(jtools)
 
 
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -140,7 +141,7 @@ confint(model)
 
 ## ---------------------------------------------------------------------------------------------------
 
-model <- lm(predicted_WL ~  OPG * delta_ct_cewe_Mminus, data = Field)
+model <- lm(predicted_WL ~  OPG * delta_ct_cewe_MminusE, data = Field)
 
 
 summary(model)
@@ -341,7 +342,8 @@ fitWL_tol <- parasiteLoad::analyse(data = Field_tol,
 
 
 
-plot_tolerance_Sex<- bananaPlot(mod = fitWL_tol$H3,
+plot_tolerance_Sex <- 
+    bananaPlot(mod = fitWL_tol$H3,
              data = Field_tol,
              response = "tolerance",
              group = "Sex") +
@@ -362,18 +364,18 @@ HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
   scale_y_continuous(expand=c(0,0)) +
   theme(legend.position = 'none')
 
-plot_grid(plot_WL_Sex, 
-          HIgradientBar,
-          nrow = 2,
-          align = "v",
-          axis = "tlr",
-          rel_heights = c(13, 1))
+#plot_grid(plot_WL_Sex, 
+#          HIgradientBar,
+ #         nrow = 2,
+  #        align = "v",
+   #       axis = "tlr",
+    #      rel_heights = c(13, 1))
 
 
 
 ################## hybrid effect
 Field <- Field %>%
-    mutate(HI_2 = 2*HI*(1-HI), #linearize HI
+    mutate(HE = 2*HI*(1-HI), #linearize HI
            tolerance = predicted_WL / delta_ct_cewe_MminusE) 
 # tolerance = health impact / infection intensity
 
@@ -392,23 +394,23 @@ cor(i$HI, i$tolerance, method = "spearman")
 cor(i$HI, i$predicted_WL, method = "spearman")
 
 
-ggplot(Field, aes(x = HI, HI_2)) +
+ggplot(Field, aes(x = HI, HE)) +
     geom_point() +
     geom_line()
 
-ggplot(Field, aes(x = HI_2, predicted_WL, color = Sex)) +
+ggplot(Field, aes(x = HE, predicted_WL, color = Sex)) +
     geom_smooth(method = lm, se = TRUE) 
 
-ggplot(Field, aes(x = HI_2, tolerance, color = Sex)) +
+ggplot(Field, aes(x = HE, tolerance, color = Sex)) +
     geom_jitter() +
     geom_smooth(method = lm, se = TRUE) 
 
 
-ggplot(Field, aes(x = HI_2, OPG)) +
+ggplot(Field, aes(x = HE, OPG)) +
     geom_point() +
     geom_line()
 
-model <- lm(formula = predicted_WL ~ HI_2 * Sex, data = Field)
+model <- lm(formula = predicted_WL ~ HE * Sex, data = Field)
 summary(model)
 
 df <- Field %>%
@@ -420,7 +422,7 @@ model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE,
 
 summary(model_tolerance)
 
-model <- lm(tolerance ~ HI + HI_2 * Sex, df)
+model <- lm(tolerance ~ HI + HE * Sex, df)
 summary(model)
 
 
@@ -441,7 +443,7 @@ model_tolerance <- lm(predicted_WL ~ delta_ct_cewe_MminusE,
 
 summary(model_tolerance)
 
-model <- lm(tolerance ~ HI + HI_2 * Sex, df)
+model <- lm(tolerance ~ HI + HE * Sex, df)
 summary(model)
 ####################################################################
 Field_asp <- Field %>%
@@ -540,40 +542,75 @@ model_tolerance <- lm(predicted_WL ~ Trichuris_muris,
 summary(model_tolerance)
 
 ##################################################################
-#### Testing multiple parasites
-model <- lm(predicted_WL ~ delta_ct_cewe_MminusE + Aspiculuris_sp +
-                Syphacia_sp + ILWE_Crypto_Ct, Field)
-summary(model)
+model1 <- lm(predicted_WL ~ MC.Eimeria + infected_Aspiculuris + HI + HE
+            + infected_syphasia + infected_crypto, data = Field_par)
+summary(model1)
+plot_summs(model1, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+           colors = "darkorange")-> plot1
+plot1
 
-
-model <- lm(predicted_WL ~ MC.Eimeria, Field)
-summary(model)
-
+ggsave(filename = "figures/coefficient_plot_model1.jpeg", plot = plot1, 
+       width = 8, height = 6, dpi = 300)
 
 #######################################
-model1 <- lm(predicted_WL ~ MC.Eimeria * HI_2, Field)
-summary(model)
-
-
-model1 <- lm(predicted_WL ~ #MC.Eimeria + 
-                HI + HI_2 + Aspiculuris_sp + 
-                Syphacia_sp, Field)
-summary(model1)
-
-
-model2 <- lm(predicted_WL ~ MC.Eimeria + 
-                HI + HI_2 + Aspiculuris_sp + 
-                Syphacia_sp, Field)
+model2 <- lm(predicted_WL ~ MC.Eimeria * HE, Field)
 summary(model2)
+plot_summs(model2) 
 
-model <- lm(predicted_WL ~ MC.Eimeria + 
-                HI + HI_2 + Aspiculuris_sp + 
-                Syphacia_sp, Field)
-summary(model)
 
-model <- lm(predicted_WL ~ MC.Eimeria *delta_ct_cewe_MminusE * HI_2 + 
-                HI + HI_2, Field)
-summary(model)
+## hybrid index + infectopm
+Field$MC.Eimeria <- as.factor(Field$MC.Eimeria)
+model3 <- lm(predicted_WL ~ MC.Eimeria *delta_ct_cewe_MminusE * HE + 
+                HI + HE, Field)
+summary(model3)
+
+plot_summs(model3, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+           colors = "darkseagreen") -> plot2
+
+ggsave(filename = "figures/coefficient_plot_model2.jpeg", plot = plot2, 
+       width = 8, height = 6, dpi = 300)
+
+ggpredict(model3, terms = c("MC.Eimeria", "delta_ct_cewe_MminusE")) %>%
+    plot()
+
+ggplot(Field, aes())
+
+## hybrid index + infectopm
+model4 <- lm(predicted_WL ~  HI + HE, Field)
+summary(model4)
+plot_summs(model4,  plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+           colors = "lightpink")  
+
+
+
+plot_summs(model3, model4,  robust = TRUE, 
+           scale = TRUE) -> model1_2
+
+ggsave(filename = "figures/coefficient_plot_model1_2.jpeg", plot = model1_2, 
+       width = 8, height = 6, dpi = 300)
+
+
+
+##
+Field_par <- Field %>%
+    mutate(
+        infected_Aspiculuris = Aspiculuris_sp != 0,
+        infected_syphasia = Syphacia_sp != 0,
+        infected_crypto = ILWE_Crypto_Ct != 0
+    )
+
+Field_par <- Field_par %>%
+    mutate(
+        infected_Aspiculuris = as.factor(infected_Aspiculuris),
+        infected_syphasia = as.factor(infected_syphasia),
+        infected_crypto = as.factor(infected_crypto)
+    )
+
+
+
+
+
+
 
 ##################################
 #raincloud plots
@@ -589,6 +626,9 @@ ggplot(Field, aes(x = MC.Eimeria, y = predicted_WL, color = MC.Eimeria)) +
 
 # Filter out NA values in MC.Eimeria
 Field_filtered <- Field %>% filter(!is.na(MC.Eimeria))
+
+
+
 
 # Define colors
 colors <- c("TRUE" = "firebrick3", "FALSE" = "steelblue")
@@ -609,6 +649,14 @@ ggplot(Field_filtered, aes(y = MC.Eimeria, x = predicted_WL, fill = MC.Eimeria))
         outlier.shape = NA,
         orientation = "y"  # Set orientation to y
     ) +
+    stat_dots(
+        # ploting on left side
+        side = "left",
+        # adjusting position
+        justification = 1.1,
+        # adjust grouping (binning) of observations
+        binwidth = 0.25,
+        alpha = 0.5) +
     geom_point(
         shape = 95,
         size = 15,
@@ -621,32 +669,23 @@ ggplot(Field_filtered, aes(y = MC.Eimeria, x = predicted_WL, fill = MC.Eimeria))
     labs(y = "Infection status with Eimerai spp.", 
          x = "Predicted detrimental immune signature") -> raincloud_plots__eimeria
 
+raincloud_plots__eimeria
+
 ggsave(plot = raincloud_plots__eimeria, filename = "figures/raincloud_eimeria.jpeg", 
        width = 6, 
        height = 4, dpi = 1000)
 
 ###############################################
 ########################
-Field <- Field %>%
-    mutate(
-        infected_Aspiculuris = Aspiculuris_sp != 0,
-        infected_syphasia = Syphacia_sp != 0,
-        infected_crypto = ILWE_Crypto_Ct != 0
-    )
-
-Field <- Field %>%
-    mutate(
-        infected_Aspiculuris = as.factor(infected_Aspiculuris),
-        infected_syphasia = as.factor(infected_syphasia),
-        infected_crypto = as.factor(infected_crypto)
-    )
-
-Field <- Field %>%
+# raincloud plots parasites
+Field_par <- Field_par %>%
     pivot_longer(cols = c("infected_Aspiculuris", "infected_syphasia", 
                           "infected_crypto"), names_to = "parasite",
-                 values_to = "infection_status")
+                 values_to = "infection_status")  %>% 
+    drop_na(infection_status)
 
-ggplot(Field, aes(y = infection_status, x = predicted_WL, 
+
+ggplot(Field_par, aes(y = infection_status, x = predicted_WL, 
                   fill = infection_status)) + 
     ggdist::stat_halfeye(
         adjust = .5, 
@@ -670,8 +709,24 @@ ggplot(Field, aes(y = infection_status, x = predicted_WL,
         color = "gray50",
         position = position_dodge(width = 0.75)
     ) +
+    stat_dots(
+        # ploting on left side
+        side = "left",
+        # adjusting position
+        justification = 1.1,
+        # adjust grouping (binning) of observations
+        binwidth = 0.25) +
     coord_cartesian(ylim = c(1.2, 2.9), clip = "off") +
     theme_minimal() +
     labs(y = "Infection status with Eimerai spp.", 
          x = "Predicted detrimental immune signature") +
-    facet_wrap(~ "parasite")
+    facet_wrap(~parasite) -> parasites
+
+parasites
+
+ggsave(plot = parasites, filename = "figures/raincloud_parasites.jpeg", 
+       width = 10, 
+       height = 4, dpi = 1000)
+
+###############################################################
+################################################
