@@ -23,7 +23,9 @@ library(logspline)
 library(caret)
 library(dplyr)
 library(tidyr)
-library(ggeffects)# read the data
+library(ggeffects)
+library(ggbeeswarm)
+library(ggdist)
 
 
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -406,7 +408,8 @@ ggplot(Field, aes(x = HI_2, OPG)) +
     geom_point() +
     geom_line()
 
-lm(formula = predicted_WL ~ HI_2 * Sex, data = Field)
+model <- lm(formula = predicted_WL ~ HI_2 * Sex, data = Field)
+summary(model)
 
 df <- Field %>%
     filter(MC.Eimeria == TRUE)
@@ -535,3 +538,140 @@ model_tolerance <- lm(predicted_WL ~ Trichuris_muris,
                       data = df)
 
 summary(model_tolerance)
+
+##################################################################
+#### Testing multiple parasites
+model <- lm(predicted_WL ~ delta_ct_cewe_MminusE + Aspiculuris_sp +
+                Syphacia_sp + ILWE_Crypto_Ct, Field)
+summary(model)
+
+
+model <- lm(predicted_WL ~ MC.Eimeria, Field)
+summary(model)
+
+
+#######################################
+model1 <- lm(predicted_WL ~ MC.Eimeria * HI_2, Field)
+summary(model)
+
+
+model1 <- lm(predicted_WL ~ #MC.Eimeria + 
+                HI + HI_2 + Aspiculuris_sp + 
+                Syphacia_sp, Field)
+summary(model1)
+
+
+model2 <- lm(predicted_WL ~ MC.Eimeria + 
+                HI + HI_2 + Aspiculuris_sp + 
+                Syphacia_sp, Field)
+summary(model2)
+
+model <- lm(predicted_WL ~ MC.Eimeria + 
+                HI + HI_2 + Aspiculuris_sp + 
+                Syphacia_sp, Field)
+summary(model)
+
+model <- lm(predicted_WL ~ MC.Eimeria *delta_ct_cewe_MminusE * HI_2 + 
+                HI + HI_2, Field)
+summary(model)
+
+##################################
+#raincloud plots
+ggplot(Field, aes(x = MC.Eimeria, y = predicted_WL, color = MC.Eimeria)) +
+    geom_violin(trim = FALSE, alpha = 0.5) + 
+    geom_quasirandom(aes(color = MC.Eimeria), size = 1, alpha = 0.8) +
+    geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.5) +
+    scale_color_brewer(palette = "Dark2") +
+    theme_minimal() +
+    labs(title = "Raincloud Plot of predicted_WL by MC.Eimeria Group",
+         x = "MC.Eimeria Group",
+         y = "Predicted WL")
+
+# Filter out NA values in MC.Eimeria
+Field_filtered <- Field %>% filter(!is.na(MC.Eimeria))
+
+# Define colors
+colors <- c("TRUE" = "firebrick3", "FALSE" = "steelblue")
+
+ggplot(Field_filtered, aes(y = MC.Eimeria, x = predicted_WL, fill = MC.Eimeria)) + 
+    ggdist::stat_halfeye(
+        adjust = .5, 
+        width = .6, 
+        alpha = 0.7,
+        .width = 0, 
+        justification = -.2, 
+        point_colour = NA,
+        orientation = "y"  # Set orientation to y
+    ) + 
+    scale_fill_manual(values = colors) +
+    geom_boxplot(
+        width = .15, 
+        outlier.shape = NA,
+        orientation = "y"  # Set orientation to y
+    ) +
+    geom_point(
+        shape = 95,
+        size = 15,
+        alpha = .2,
+        color = "gray50",
+        position = position_dodge(width = 0.75)
+    ) +
+    coord_cartesian(ylim = c(1.2, 2.9), clip = "off") +
+    theme_minimal() +
+    labs(y = "Infection status with Eimerai spp.", 
+         x = "Predicted detrimental immune signature") -> raincloud_plots__eimeria
+
+ggsave(plot = raincloud_plots__eimeria, filename = "figures/raincloud_eimeria.jpeg", 
+       width = 6, 
+       height = 4, dpi = 1000)
+
+###############################################
+########################
+Field <- Field %>%
+    mutate(
+        infected_Aspiculuris = Aspiculuris_sp != 0,
+        infected_syphasia = Syphacia_sp != 0,
+        infected_crypto = ILWE_Crypto_Ct != 0
+    )
+
+Field <- Field %>%
+    mutate(
+        infected_Aspiculuris = as.factor(infected_Aspiculuris),
+        infected_syphasia = as.factor(infected_syphasia),
+        infected_crypto = as.factor(infected_crypto)
+    )
+
+Field <- Field %>%
+    pivot_longer(cols = c("infected_Aspiculuris", "infected_syphasia", 
+                          "infected_crypto"), names_to = "parasite",
+                 values_to = "infection_status")
+
+ggplot(Field, aes(y = infection_status, x = predicted_WL, 
+                  fill = infection_status)) + 
+    ggdist::stat_halfeye(
+        adjust = .5, 
+        width = .6, 
+        alpha = 0.7,
+        .width = 0, 
+        justification = -.2, 
+        point_colour = NA,
+        orientation = "y"  # Set orientation to y
+    ) + 
+    scale_fill_manual(values = colors) +
+    geom_boxplot(
+        width = .15, 
+        outlier.shape = NA,
+        orientation = "y"  # Set orientation to y
+    ) +
+    geom_point(
+        shape = 95,
+        size = 15,
+        alpha = .2,
+        color = "gray50",
+        position = position_dodge(width = 0.75)
+    ) +
+    coord_cartesian(ylim = c(1.2, 2.9), clip = "off") +
+    theme_minimal() +
+    labs(y = "Infection status with Eimerai spp.", 
+         x = "Predicted detrimental immune signature") +
+    facet_wrap(~ "parasite")

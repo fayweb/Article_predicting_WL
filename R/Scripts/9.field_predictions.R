@@ -477,6 +477,8 @@ Field_crypto <- Field_crypto %>%
 
 Field_crypto$crypto_infected_ct <- as.factor(Field_crypto$crypto_infected_ct)
 
+
+
 fitWL_crypto_ct <- parasiteLoad::analyse(data = Field_crypto,
                                       response = "predicted_WL",
                                       model = "normal",
