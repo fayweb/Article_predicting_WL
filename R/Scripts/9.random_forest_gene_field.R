@@ -589,7 +589,8 @@ plot_summs(model3, model4,  robust = TRUE,
 ggsave(filename = "figures/coefficient_plot_model1_2.jpeg", plot = model1_2, 
        width = 8, height = 6, dpi = 300)
 
-
+model4 <- lm(predicted_WL ~  MC.Eimeria, Field)
+summary(model4)
 
 ##
 Field_par <- Field %>%
