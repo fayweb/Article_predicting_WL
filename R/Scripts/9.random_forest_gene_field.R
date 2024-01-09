@@ -160,13 +160,20 @@ ggplot(data = Field, aes(x = BMI, y = predicted_WL)) +
 
 bmi <- lm(predicted_WL ~ BMI, data = Field)
 
+bmi_plot <- 
+    ggpredict(bmi) %>%
+    plot(color = "purple") +
+    labs(y = "Predicted health impact", x = "BMI") +
+    theme(title = element_blank())
+
+
 cor(Field$BMI, Field$predicted_WL, use = "complete.obs")
 
 summary(bmi)
 
 confint(bmi)
 
-
+ggsave(filename = "figures/BMI_WL.jpeg", plot = bmi_plot, width = 5, height = 4, dpi = 1000)
 
 ## ---------------------------------------------------------------------------------------------------
 # load predicting parasite model
@@ -542,57 +549,9 @@ model_tolerance <- lm(predicted_WL ~ Trichuris_muris,
 summary(model_tolerance)
 
 ##################################################################
-model1 <- lm(predicted_WL ~ MC.Eimeria + infected_Aspiculuris + HI + HE
-            + infected_syphasia + infected_crypto, data = Field_par)
-summary(model1)
-plot_summs(model1, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
-           colors = "darkorange")-> plot1
-plot1
-
-ggsave(filename = "figures/coefficient_plot_model1.jpeg", plot = plot1, 
-       width = 8, height = 6, dpi = 300)
-
-#######################################
-model2 <- lm(predicted_WL ~ MC.Eimeria * HE, Field)
-summary(model2)
-plot_summs(model2) 
-
-
-## hybrid index + infectopm
-Field$MC.Eimeria <- as.factor(Field$MC.Eimeria)
-model3 <- lm(predicted_WL ~ MC.Eimeria *delta_ct_cewe_MminusE * HE + 
-                HI + HE, Field)
-summary(model3)
-
-plot_summs(model3, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
-           colors = "darkseagreen") -> plot2
-
-ggsave(filename = "figures/coefficient_plot_model2.jpeg", plot = plot2, 
-       width = 8, height = 6, dpi = 300)
-
-ggpredict(model3, terms = c("MC.Eimeria", "delta_ct_cewe_MminusE")) %>%
-    plot()
-
-ggplot(Field, aes())
-
-## hybrid index + infectopm
-model4 <- lm(predicted_WL ~  HI + HE, Field)
-summary(model4)
-plot_summs(model4,  plot.distributions = TRUE, robust = TRUE, scale = TRUE,
-           colors = "lightpink")  
-
-
-
-plot_summs(model3, model4,  robust = TRUE, 
-           scale = TRUE) -> model1_2
-
-ggsave(filename = "figures/coefficient_plot_model1_2.jpeg", plot = model1_2, 
-       width = 8, height = 6, dpi = 300)
-
-model4 <- lm(predicted_WL ~  MC.Eimeria, Field)
-summary(model4)
-
 ##
+Field <- Field %>%
+    mutate(infection_intensity_Eim = delta_ct_cewe_MminusE)
 Field_par <- Field %>%
     mutate(
         infected_Aspiculuris = Aspiculuris_sp != 0,
@@ -606,6 +565,62 @@ Field_par <- Field_par %>%
         infected_syphasia = as.factor(infected_syphasia),
         infected_crypto = as.factor(infected_crypto)
     )
+
+model1 <- lm(predicted_WL ~ MC.Eimeria + infected_Aspiculuris + HI + HE
+            + infected_syphasia + infected_crypto, data = Field_par)
+
+summary(model1)
+
+plot_summs(model1, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+           colors = "mediumblue") -> plot1
+plot1
+
+ggsave(filename = "figures/coefficient_plot_model1.jpeg", plot = plot1, 
+       width = 5, height = 4, dpi = 300)
+
+#######################################
+model2 <- lm(predicted_WL ~ MC.Eimeria * HE, Field)
+summary(model2)
+plot_summs(model2, plot.distributions = TRUE) 
+
+
+## hybrid index + infectopm
+Field$MC.Eimeria <- as.factor(Field$MC.Eimeria)
+model3 <- lm(predicted_WL ~ MC.Eimeria *infection_intensity_Eim * HE + 
+                HI + HE, Field)
+summary(model3)
+
+plot_summs(model3, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+           colors = "mediumblue") -> plot2
+
+plot2 
+
+ggsave(filename = "figures/coefficient_plot_model2.jpeg", plot = plot2, 
+       width = 5, height = 4, dpi = 300)
+
+ggpredict(model3, terms = c("MC.Eimeria", "delta_ct_cewe_MminusE")) %>%
+    plot()
+
+## hybrid index + infectopm
+model4 <- lm(predicted_WL ~  HI + HE, Field)
+summary(model4)
+plot_summs(model4,  plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+           colors = "mediumblue")  -> plot_4
+
+ggsave(filename = "figures/coefficient_plot_HE.jpeg", plot = plot_4, 
+       width = 5, height = 4, dpi = 300)
+
+plot_summs(model3, model4,  robust = TRUE, 
+           scale = TRUE) -> model1_2
+model1_2
+
+ggsave(filename = "figures/coefficient_plot_model1_2.jpeg", plot = model1_2, 
+       width = 8, height = 6, dpi = 300)
+
+model4 <- lm(predicted_WL ~  MC.Eimeria, Field)
+summary(model4)
+
+
 
 
 

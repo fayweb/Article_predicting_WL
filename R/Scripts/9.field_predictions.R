@@ -191,8 +191,8 @@ plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
 
 plot_WL_Sex
 
-ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 6, 
+       height = 6, dpi = 1000)
 
 
 # Adjust the gradient bar plot to include axis labels and remove space
@@ -221,15 +221,14 @@ plot_WL_Sex_combined <-
               align = "hv",
               axis = "tb",
               vjust = c(-1,2),
-              scale = 1.1) 
+              scale = 1) 
    
 # Display the combined plot
 plot_WL_Sex_combined
 
 
 ggsave(plot = plot_WL_Sex_combined, 
-       filename = "figures/hybrid_sex.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_sex.jpeg", width = 6, height = 6, dpi = 1000)
 
 
 ####################### Mapping ######################################
@@ -339,8 +338,8 @@ plot_WL_mc_combined
 
 
 ggsave(plot = plot_WL_mc_combined, 
-       filename = "figures/hybrid_meltingcurve.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_meltingcurve.jpeg",  
+       width = 6, height = 6, dpi = 1000)
 
 
 
@@ -398,8 +397,7 @@ combined_plot
 
 
 ggsave(plot = combined_plot, 
-       filename = "figures/hybrid_infected_ct.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_infected_ct.jpeg",  width = 6, height = 6, dpi = 1000)
 
 
 ##################### Eimeria oocysts
@@ -456,8 +454,7 @@ combined_plot_ooc
 
 
 ggsave(plot = combined_plot_ooc, 
-       filename = "figures/hybrid_eimeria_ooc.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_eimeria_ooc.jpeg",  width = 6, height = 6, dpi = 1000)
 
 ###################################
 
@@ -465,6 +462,7 @@ ggsave(plot = combined_plot_ooc,
 ####################################################
 #####  crpyto ct
 Field_crypto <- Field %>%
+    drop_na(ILWE_Crypto_Ct) %>%
     mutate(crypto_infected_ct = 
                case_when(
                    ILWE_Crypto_Ct > 0 ~ "TRUE",
@@ -523,8 +521,7 @@ plot_WL_crypto_Ct
 
 
 ggsave(plot = plot_WL_crypto_Ct, 
-       filename = "figures/hybrid_crypto_qpcr.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_crypto_qpcr.jpeg",  width = 6, height = 6, dpi = 1000)
 
 rm(Field_crypto, Field_ct, Field_mc, gamma_, normal_, weibull_)
 
@@ -602,8 +599,8 @@ plot_WL_worms
 
 
 ggsave(plot = plot_WL_worms, 
-       filename = "figures/hybrid_aspiculuris.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_aspiculuris.jpeg",  width = 6, height = 6, 
+       dpi = 1000)
 
 ##############################################################
 #####  Syphacia
@@ -664,8 +661,8 @@ plot_WL_syphacia
 
 
 ggsave(plot = plot_WL_syphacia, 
-       filename = "figures/hybrid_syphacia.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_syphacia.jpeg",  width = 6, height = 6, 
+       dpi = 1000)
 
 ##############  Trichuris
 wormy_field <- Field %>%
@@ -725,8 +722,7 @@ plot_WL_trichuris
 
 
 ggsave(plot = plot_WL_trichuris, 
-       filename = "figures/hybrid_trichuris.jpeg", width = 10, 
-       height = 8, dpi = 1000)
+       filename = "figures/hybrid_trichuris.jpeg", width = 6, height = 6, dpi = 1000)
 
 
 ##############  Heterakis
@@ -787,11 +783,7 @@ plot_WL_heterakis
 
 
 ggsave(plot = plot_WL_heterakis, 
-       filename = "figures/hybrid_heterakis.jpeg", width = 10, 
-       height = 8, dpi = 1000)
-
-
-
+       filename = "figures/hybrid_heterakis.jpeg",  width = 6, height = 6, dpi = 1000)
 
 
 

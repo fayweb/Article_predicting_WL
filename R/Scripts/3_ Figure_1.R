@@ -299,7 +299,7 @@ summary(model_2)
 
 # without host data
 model_3 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
-                  immunization + weight_dpi0, data = lab)
+                  immunization, data = lab)
 
 summary(model_3)
 
@@ -327,8 +327,11 @@ plot_coefs(model_1, model_2, model_3, model_4, model_5)
 ## Please cite as:
 ##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
 stargazer(model_1, model_2, model_3, model_4, 
-          type = "html", out = "figures/predictors_weightloss.html", 
-          title = "Linear models - Predicting maximum weight loss")
+          type = "latex",
+          out = "tables/stargazer.txt", 
+          title = "Linear models - Predicting maximum weight loss",
+          align = TRUE,
+          float = TRUE)
 
 #correcting for nas in delta ct
 model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>% 
@@ -341,8 +344,8 @@ model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab %>%
 # Anova of different models
 anova_mod <- anova(model_1, model_2, model_3, model_4)
 
-stargazer(anova_mod, type = "html", out = "figures/anova_model.html", title = 
-              "Analysis of Variance Table")
+stargazer(anova_mod, type = "html", out = "figures/anova_model.html", 
+          title = "Analysis of Variance Table")
 
 #see the ggefects
 effects <- ggpredict(model_4)
@@ -404,8 +407,11 @@ ggsave(filename = "figures/pc2_current_infection.jpeg",
 plot_summs(model_4)
 
 ## divided by infections
+lab$current_infection <- as.factor(lab$current_infection)
 model_5 <- lm(WL_max ~ PC1*current_infection + PC2*current_infection, data = lab) #, data = lab %>% drop_na(delta_ct_cewe_MminusE))
 summary(model_5)
+
+plot_summs(model_5)
 
 # Now create the scatter plot using this color mapping
 ggpredict(model_5, terms = c("PC1", "current_infection")) %>% 

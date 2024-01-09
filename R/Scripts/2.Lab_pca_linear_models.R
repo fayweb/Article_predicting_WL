@@ -453,13 +453,16 @@ parasite_colors <- c("E_falciformis" = "coral2",
 #my_colors <- colorRampPalette(c("red", "white", "blue"))(100)
 
 # Generate the heat map
-pheatmap(heatmap_data, annotation_col = annotation_df,# color = my_colors,
+heatmap <-
+    pheatmap(heatmap_data, annotation_col = annotation_df,# color = my_colors,
          scale = "row",
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean",
          annotation_colors = list(current_infection = parasite_colors)) # use annotation_colors
 
 
+ggsave(filename = "figures/heatmap_lab_genes.jpeg", plot = heatmap, 
+       width = 8, height = 4, dpi =1000)
 ####### Gene enrichment analysis
 #create a new vector n to match the genes with gene ids in the package
 # Enrichr

@@ -1,0 +1,91 @@
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: Mon, Jan 08, 2024 - 16:54:07
+\begin{table}[!htbp] \centering 
+  \caption{Linear models - Predicting maximum weight loss} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{4}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-5} 
+\\[-1.8ex] & \multicolumn{4}{c}{WL\_max} \\ 
+\\[-1.8ex] & (1) & (2) & (3) & (4)\\ 
+\hline \\[-1.8ex] 
+ PC1 & 0.145 & 0.367 & 0.316 & 0.477$^{*}$ \\ 
+  & (0.234) & (0.294) & (0.204) & (0.251) \\ 
+  & & & & \\ 
+ PC2 & $-$0.693$^{**}$ & $-$0.516 & $-$1.105$^{***}$ & $-$1.381$^{***}$ \\ 
+  & (0.301) & (0.374) & (0.280) & (0.367) \\ 
+  & & & & \\ 
+ current\_infectionE\_ferrisi & $-$2.803$^{**}$ &  & $-$3.088$^{**}$ &  \\ 
+  & (1.382) &  & (1.387) &  \\ 
+  & & & & \\ 
+ current\_infectionuninfected & $-$1.324 &  & $-$1.823 &  \\ 
+  & (1.594) &  & (1.563) &  \\ 
+  & & & & \\ 
+ delta\_ct\_cewe\_MminusE & 0.629$^{***}$ &  & 0.704$^{***}$ &  \\ 
+  & (0.128) &  & (0.118) &  \\ 
+  & & & & \\ 
+ mouse\_strainBUSNA\_PWD & 0.056 & 0.100 &  &  \\ 
+  & (4.623) & (5.948) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainBUSNA\_STRA & 0.268 & 0.298 &  &  \\ 
+  & (3.707) & (4.844) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainNMRI & $-$6.186 & 0.809 &  &  \\ 
+  & (5.151) & (6.621) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainPWD\_BUSNA & 1.145 & 0.290 &  &  \\ 
+  & (4.039) & (5.262) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainPWD\_PWD & 5.859$^{*}$ & 11.189$^{***}$ &  &  \\ 
+  & (3.047) & (3.800) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainPWD\_SCHUNT & $-$0.469 & 0.287 &  &  \\ 
+  & (4.018) & (5.269) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainSCHUNT\_PWD & $-$2.845 & $-$2.571 &  &  \\ 
+  & (3.760) & (4.869) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainSCHUNT\_SCHUNT & 2.642 & 5.862 &  &  \\ 
+  & (2.965) & (3.821) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainSCHUNT\_STRA & 5.212 & 5.940 &  &  \\ 
+  & (4.132) & (5.410) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainSTRA\_BUSNA & $-$1.414 & $-$0.276 &  &  \\ 
+  & (3.857) & (5.024) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainSTRA\_SCHUNT & 0.793 & 1.307 &  &  \\ 
+  & (3.831) & (4.987) &  &  \\ 
+  & & & & \\ 
+ mouse\_strainSTRA\_STRA & $-$3.139 & $-$2.723 &  &  \\ 
+  & (3.798) & (4.931) &  &  \\ 
+  & & & & \\ 
+ immunizationhomologous & $-$0.947 &  & $-$0.457 &  \\ 
+  & (1.417) &  & (1.388) &  \\ 
+  & & & & \\ 
+ immunizationnaive & $-$0.642 &  & 0.452 &  \\ 
+  & (1.789) &  & (1.765) &  \\ 
+  & & & & \\ 
+ immunizationuninfected & $-$3.369$^{*}$ &  & $-$3.162$^{*}$ &  \\ 
+  & (1.766) &  & (1.745) &  \\ 
+  & & & & \\ 
+ weight\_dpi0 & 0.298$^{**}$ & 0.179 & 0.023 &  \\ 
+  & (0.131) & (0.165) & (0.043) &  \\ 
+  & & & & \\ 
+ Constant & 6.561$^{*}$ & 0.405 & 14.757$^{***}$ & 9.662$^{***}$ \\ 
+  & (3.931) & (4.771) & (1.743) & (0.641) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 128 & 136 & 128 & 136 \\ 
+R$^{2}$ & 0.631 & 0.329 & 0.569 & 0.118 \\ 
+Adjusted R$^{2}$ & 0.557 & 0.245 & 0.536 & 0.104 \\ 
+Residual Std. Error & 5.218 (df = 106) & 6.865 (df = 120) & 5.344 (df = 118) & 7.477 (df = 133) \\ 
+F Statistic & 8.614$^{***}$ (df = 21; 106) & 3.924$^{***}$ (df = 15; 120) & 17.281$^{***}$ (df = 9; 118) & 8.875$^{***}$ (df = 2; 133) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 
