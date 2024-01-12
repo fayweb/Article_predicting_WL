@@ -427,12 +427,13 @@ heatmap_data <-  heatmap_data[, colSums(is.na(heatmap_data)) !=
 
 #Prepare the annotation data frame
 annotation_df <- as_tibble(lab) %>%
-  dplyr::select(c("Mouse_ID",  "WL_max", "Parasite_challenge")) 
+  dplyr::select(c("Mouse_ID",  "WL_max", "current_infection", "MC.Eimeria",
+                  "delta_ct_cewe_MminusE")) 
 
 annotation_df <- unique(annotation_df) 
 
 annotation_df <- as.data.frame(annotation_df)
-
+annotation_df$MC.Eimeria <- as.factor(annotation_df$MC.Eimeria)
 
 ### Prepare the annotation columns for the heatmap
 rownames(annotation_df) <- annotation_df$Mouse_ID
@@ -453,15 +454,18 @@ parasite_colors <- c("E_falciformis" = "coral2",
 #my_colors <- colorRampPalette(c("red", "white", "blue"))(100)
 
 # Generate the heat map
-heatmap <-
+heatmap_eim <-
     pheatmap(heatmap_data, annotation_col = annotation_df,# color = my_colors,
          scale = "row",
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean",
-         annotation_colors = list(current_infection = parasite_colors)) # use annotation_colors
+         annotation_colors = list(current_infection = parasite_colors, 
+                                  MC.Eimeria = c("TRUE" = "red",
+                                                 "FALSE" = "blue"))) # use annotation_colors
 
 
-ggsave(filename = "figures/heatmap_lab_genes.jpeg", plot = heatmap, 
+
+ggsave(filename = "figures/heatmap_lab_genes.jpeg", plot = heatmap_eim, 
        width = 8, height = 4, dpi =1000)
 ####### Gene enrichment analysis
 #create a new vector n to match the genes with gene ids in the package

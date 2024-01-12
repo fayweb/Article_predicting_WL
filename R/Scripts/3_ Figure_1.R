@@ -330,8 +330,7 @@ stargazer(model_1, model_2, model_3, model_4,
           type = "latex",
           out = "tables/stargazer.txt", 
           title = "Linear models - Predicting maximum weight loss",
-          align = TRUE,
-          float = TRUE)
+          align = TRUE)
 
 #correcting for nas in delta ct
 model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>% 
