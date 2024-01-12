@@ -746,3 +746,11 @@ ggsave(plot = parasites, filename = "figures/raincloud_parasites.jpeg",
 
 ###############################################################
 ################################################
+
+model <- lm(predicted_WL ~ eimeriaSpecies, data = Field)
+summary(model)
+
+
+model <- test.an
+ggpredict(model) %>%
+    plot()
