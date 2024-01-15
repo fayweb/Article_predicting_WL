@@ -1,3 +1,4 @@
+
 #install.packages("optimx", version = "2021-10.12") # this package is required for 
 #the parasite load package to work
 #require(devtools)
@@ -751,6 +752,103 @@ model <- lm(predicted_WL ~ eimeriaSpecies, data = Field)
 summary(model)
 
 
-model <- test.an
-ggpredict(model) %>%
+
+amplicon <- read.csv("https://raw.githubusercontent.com/ferreira-scm/Eimeria_AmpSeq/master/data/Wild/Sample_selection_Metabarcoding_Complete.csv")
+
+
+glimpse(amplicon)
+glimpse(Field)
+
+
+eimer_sp <- amplicon %>%
+    dplyr::select(c(Mouse_ID, Species)) %>%
+    rename(amplicon_species = Species) %>%
+    drop_na(amplicon_species)
+
+eimer_sp$Mouse_ID <- gsub(pattern = "_", replacement = "", x = eimer_sp$Mouse_ID)
+
+
+Field <- Field %>%
+    left_join(eimer_sp, by = "Mouse_ID")
+
+
+
+
+# create new variable depending on amplicon sequencing
+Field <- Field %>%
+    mutate(species_Eimeria = case_when(
+        is.na(eimeriaSpecies) ~ amplicon_species,
+        !is.na(eimeriaSpecies) ~ eimeriaSpecies))
+
+Field$species_Eimeria <- gsub(pattern = "Negative", replacement = "uninfected", 
+                              x = Field$species_Eimeria)
+
+Field <- Field %>%
+    mutate(infection_status = case_when(
+        is.na(MC.Eimeria) & species_Eimeria == "uninfected" ~ "FALSE",
+        is.na(MC.Eimeria) & species_Eimeria == "E_falciformis" ~ "TRUE",
+        is.na(MC.Eimeria) & species_Eimeria == "E_ferrisi" ~ "TRUE",
+        !is.na(MC.Eimeria) ~ MC.Eimeria
+    ))
+
+Field$infection_status <- as.factor(Field$infection_status)
+############
+
+infected <- parasiteLoad::analyse(data = Field,
+                                            response = "predicted_WL",
+                                            model = "normal",
+                                            group = "infection_status")
+
+
+
+plot_infected <- 
+    bananaPlot(mod = infected$H3,
+               data = Field,
+               response = "predicted_WL",
+               group = "infection_status") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+    scale_color_manual(values = c("blueviolet", "limegreen")) +
+    theme_bw() 
+
+plot_infected
+
+##############
+model <- lm(predicted_WL ~ species_Eimeria, data = Field)
+summary(model)
+
+
+ggpredict(model = model) %>%
     plot()
+
+
+
+##All
+only_inf <- Field %>%
+    dplyr::filter(species_Eimeria == c("E_falciformis", "E_ferrisi"))
+
+only_inf$species_Eimeria <- as.factor(only_inf$species_Eimeria)
+
+fitWL_species_Diff <- parasiteLoad::analyse(data = only_inf,
+                                   response = "predicted_WL",
+                                   model = "normal",
+                                   group = "species_Eimeria")
+
+
+
+plot_species <- 
+    bananaPlot(mod = fitWL_species_Diff$H3,
+               data = only_inf,
+               response = "predicted_WL",
+               group = "species_Eimeria") +
+    scale_fill_manual(values = c("blueviolet", "limegreen")) +
+    scale_color_manual(values = c("blueviolet", "limegreen")) +
+    theme_bw() 
+
+
+plot_species
+
+A <- Field %>%
+    dplyr::select(c(Mouse_ID, infection_status, species_Eimeria))
+
+
+write.csv(A, "tables/table_for_saskia.csv", row.names = FALSE)
