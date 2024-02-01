@@ -852,3 +852,4 @@ A <- Field %>%
 
 
 write.csv(A, "tables/table_for_saskia.csv", row.names = FALSE)
+
