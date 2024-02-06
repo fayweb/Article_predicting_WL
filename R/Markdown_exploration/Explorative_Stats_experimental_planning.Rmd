@@ -3,15 +3,15 @@ title: "Data exploration of the immune response of wild mice against parasite in
 author: "Fay"
 date: "2024-02-01"
 output: 
+    pdf_document:
+         keep_md: true
+         fig_width: 12
+         fig_height: 8
     html_document:
         toc: yes # table of content
         toc_float: 
             collapsed: false # show full toc
             smooth_scroll: true # toc scrolling behavior
-    pdf_document:
-         keep_md: true
-         fig_width: 12
-         fig_height: 8
 ---
 
 ```{r setup, include=FALSE}
@@ -33,6 +33,7 @@ library(pheatmap)
 library(tibble)
 library(corrplot)
 library(RColorBrewer)
+library(leaflet)
 
 ```
 
@@ -106,9 +107,14 @@ lab %>%
     # Use a nice color scale, like Viridis
     theme_minimal() + # Apply a minimal theme for a cleaner look
     theme(axis.text.x = element_text(angle = 50)) +
-    labs(title = "Mouse Strain in experimental infections", x = "Mouse Strain", 
+    labs(title = "Mouse strains in experimental infections", x = "Mouse Strain", 
          y = "Count") +# Add label
-    guides(fill = "none")
+    guides(fill = "none") -> m_s
+
+m_s
+
+ggsave(filename = "~/GitHub/Article_predicting_WL/figures/mice_strains_n.jpeg",
+        plot = m_s, width = 8, height = 6)
 ```
 
 
@@ -292,13 +298,72 @@ GENE_M <- GENE_M %>%
 
 length(GENE_M$Mouse_ID)
 ```
+
 ### How many mice have immune gene expression AND FACS data
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
 length(intersect(FACS_M$Mouse_ID, GENE_M$Mouse_ID))
 ```
+
 For the complete FACS Data set, immune gene expression is complete
 
+
+# Field infections - experimental planning
+Number of mice with FACS data
+```{r, message=FALSE, warning=FALSE}
+FACS_M_f <- field %>%
+    dplyr::select(Mouse_ID, all_of(facs_field))
+
+FACS_f <- FACS_M_f %>%
+    dplyr::select(-Mouse_ID)
+
+#remove rows with only nas
+FACS_f <- FACS_f[,colSums(is.na(FACS_f))<nrow(FACS_f)]
+
+#remove colums with only nas 
+FACS_f <- FACS_f[rowSums(is.na(FACS_f)) != ncol(FACS_f), ]
+
+FACS_M_f <- FACS_M_f %>%
+    filter(row.names(FACS_M_f) %in% row.names(FACS_f))
+
+FACS_field <- field %>%
+    filter(row.names(field) %in% row.names(FACS_f))
+
+length(FACS_M_f$Mouse_ID)
+
+```
+Number of mice with gene expression data 
+
+```{r warning = FALSE, message = FALSE}
+length(field$Mouse_ID)
+```
+Mice with gene expression data
+```{r}
+# Create a leaflet map
+leaflet(data = field) %>%
+  addTiles() %>%  # Add default OpenStreetMap tiles
+  addCircleMarkers(~Longitude, ~Latitude, color = ~colorFactor(c("blue", "red"), HI)(HI),
+                   popup = ~Mouse_ID) %>%
+  addProviderTiles(providers$Stamen.Terrain) %>%
+  setView(lng = mean(field$Longitude), lat = mean(field$Latitude), zoom = 7.5)
+
+```
+
+
+
+```{r}
+# Create a leaflet map
+leaflet(data = FACS_field) %>%
+  addTiles() %>%  # Add default OpenStreetMap tiles
+  addCircleMarkers(~Longitude, ~Latitude, color = ~colorFactor(c("blue", "red"), HI)(HI),
+                   popup = ~Mouse_ID) %>%
+  addProviderTiles(providers$Stamen.Terrain) %>%
+  setView(lng = mean(field$Longitude), lat = mean(field$Latitude), zoom = 7.5)
+
+```
+
+
 ## Immune cells
+### Laboratory infections - immune cells
 
 ```{r HEATMAP_lab_facs, message=FALSE, echo = FALSE, warning=FALSE, fig.width=10, fig.height=8}
 
@@ -332,7 +397,7 @@ annotation_df <- unique(annotation_df) %>%
     dplyr::filter(Mouse_ID %in% colnames(heatmap_data))
 
 ### Prepare the annotation columns for the heatmap
-rownames(annotation_df) <- annotation_df$EH_ID
+rownames(annotation_df) <- annotation_df$Mouse_ID
 
 # Match the row names to the heatmap data frame
 rownames(annotation_df) <- colnames(FACS)
@@ -357,8 +422,60 @@ heatmap_data %>%
            annotation_colors = annotation_colors,
            scale = "row")
 ```
+### Field infections immune cells - heatmap
+```{r HEATMAP_field_facs, message=FALSE, echo = FALSE, warning=FALSE, fig.width=10, fig.height=8}
+
+annotation_df <- FACS_field %>% 
+    dplyr::select(c("Mouse_ID", "MC.Eimeria",
+                    "HI", "delta_ct_cewe_MminusE", all_of(facs_field))) %>%
+    drop_na()
 
 
+FACS <- annotation_df %>%
+    dplyr::select(c(Mouse_ID, all_of(facs_field)))
+
+annotation_df <- annotation_df %>%
+    dplyr::select(-all_of(facs_field))
+
+annotation_df$MC.Eimeria <- as.factor(annotation_df$MC.Eimeria)
+
+# turn the data frame intFFACS_field# turn the data frame intFACS_field# turn the data frame into a matrix and transpose it. We want to have each cell 
+# type as a row name 
+FACS <- t(as.matrix(FACS))
+
+#switch the matrix back to a data frame format
+FACS <- as.data.frame(FACS)
+
+# turn the first row into column names
+FACS %>%
+  row_to_names(row_number = 1) -> FACS
+
+# Now further prepare the data frame for plotting by removing the first row
+## and convert the column to row names with the cells 
+heatmap_data <- FACS
+
+# turn the columns to numeric other wise the heatmap function will not work
+heatmap_data[] <- lapply(heatmap_data, function(x) as.numeric(as.character(x)))
+
+
+annotation_df <- unique(annotation_df) %>%
+    dplyr::filter(Mouse_ID %in% colnames(heatmap_data))
+
+### Prepare the annotation columns for the heatmap
+rownames(annotation_df) <- annotation_df$Mouse_ID
+
+# Match the row names to the heatmap data frame
+rownames(annotation_df) <- colnames(FACS)
+
+#remove the unecessary column
+annotation_df <- annotation_df %>% dplyr::select(-Mouse_ID, )
+
+
+heatmap_data %>% 
+  pheatmap(annotation_col = annotation_df,
+           scale = "row")
+```
+### Correlation between cells laboratory infections
 ```{r facs_core, echo = FALSE, warning=FALSE, message = FALSE}
 FACS <- FACS_M %>%
     dplyr::select(-Mouse_ID)
@@ -369,6 +486,26 @@ facs_correlation <- as.matrix(cor(FACS,
 
 # load the function to calculate the p value for correlations
 source("~/GitHub/Article_predicting_WL/R/Functions/p_value_for_correlations.R")
+
+# matrix of the p-value of the correlatio
+p.mat <- cor.mtest(facs_correlation)
+
+corrplot(facs_correlation, 
+         method = "circle",  #method of the plot, "color" would show colour gradient
+         tl.col = "black", tl.srt=45, #colour of labels and rotation
+         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
+         order="hclust", #hclust reordering
+         p.mat = p.mat, sig.level = 0.01, insig = "blank",
+         addCoef.col = 'black',
+         number.cex=0.5) 
+  #Add significance level to the correlogram
+#remove the values that are insignificant
+```
+```{r facs_core_field, echo = FALSE, warning=FALSE, message = FALSE}
+# draw correlation between the cells
+facs_correlation <- as.matrix(cor(FACS_M_f %>%
+                                      dplyr::select(-Mouse_ID), 
+                                  use="pairwise.complete.obs"))
 
 # matrix of the p-value of the correlatio
 p.mat <- cor.mtest(facs_correlation)
@@ -405,152 +542,5 @@ f %>%
   scale_color_manual(values = color_mapping) 
 
 
-```
-
-
-# Field infections
-
-## Correlations between the cells 
-
-
-```{r, echo = FALSE}
-facs_correlation <- MICE %>% 
-  filter(origin == "Field") %>%
-  ungroup() %>%
-  dplyr::select(all_of(Facs_wild))
-
-# draw correlation between the genes
-facs_correlation <- as.matrix(cor(facs_correlation, use="pairwise.complete.obs"))
-
-
-# matrix of the p-value of the correlatio
-p.mat <- cor.mtest(facs_correlation)
-```
-
-
-## Corrplot of correlations - Field facs data
-
-Here is a corrplot of the correlations between the cells
-
-
-```{r, echo = FALSE}
-
-corrplot(facs_correlation, 
-         method = "circle",  #method of the plot, "color" would show colour gradient
-         tl.col = "black", tl.srt=45, #colour of labels and rotation
-         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
-         order="hclust", #hclust reordering
-         p.mat = p.mat, sig.level = 0.01, insig = "blank",
-         addCoef.col = 'black',
-         number.cex=0.5) #Add significance level to the correlogram
-#remove the values that are insignificant
-```
-
-## Immune cells versus infection intensities - Field infections
-
-
-```{r , echo = FALSE, message = FALSE}
-
-f <- MICE %>% 
-  filter(origin == "Field") %>%
-  dplyr::group_by(Mouse_ID) %>%
-  pivot_longer(cols = all_of(Facs_wild), names_to = "Cells", 
-               values_to = "Percentage")
-
-f <- unique(f)
-
-
-f %>%
-  ggplot(aes(x = eimeriaSpecies, y = Percentage, 
-             color = eimeriaSpecies)) + 
-  geom_boxplot() +
-  geom_jitter() +
-  facet_wrap(~ Cells) +
-    labs(x = "Infective parasite species", y = "Immune Cells",
-         title = "Immune cells in response to parasite species -
-         field data") +
-  theme_bw() +
-  theme(axis.text.x = element_blank(),
-        plot.title = element_text(size= 30))
-
-
-
-```
-
-
-
-
-```{r}
-
-f %>%
-    filter(!eimeriaSpecies == "uninfected", MC.Eimeria == "TRUE") %>%
-    ggplot(aes(x = delta_ct_cewe_MminusE, y = Percentage, 
-               color = eimeriaSpecies)) +
-    geom_jitter() +
-    facet_wrap(~ Cells, scales = "free") +
-    theme_light() +
-    labs(x = "Delta Ct, Infection intensity", y = "Percentage",
-         title = "Immune cells in response to infection intensity - 
-         field data") +
-    theme_bw() +
-  theme(plot.title = element_text(size= 30))
-
-
-```
-
-
-
-
-
-
-#####################
-# FACS correlations in lab and field data
-
-
-```{r, echo = FALSE}
-facs_correlation1 <- MICE %>% 
-  filter(origin == "Lab", infection == "challenge", dpi == dpi_max) %>%
-  ungroup() %>%
-  dplyr::select(c(Mouse_ID, all_of(Facs_lab)))
-
-facs_correlation2 <- MICE %>% 
-  filter(origin == "Field") %>%
-  ungroup() %>%
-  dplyr::select(c(Mouse_ID, all_of(Facs_wild)))
-
-# We want to have the same exactly columns in order for our correlation to work
-facs_correlation1 <- facs_correlation1 %>%
-  dplyr::select(colnames(facs_correlation2))
-
-facs_correlation <- rbind(facs_correlation1, facs_correlation2)
-
-facs_correlation <- facs_correlation %>% 
-  dplyr::select(-Mouse_ID)
-
-# draw correlation between the genes
-facs_correlation <- as.matrix(cor(facs_correlation, 
-                                  use="pairwise.complete.obs"))
-
-
-# matrix of the p-value of the correlatio
-p.mat <- cor.mtest(facs_correlation)
-```
-
-
-## Corrplot of correlations - *Laboratory and field* gene expression data
-
-Here is a corrplot of the correlations between the genes.
-
-```{r, echo = FALSE}
-corrplot(facs_correlation, 
-         method = "circle",  #method of the plot, "color" would show colour gradient
-         tl.col = "black", tl.srt=45, #colour of labels and rotation
-         col = brewer.pal(n = 8, name ="RdYlBu"), #colour of matrix
-         order="hclust", #hclust reordering
-         p.mat = p.mat, sig.level = 0.01, insig = "blank",
-         addCoef.col = 'black',
-         number.cex=0.5) 
-  #Add significance level to the correlogram
-#remove the values that are insignificant
 ```
 
