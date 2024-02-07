@@ -66,6 +66,76 @@ Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10",
                 "TICAM1", "TNF") #"IL.12", "IRG6")
 ```
 
+# Data structure of field and laboratory data sets
+## Data originating from yearly field excursions in the House Mouse Hybrid Zone
+
+GitHub repository: https://github.com/derele/Mouse_Eimeria_Field/tree/master
+
+```{r include = FALSE, message = FALSE, warning=FALSE}
+sota_org <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/documentation/Documentation_MEF.csv")
+
+kable(sota_org)
+```
+
+### Infection intensity data 
+*Eimeria spp.* oocysts counting:
+
+counter: character, Person who counted
+Feces_g: numeric, amount of feces used in flotation
+Date_count: date counted
+N_oocysts_sq1 ... sq8: numeric, individual count for each single square on the neubaure chamber (up to 8)
+mean_neubauer: numeric, mean of the 8 squares
+PBS_dil_in_mL: numeric, in which volume of PBS whas
+Ncells: number of neubauer "cells" (squares) counted
+OPG: oocysts per gram feces (calculated from the above)
+In some cases only OPG data might be available or rather data would need to be re-formatted to access all the raw values.
+
+*Eimeria spp.* detection qPCR
+We perform relative qPCR for detection and quantification of Eimeria DNA in intestinal tissue. We amplify a locus in the nuclear genome of the house mouse and a locus in the mitochondrial genome (COI) of Eimeria. We then calculate a "delta" between the two ct values.
+
+delta_ct_ilwe_MminusE: threshold cycle for mouse minus Eimeria in Ileum tissue. Only E. vermiformis is (at low pervalence in Ileum tissue) and we therefore don't obtain this data-type for all years.
+
+delta_ct_cewe_MminusE: threshold cycle for mouse minus Eimeria in Caecume tissue. E. ferrisi and E. falcifromis are detected here. We should have this (as coprehensively as possible) for every year!
+
+MC.Eimeria: TRUE/FALSE. This was established in 2018 as an improvement over the '> -5 delta ct rule' for identification of Eimeria -positive qPCRs. Melting curves have to show a drastic drop at XX°C to indicate melting of a proper Eimeria COI amplification product. It might be added where possible for per 2018 data post-hoc (if melting curves exist for a review of raw data).
+
+## Data structure - laboratory challenge infections with *Eimeria spp.* 
+
+Contains data for challenge (repeated) infections performed between 2017 and 2019.  The data product is structure in the following columns:
+
+Mouse_ID: the unique identifier of the mouse
+experiment: the experiment as numbered in the overview table
+mouse_strain: the strain (inbred or outbred) of the mouse
+primary_infection: The Eimeria strain used for the primary infection
+challenge_infection: The Eimeria strain used for the challenge infection
+infection_history: The resulting infection history
+labels: the unique label of the fecal sample at a particular dpi
+weight: the weight of the mouse at this dpi
+weight_dpi0: the weight at the day of infection
+relative_weight: the weight of the mouse at this dpi relative to the weight at dpi0
+feces_weight: the weight of the feces collected at this dpi
+dpi: days post infection at which samples and data in this row were taken
+infection: the infection (primary or challenge) this row/dpi corresponds to
+oocyst_sq1, oocyst_sq2, oocyst_sq3, oocyst_sq4: the raw values for squared during oocyst counting
+dilution: the amount of PBS the feces (with it's relative weight) was dissolved in
+OO4sq: the sum of oocysts in the four counting squares
+OOC: the overall number of oocysts in in the feces (of a particular weight) at this dpi
+OPG_O: Old way of counting opg (Emanuel ask me)
+infection_type: what kind of infection are we looking at (challenge or primary, homologous or heterologous immunization). This is differently coded to infection, as here UNI:E88 (first uninfected, then infected with E88) would count as a "primaryE88" infection
+The next values max_dpi until maximum_weight are calculated for the infection type in which the mice died
+
+max_dpi = maximum dpi that the mouse that the mouse reached for each infection challenge or primary (group_by EH_ID and infection (primary/challenge) to get the value
+
+maximum oocysts for each infection type (group_by EH_ID and infection (primary/challenge) to get the value)
+
+maximum weight loss for each infection type (group_by EH_ID and infection (primary/challenge) to get the value)
+
+death = challenge/primary (in which infection did the mouse die
+
+Eim_MC = Melting curve for eimeria
+
+delta = delta ct value
+
 
 # Experimental planning - Laboratory infections
 ## Selected mouse strains 
@@ -88,7 +158,7 @@ strains <- as.data.frame(hybrid_status, mouse_strains)
 kable(strains)
 ```
 
-
+Numbers of each mouse strain
 
 ```{r strains,  warnings = FALSE, echo = FALSE}
 lab %>%
@@ -132,6 +202,7 @@ Maximum weight loss =
 highest relative weight on any day of the experiment /
 starting weight 
 
+## Maximum relative weight loss in each infection group, in challenge and primary infections combined.
 
 
 ```{r general_WL_parasite, echo = FALSE, message=FALSE, warning=FALSE}
@@ -154,7 +225,6 @@ ggplot(lab %>%
 
 eimeria_weight
 
-  
 ```
 
 
@@ -184,7 +254,6 @@ eimeria_weight_challenge
 
 
 ## Weight loss per mouse strain 
-
 
 ```{r mouse_strain_WL, message=FALSE, echo = FALSE, warning=FALSE}
 # Define colors
@@ -241,8 +310,8 @@ strains_weight_challenge
 ```
 
 
-## Immune laboratory data
-### How many mice in the laboratory infections?
+## Preliminary data analysis immune data from laboratory infection experiments
+### For how many mice do we have immune data? 
 ```{r , message=FALSE, warning=FALSE}
 length(lab$Mouse_ID)
 ```
@@ -259,7 +328,8 @@ lab %>%
     group_by(infection, current_infection) %>%
     summarize(n())
 ```
-### Mice n - cell data
+
+### For how many mice do we have FACS data? 
 ```{r , message=FALSE, warning=FALSE, echo = FALSE}
 FACS_M <- lab %>%
     dplyr::select(Mouse_ID, all_of(facs_lab))
@@ -279,7 +349,7 @@ FACS_M <- FACS_M %>%
 length(FACS_M$Mouse_ID)
 ```
 
-### Mice n - immune gene expression data 
+### For how many mice do we have immune gene expression data?
 ```{r , message=FALSE, warning=FALSE, echo = FALSE}
 GENE_M <- lab %>%
     dplyr::select(Mouse_ID, all_of(Genes_v))
@@ -299,17 +369,17 @@ GENE_M <- GENE_M %>%
 length(GENE_M$Mouse_ID)
 ```
 
-### How many mice have immune gene expression AND FACS data
-```{r, message=FALSE, warning=FALSE, echo = FALSE}
+### How many mice have immune gene expression AND FACS data?
+```{r, message=FALSE, warning=FALSE}
 length(intersect(FACS_M$Mouse_ID, GENE_M$Mouse_ID))
 ```
 
-For the complete FACS Data set, immune gene expression is complete
+For the complete FACS Data set, immune gene expression is complete too.
 
 
-# Field infections - experimental planning
-Number of mice with FACS data
-```{r, message=FALSE, warning=FALSE}
+# Field infections - FACS immune cell data
+### Number of mice with FACS data
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
 FACS_M_f <- field %>%
     dplyr::select(Mouse_ID, all_of(facs_field))
 
@@ -331,13 +401,15 @@ FACS_field <- field %>%
 length(FACS_M_f$Mouse_ID)
 
 ```
-Number of mice with gene expression data 
 
-```{r warning = FALSE, message = FALSE}
+
+### Number of mice with gene expression data 
+
+```{r warning = FALSE, message = FALSE, echo = FALSE}
 length(field$Mouse_ID)
 ```
-Mice with gene expression data
-```{r}
+### Capture locations of mice with gene expression data
+```{r echo = FALSE, message = FALSE, warning = FALSE}
 # Create a leaflet map
 leaflet(data = field) %>%
   addTiles() %>%  # Add default OpenStreetMap tiles
@@ -348,9 +420,9 @@ leaflet(data = field) %>%
 
 ```
 
+### Capture locations of mice with immune cell data
 
-
-```{r}
+```{r echo = FALSE, message = FALSE, warning = FALSE}
 # Create a leaflet map
 leaflet(data = FACS_field) %>%
   addTiles() %>%  # Add default OpenStreetMap tiles
@@ -363,7 +435,7 @@ leaflet(data = FACS_field) %>%
 
 
 ## Immune cells
-### Laboratory infections - immune cells
+### Laboratory infections - heatmap of immune cells
 
 ```{r HEATMAP_lab_facs, message=FALSE, echo = FALSE, warning=FALSE, fig.width=10, fig.height=8}
 
@@ -422,6 +494,10 @@ heatmap_data %>%
            annotation_colors = annotation_colors,
            scale = "row")
 ```
+
+Visual difference between infected and uninfected mice
+
+
 ### Field infections immune cells - heatmap
 ```{r HEATMAP_field_facs, message=FALSE, echo = FALSE, warning=FALSE, fig.width=10, fig.height=8}
 
@@ -475,7 +551,11 @@ heatmap_data %>%
   pheatmap(annotation_col = annotation_df,
            scale = "row")
 ```
-### Correlation between cells laboratory infections
+
+Nothing to gain from this 
+
+
+### Correlation between cells in laboratory challenge infections
 ```{r facs_core, echo = FALSE, warning=FALSE, message = FALSE}
 FACS <- FACS_M %>%
     dplyr::select(-Mouse_ID)
@@ -501,6 +581,8 @@ corrplot(facs_correlation,
   #Add significance level to the correlogram
 #remove the values that are insignificant
 ```
+### Correlations between cells in field mice
+
 ```{r facs_core_field, echo = FALSE, warning=FALSE, message = FALSE}
 # draw correlation between the cells
 facs_correlation <- as.matrix(cor(FACS_M_f %>%
@@ -543,4 +625,8 @@ f %>%
 
 
 ```
+
+
+- Missing: completing the data set of genotyping parasites in field samples 
+
 
