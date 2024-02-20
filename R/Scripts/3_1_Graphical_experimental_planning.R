@@ -6,11 +6,20 @@ library(ggridges)
 library(tidyr)
 library(rlang)
 library(patchwork)
+library(gt)
+library(stringr)
+library(maps)
+library(ggdist)
 
 
 # read the data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
 
+### read uncleaend laboratory data
+hm_full <- read.csv("Data/Data_output/full_data_prior_imputation.csv")
+
+Challenge <- hm_full %>% 
+    filter(origin == "Lab")
 
 # Select laboratory data 
 # Select genes
@@ -21,7 +30,7 @@ Field <- hm %>%
     dplyr::filter(origin == "Field")
 
 # create a vector to select genes
-Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", "IL.10",
+Genes_v   <- c("IFNy", "CXCR3", "IL.6", "IL.13", #"IL.10",
                "IL1RN","CASP1", "CXCL9", "IDO1", "IRGM1", "MPO", 
                "MUC2", "MUC5AC", "MYD88", "NCR1", "PRF1", "RETNLB", "SOCS1", 
                "TICAM1", "TNF") #"IL.12", "IRG6")
@@ -45,9 +54,9 @@ lab$mouse_strain <- factor(lab$mouse_strain,
 #Numbers of each mouse strain
 
 lab %>%
-    group_by(mouse_strain) %>%
+    dplyr::group_by(mouse_strain) %>%
     # Summarize the data to get counts for each mouse strain
-    summarize(count = n()) %>%
+    dplyr::summarize(count = n()) %>%
     # Reorder mouse_strain by count
     mutate(mouse_strain = reorder(mouse_strain, count)) %>%
     # Plotting
@@ -78,7 +87,7 @@ ggplot(Field, aes(x = HI)) +
     geom_density(fill = "steelblue", alpha = 0.7) +
     geom_vline(aes(xintercept = mean(HI, na.rm = TRUE)),
                color = "red", linetype = "dashed", size = 1) +
-    labs(title = "Distribution of Hybrid Index (HI) Among Wild Mice",
+    labs(#title = "Distribution of Hybrid Index (HI) Among Wild Mice",
          x = "Hybrid Index (HI)",
          y = "Density") +
     theme_minimal() +
@@ -92,7 +101,33 @@ ggsave(filename = "~/GitHub/Article_predicting_WL/figures/densityplot_HI.jpeg",
 #the central tendency of hybridization.
 
 
+# Base world map
+world_map <- map_data("world")
 
+lon_range <- range(Field$Longitude) + c(-0.1, 0.1)  # Expanding the range a bit for padding
+lat_range <- range(Field$Latitude) + c(-0.1, 0.1)   # Expanding the range a bit for padding
+
+# Plot with zoom
+map_hybrids <-
+    ggplot() +
+    geom_polygon(data = world_map, aes(x = long, y = lat, group = group), fill = "gray90", color = "white") +
+    geom_point(data = Field, aes(x = Longitude, y = Latitude, color = HI), size = 3) +
+    scale_color_gradient(low = "blue", high = "red") +
+    labs(#title = "Mouse HI Values Across Locations", 
+         x = "Longitude", y = "Latitude") +
+    theme_minimal() +
+    coord_fixed(1.3) +  # Keep map aspect ratio
+    xlim(lon_range) +   # Set x-axis limits to zoom in
+    ylim(lat_range)     # Set y-axis limits to zoom in
+
+map_hybrids 
+
+ggsave(filename = "~/GitHub/Article_predicting_WL/figures/map_HI.jpeg",
+       plot = map_hybrids, width = 8, height = 6)
+
+###################################################
+####################################################
+###################################################
 ggplot(lab %>%
            filter(infection == "challenge"), 
        aes(x = WL_max, y = mouse_strain, fill = mouse_strain)) + 
@@ -218,12 +253,6 @@ summary(mouse_WL)
 
 
 ###################################################
-### read uncleaend laboratory data
-hm_full <- read.csv("Data/Data_output/full_data_prior_imputation.csv")
-
-Challenge <- hm_full %>% 
-    filter(origin == "Lab")
-
 #relative weight loss per day - challenge
 Challenge %>%
     filter(infection == "challenge") %>%
@@ -361,14 +390,102 @@ print(panel_figure)
 ggsave('figure_panels/experimental_design_simple.jpeg', 
        panel_figure, width = 10, height = 12, dpi = 300)
 
+############################
+#Hybrids
 
+
+# Combine the plots
+panel_hybr <- 
+    (h_w | map_hybrids) +
+    plot_layout(guides = 'collect') + # Collect all legends into a single legend
+    plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
+
+# Add a figure title
+panel_hybr <- panel_hybr + 
+    plot_annotation(title = 'Fig. 2', 
+                    theme = theme(plot.title = element_text(size = 13, hjust = 0)))
+
+# Display the panel figure
+print(panel_hybr)
+
+# Save the panel figure
+ggsave('figure_panels/hyb_plot_design.jpeg', 
+       panel_hybr, width = 6, height = 3, dpi = 300)
+#######################
+############### make tables to present mouse strains and infection history
+#eimeria strains 
+Eim_strains <- 
+    lab %>%
+    group_by(infection_history) %>%
+    dplyr::count() %>%
+    mutate(infection_history = str_replace(infection_history, "falciformis", "E. falciformis"),
+           infection_history = str_replace(infection_history, "ferrisi", "E. ferrisi"),
+           infection_history = str_replace(infection_history, "uninfected", "Uninfected"),
+           infection_history = str_replace(infection_history, "_", " X "))
+
+Eim_strains                
+
+as.data.frame(Eim_strains) %>%
+    dplyr::rename("Infection history" = infection_history, 
+                  "Number of mice" = n) %>%
+    gt() %>%
+    tab_header(title = md("Infection history of the mice used in experimental laboratory infections")) 
 
 
 # prim 
 #prim <- 
-    
-    Challenge %>%
-    filter(infection == "primary") %>%
-    group_by(Mouse_ID) %>%
-    summarise(length(Parasite_primary))
-    
+count(lab$Parasite_primary)
+x <- lab %>% filter(infection == "challenge")
+count(x$Parasite_challenge)
+model <- lm(WL_max ~ mouse_strain, data = lab)
+summary(model)
+
+model2 <- lm(WL_max ~ Parasite_primary, 
+             data = Challenge %>% filter(infection == "primary"))
+summary(model2)
+
+
+#########################################################################
+############################# genes
+lab %>%
+    pivot_longer(cols = all_of(Genes_v), 
+                 names_to = "Genes", values_to = "Expression") %>%
+    ggplot(aes(x = Parasite_primary, y = Expression)) +
+    geom_density() +
+    facet_wrap(~Genes)
+
+color_mapping <- c("E. falciformis" = "salmon", 
+                   "E. ferrisi" = "forestgreen", 
+                   "uninfected" = "skyblue")
+
+lab %>%
+    pivot_longer(cols = all_of(Genes_v), 
+                 names_to = "Genes", values_to = "Expression") %>%
+    ggplot(aes(x = Expression, fill = current_infection)) +
+    ggdist::stat_halfeye(
+        adjust = .5, 
+        width = .6, 
+        alpha = 0.5,
+        .width = 0, 
+        justification = -.2, 
+        point_colour = NA,
+        orientation = "y"  # Set orientation to y
+    ) +
+    geom_boxplot(position = "dodge2",
+        width = .5, 
+        outlier.shape = NA,
+        orientation = "y"  # Set orientation to y
+    ) +
+    facet_wrap(~Genes,  scales = 'free', ncol = 4) +
+    labs(x = "Expression Level", y = "Density") +
+    theme_minimal() +
+    scale_fill_manual(values = color_mapping)  +
+    theme_minimal() +
+    labs(y = "Density", 
+         x = "Immune gene expression level") -> density_imm
+
+density_imm
+
+ggsave(filename = "~/GitHub/Article_predicting_WL/figures/density_immune_genes.jpeg",
+        plot = density_imm, width = 10, height = 8, dpi = 300)
+
