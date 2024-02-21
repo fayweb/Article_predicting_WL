@@ -16,6 +16,8 @@ library(RColorBrewer)
 library(ggeffects)
 library(pheatmap)
 library(pdp)
+library(gt)
+library(ggdist)
 library(broom)
 library(reshape2)
 library(knitr)
@@ -26,7 +28,9 @@ library(sjlabelled)
 library(jtools)
 library(sjPlot)
 library(FactoMineR)
+library(ggridges)
 library(Polychrome)
+library(patchwork)
 library(gridExtra)
 library(cowplot)
 library(patchwork)
@@ -137,20 +141,19 @@ pca_variables <-
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
   geom_point(size = 3) +
-  geom_label_repel(aes(label = Variable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
+  geom_label_repel(aes(label = Variable), size = 2, box.padding = 0.5, max.overlaps = Inf) +
   coord_equal() +
   xlab("PC1 (34.37%)") +
   ylab("PC2 (16.03%") +
   #ggtitle("PCA Plot of Variables") +
-  theme_minimal() + 
-  #theme(legend.position = "right",
-   #plot.title = element_text(size = 12, face = "bold")) +
-  guides(color = guide_colorbar(title = "Squared Distance from Origin")) +
-  scale_color_gradientn(colors = gradient_colors, guide = "none")  
+  theme_minimal()  +
+  scale_color_gradient(low = "blue", high = "orange")+
+    labs(color = "Squared distance to origin")
 
 pca_variables
 
-
+ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
+       width = 5, height = 6, dpi = 300)
 ################################################################
 # Create a custom color palette for 19 genes
 # build-in color palette
@@ -158,7 +161,7 @@ pca_variables
 
 color_palette <- colorRampPalette(brewer.pal(12, "Paired"))(19)
 
-pca_variables <-
+#pca_variables <-
     ggplot(vpg, aes(x = PC1, y = PC2, color = Variable)) +
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
@@ -181,11 +184,11 @@ pca_variables <-
     # Coloring for the 19 genes
     scale_color_manual(values = color_palette)
 
-print(pca_variables)
+#print(pca_variables)
 
 
-ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
-       width = 12, height = 6, dpi = 600)
+#ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
+#       width = 12, height = 6, dpi = 600)
 
 
 fviz_pca_biplot(res.pca, 
@@ -294,19 +297,19 @@ ggsave(filename = "figures/residuals_vs_fitted.jpeg",
 
 #########
 # without parasite data
-model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab)
-summary(model_2)
+#model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab)
+#summary(model_2)
 
 # without host data
-model_3 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
+model_2 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
                   immunization, data = lab)
 
-summary(model_3)
+summary(model_2)
 
 # only pc1 + pc2
-model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab)
+model_3 <- lm(WL_max ~ PC1 + PC2 , data = lab)
 
-summary(model_4)
+summary(model_3)
 
 plot_coefs(model_4, colors = "pink", plot.distributions = TRUE) -> coef_pc1_pc2
 
@@ -326,13 +329,13 @@ plot_coefs(model_1, model_2, model_3, model_4, model_5)
 
 ## Please cite as:
 ##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
-stargazer(model_1, model_2, model_3, model_4, 
-          type = "latex",
-          out = "tables/stargazer.txt", 
+stargazer(model_1, model_2, model_3,
+          type = "text",
+          out = "tables/stargazer.doc", 
           title = "Linear models - Predicting maximum weight loss",
           align = TRUE)
 
-#correcting for nas in delta ct
+?#correcting for nas in delta ct
 model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>% 
                   drop_na(delta_ct_cewe_MminusE))
 
@@ -468,27 +471,51 @@ ggsave("figures/pc2_WL_current_infection.jpeg", pc2_WL_current_infection, width 
 
 
 
-# produce the table without levels (immunization and mouse_strains)
-#not possible
-
-
 # Combine the figures
+# Combine the plots
+panel_figure <- 
+    pca_variables /
+         biplot /
+    (pc1_current_infection | pc2_current_infection) /
+    (pc1_WL_current_infection | pc2_WL_current_infection) +
+    plot_layout(guides = 'collect') + # Collect all legends into a single legend
+    plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
+
+# Add a figure title
+panel_figure <- panel_figure + 
+    plot_annotation(title = 'Fig. 2', 
+                    theme = theme(plot.title = element_text(size = 20, hjust = 0)))
+
+# Control sizes of each plot within the panel
+# This is a generic example. You'll need to adjust the widths, heights, and layout design based on your specific needs.
+panel_figure <- panel_figure + 
+    plot_layout(heights = c(10, 1, 1,1), 
+                widths = c(1,1,1,1)) # Adjust according to your layout needs
+
+# Display the panel figure
+#print(panel_figure)
+
+# Save the panel figure
+ggsave('figure_panels/pca_panel.jpeg', 
+       panel_figure, width = 12, height = 6, dpi = 300)
+
+
 
 figure_panel_1 <- ggarrange(pca_variables, biplot, 
-                            contributions_pc1, contributions_pc2,
                             pc1_current_infection, pc2_current_infection,
                             pc1_WL_current_infection, pc2_WL_current_infection,
-                            labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
-                            ncol = 2, nrow = 4)
+                            labels = c("A", "B", "C", "D", "E", "F"),
+                            ncol = 2, nrow = 3,
+                            )
 
 # Adding the title "Figure 1" to the entire arrangement
 figure_panel_1 <- annotate_figure(figure_panel_1, 
-                                  top = text_grob("Figure 1", size = 14, 
+                                  top = text_grob("Fig. 2", size = 14, 
                                                   face = "bold"))
 
 print(figure_panel_1)
 
 
-ggsave("figure_panels/figure_panel_1.jpeg", figure_panel_1, 
-       width = 20, height = 22, dpi = 300)
+ggsave("figure_panels/pca_panel.jpeg", figure_panel_1, 
+       width = 11, height = 9, dpi = 300)
 
