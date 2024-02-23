@@ -648,13 +648,13 @@ Field_filtered <- Field %>% filter(!is.na(MC.Eimeria))
 
 
 # Define colors
-colors <- c("TRUE" = "firebrick3", "FALSE" = "steelblue")
+colors <- c("TRUE" = "forestgreen", "FALSE" = "purple")
 
 ggplot(Field_filtered, aes(y = MC.Eimeria, x = predicted_WL, fill = MC.Eimeria)) + 
     ggdist::stat_halfeye(
         adjust = .5, 
         width = .6, 
-        alpha = 0.7,
+        alpha = 0.5,
         .width = 0, 
         justification = -.2, 
         point_colour = NA,

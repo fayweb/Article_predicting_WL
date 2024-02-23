@@ -83,7 +83,7 @@ par(mfrow=c(2,2))
 ##################
 ##################
 ########## Plots
-
+dev.off()
 root_mean <- plot(predict_WL_cv)
 
 # Root Mean Squared Error (observed vs. predicted) from each Bootstrap 
