@@ -29,6 +29,8 @@ library(htmlwidgets)
 library(cowplot)
 library(gridExtra)
 library(magick)
+library(grid) 
+library(patchwork)
 
 # read the data
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -182,18 +184,12 @@ plot_WL_Sex<- bananaPlot(mod = fitWL_Sex$H3,
     scale_fill_manual(values = c("orange", "forestgreen")) +
   scale_color_manual(values = c("orange", "forestgreen")) +
   theme_bw() +
-    theme(legend.position="none",
-         axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
     labs(y = "Predicted detrimental health impact, 
-         Immune signature")
+         Immune signature") 
 
 plot_WL_Sex
 
-ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 6, 
-       height = 6, dpi = 1000)
-
+### create the hybrid bar
 
 # Adjust the gradient bar plot to include axis labels and remove space
 HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)), 
@@ -208,27 +204,36 @@ HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
           # This removes space around the plot
           axis.text.x = element_text(color = "black", 
                                      angle = 0, vjust = 0.5, hjust=0.5)) 
-        # Adjust text vjust for positioning
+# Adjust text vjust for positioning
 
 HIgradientBar
 
-# Create the combined plot with the gradient bar as the "axis"
-plot_WL_Sex_combined <- 
-    plot_grid(plot_WL_Sex ,
-              HIgradientBar,  
-              nrow = 2, 
-              rel_heights = c(1.3, 1/8),
-              align = "hv",
-              axis = "tb",
-              vjust = c(-1,2),
-              scale = 1) 
-   
-# Display the combined plot
-plot_WL_Sex_combined
+plot_WL_Sex <- plot_WL_Sex +
+    theme(legend.position="none",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+         plot.margin = unit(c(0, 0, 0, 0), "cm"))
+
+plot_WL_Sex
+
+ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 6, 
+       height = 6, dpi = 1000)
+
+# Ensure the bottom plot (HIgradientBar) is ready (assuming HIgradientBar is already defined)
+HIgradientBar <- HIgradientBar + 
+    theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+
+# Use patchwork to combine the plots without any space between them
+combined_plot <- plot_WL_Sex / HIgradientBar + 
+    plot_layout(heights = c(1, 0.1)) # Adjust the relative heights as needed
+
+# Print the combined plot
+combined_plot
 
 
-ggsave(plot = plot_WL_Sex_combined, 
-       filename = "figures/hybrid_sex.jpeg", width = 6, height = 6, dpi = 1000)
+ggsave(plot = combined_plot, 
+       filename = "figures/hybrid_sex.jpeg", width = 4, height = 4, dpi = 1000)
 
 
 ####################### Mapping ######################################
@@ -256,34 +261,10 @@ leaflet_image <- magick::image_read("figures/Hybrid_map.jpeg")
 # Convert to a raster for grid plotting
 leaflet_raster <- rasterGrob(leaflet_image, interpolate = TRUE)
 
-# Combine the ggplot and raster image
-combined_plot <- grid.arrange(
-    leaflet_raster,
-    plot_WL_Sex_combined,
-    ncol = 2, # Set the number of columns to 2 for horizontal alignment
-    widths = c(1, 1))
+leaflet_raster <- ggplot() +
+    background_image(leaflet_image) + coord_fixed()
+###################################
 
-# Add the annotations to the grob
-combined_grob <- arrangeGrob(
-    grobs = list(combined_plot,
-                 textGrob("A", x = unit(0.1, "npc"), y = unit(0.95, "npc"), 
-                          gp = gpar(fontface = "bold", cex = 1.5)),
-                 textGrob("B", x = unit(0.51, "npc"), y = unit(0.95, "npc"), 
-                          gp = gpar(fontface = "bold", cex = 1.5))),
-    ncol = 3
-)
-
-
-# Add annotations
-grid.text("A", x = unit(0.1, "npc"), y = unit(0.95, "npc"), 
-          gp = gpar(fontface = "bold", cex = 1.5))
-grid.text("B", x = unit(0.51, "npc"), y = unit(0.95, "npc"), 
-          gp = gpar(fontface = "bold", cex = 1.5))
-
-
-ggsave(plot = combined_plot, 
-       filename = "figure_panels/banana_map_immune_signature.jpeg", width = 16, 
-       height = 8, dpi = 1000)
 
 
 ##############################################################################
@@ -307,9 +288,9 @@ plot_WL_mc <-
                          response = "predicted_WL",
                          group = "MC.Eimeria",
                          cols = c("white", "white")) +
-    scale_fill_manual(values = c("steelblue1", "indianred3"), 
+    scale_fill_manual(values = c("forestgreen", "purple"), 
                        name = "Melting Curve analysis") +
-    scale_color_manual(values = c("steelblue1", "indianred3"),
+    scale_color_manual(values = c("forestgreen", "purple"),
                        name = "Melting Curve analysis") +
     theme_bw()  +
     theme(legend.position = c(0.5, 0.05),
@@ -323,15 +304,9 @@ plot_WL_mc <-
 plot_WL_mc
 
 # Create the combined plot with the gradient bar as the "axis"
-plot_WL_mc_combined <- 
-    plot_grid(plot_WL_mc ,
-              HIgradientBar,  
-              nrow = 2, 
-              rel_heights = c(1.3, 1/8),
-              align = "hv",
-              axis = "tb",
-              vjust = c(-1,2),
-              scale = 1) 
+plot_WL_mc_combined <-  plot_WL_mc / HIgradientBar + 
+    plot_layout(heights = c(1, 0.1)) # Adjust the relative heights as needed
+
 
 # Display the combined plot
 plot_WL_mc_combined
@@ -339,9 +314,27 @@ plot_WL_mc_combined
 
 ggsave(plot = plot_WL_mc_combined, 
        filename = "figures/hybrid_meltingcurve.jpeg",  
-       width = 6, height = 6, dpi = 1000)
+       width = 7, height = 7, dpi = 1000)
+####################
+#######################
+######################
+# Use patchwork to combine the plots without any space between them
+map_plot <- (combined_plot | plot_WL_mc_combined) +
+    plot_layout(guides = 'collect') + # Collect all legends into a single legend
+    plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
+
+# Add a figure title
+map_plot <- map_plot + 
+    plot_annotation(title = 'Fig. 4', 
+                    theme = theme(plot.title = element_text(size = 13, hjust = 0)))
+
+# Display the panel figure
+print(map_plot)
 
 
+ggsave(plot = map_plot, 
+       filename = "figure_panels/banana_map_immune_signature.jpeg", width = 14, 
+       height = 5, dpi = 1000)
 
 ############ Testing according to delta ct (not recommended, just validating)
 Field_ct <-  Field %>%
