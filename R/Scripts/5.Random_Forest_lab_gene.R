@@ -10,7 +10,9 @@ library(gridGraphics)
 library(ggpmisc)
 library(caret)
 library(ggpubr)
+library(viridis) # For viridis color scales
 library(ggiraphExtra)
+library(patchwork)
 library(ggeffects)
 library(rfUtilities) # Implements a permutation test cross-validation for 
 # Random Forests models
@@ -118,9 +120,28 @@ oob_error_rate <- 1 - sum(diag(WL_predict_gene$confusion)) / sum(WL_predict_gene
 ImpData <- as.data.frame(importance(WL_predict_gene))
 ImpData$Var.Names <- row.names(ImpData)
 varImp(WL_predict_gene)
+var_imp <- as.data.frame(varImp(WL_predict_gene))
+var_imp$Genes <- row.names(var_imp)
+var_imp <- var_imp %>%
+    rename(Importance = Overall)
 
-#WL_predict_gene$mse
 
+# Assuming var_imp is your data frame with variables 'Importance' and 'Genes'
+var_imp <- var_imp %>%
+    mutate(Genes = factor(Genes, levels = Genes[order(-Importance)])) # Reorder Genes by decreasing Importance
+
+# Create the plot with a color scale
+ importance_plot <- 
+     ggplot(var_imp, aes(x = reorder(Genes, Importance), y = Importance, fill = Importance)) +
+        geom_col() + # Use geom_col for a bar plot; it's more appropriate for importance scores
+        coord_flip() + # Flip the coordinates to make it easier to read
+        labs(x = "Genes", y = "IncNodePurity") +#, title = "Variable Importance of Genes") +
+        theme_minimal() + # A clean, minimal theme
+        theme(axis.text.x = element_text(angle = 45, hjust = 1), # Adjust text angle for x-axis labels if needed
+              legend.title = element_blank()) + # Remove the legend title if desired
+        scale_fill_viridis_c(option = "magma", direction = -1) # Apply a Viridis color scale with the 'magma' option
+
+ importance_plot
 ## S3 method for class 'randomForest'
 plot(WL_predict_gene, type = "l", main=deparse(substitute(x)))
 
@@ -278,6 +299,25 @@ ggsave(plot = predictions_random_for_lab,
        filename = "figures/predictions_random_for_lab.jpeg", width = 8, height = 5,
        dpi = 1000)
 
+
+combi_plot <- importance_plot | predictions_random_for_lab +
+    plot_layout(guides = 'collect') + # Collect all legends into a single legend
+    plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
+
+combi_plot
+
+# Add a figure title
+combi_plot <- combi_plot + 
+    plot_annotation(title = 'Fig. 3', 
+                    theme = theme(plot.title = element_text(size = 13, hjust = 0)))
+
+# Display the panel figure
+print(combi_plot)
+
+
+ggsave(plot = combi_plot, 
+       filename = "figure_panels/variableimp_rand_results_lab.jpeg", width = 14, 
+       height = 5, dpi = 1000)
 
 # Calculate the linear model
 lm_fit <- lm(WL_max ~ predictions, data = test_lab)

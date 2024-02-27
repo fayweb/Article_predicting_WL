@@ -695,6 +695,9 @@ ggsave(plot = raincloud_plots__eimeria, filename = "figures/raincloud_eimeria.jp
 ###############################################
 ########################
 # raincloud plots parasites
+model_par <- lm(predicted_WL ~ ILWE_Crypto_Ct + Aspiculuris_sp + Syphacia_sp, data = Field)
+summary(model_par)
+
 Field_par <- Field_par %>%
     pivot_longer(cols = c("infected_Aspiculuris", "infected_syphasia", 
                           "infected_crypto"), names_to = "parasite",
