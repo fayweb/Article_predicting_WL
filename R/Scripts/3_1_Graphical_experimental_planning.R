@@ -434,7 +434,7 @@ as.data.frame(Eim_strains) %>%
 
 # prim 
 #prim <- 
-count(lab$Parasite_primary)
+#count(lab$Parasite_primary)
 x <- lab %>% filter(infection == "challenge")
 count(x$Parasite_challenge)
 model <- lm(WL_max ~ mouse_strain, data = lab)
@@ -488,4 +488,87 @@ density_imm
 
 ggsave(filename = "~/GitHub/Article_predicting_WL/figures/density_immune_genes.jpeg",
         plot = density_imm, width = 10, height = 8, dpi = 300)
+
+
+# mean dpi at peak weight loss falciformis
+s <- 
+    Challenge %>%
+    group_by(Mouse_ID, infection) %>% 
+    filter(infection == "primary", Parasite_primary == "E_falciformis",
+           relative_weight == min(relative_weight)) 
+mean(s$dpi)
+
+# mean dpi at peak weight loss falciformis - challenge
+s <- 
+    Challenge %>%
+    group_by(Mouse_ID, infection) %>% 
+    filter(infection == "challenge", Parasite_challenge == "E_falciformis",
+           relative_weight == min(relative_weight)) 
+mean(s$dpi)
+
+# mean dpi at peak weight loss primary ferrisi
+s <- 
+    Challenge %>%
+    group_by(Mouse_ID, infection) %>% 
+    filter(infection == "primary", Parasite_primary == "E_ferrisi",
+           relative_weight == min(relative_weight)) 
+mean(s$dpi)
+
+# mean dpi at peak weight loss E_ferrisi - challenge
+s <- 
+    Challenge %>%
+    group_by(Mouse_ID, infection) %>% 
+    filter(infection == "challenge", Parasite_challenge == "E_ferrisi",
+           relative_weight == min(relative_weight)) 
+mean(s$dpi)
+
+
+# How many mice died in the primary infections
+primary <- Challenge %>%
+    filter(infection == "primary", Parasite_primary == "E_falciformis")
+# max weight loss primary
+mean(primary$WL_max)
+
+# How many mice died in the primary infections
+primary <- Challenge %>%
+    filter(infection == "primary", Parasite_primary == "E_ferrisi")
+# max weight loss primary
+mean(primary$WL_max, na.rm = TRUE)
+
+# How many mice died in the primary infections
+primary <- Challenge %>%
+    filter(infection == "primary", Parasite_primary == "uninfected")
+# max weight loss primary
+mean(primary$WL_max)
+
+chale <- Challenge %>%
+    filter(infection == "challenge", Parasite_challenge == "E_falciformis")
+# max weight loss primary
+mean(chale$WL_max)
+
+# How many mice died in the primary infections
+chale <- Challenge %>%
+    filter(infection == "challenge", Parasite_challenge == "E_ferrisi")
+# max weight loss primary
+mean(chale$WL_max)
+
+# How many mice died in the primary infections
+chale <- Challenge %>%
+    filter(infection == "challenge", Parasite_challenge == "uninfected")
+# max weight loss primary
+mean(chale$WL_max)
+
+
+
+challenge <- Challenge %>%
+    filter(infection == "challenge")
+
+mean(Challenge$WL_max)
+
+intersection <- intersect(primary$Mouse_ID, challenge$Mouse_ID)
+
+
+s <- lab %>%
+    filter(death == "primary")
+
 

@@ -6,12 +6,13 @@
 ## install the pacakage of Alice Balard
 #devtools::install_github("alicebalard/parasiteLoad@v2.0", force = TRUE)
 #force = TRUE)
-
+library(stargazer)
 library(parasiteLoad)
 library(tidyverse)
 library(tidyr)
 library(dplyr)
 library(cowplot)
+library(flextable)
 library(randomForest)
 library(ggplot2)
 library(VIM) # visualizing missing data
@@ -22,12 +23,17 @@ library(rfUtilities) # Implements a permutation test cross-validation for
 library(fitdistrplus) #testing distributions
 library(logspline)
 library(caret)
+library(officer)
 library(dplyr)
+library(knitr)
+library(kableExtra)
+library(broom)
 library(tidyr)
 library(ggeffects)
 library(ggbeeswarm)
 library(ggdist)
 library(jtools)
+library(huxtable)
 
 
 hm <- read.csv("Data/Data_output/imputed_clean_data.csv")
@@ -418,7 +424,7 @@ ggplot(Field, aes(x = HE, OPG)) +
     geom_point() +
     geom_line()
 
-model <- lm(formula = predicted_WL ~ HE * Sex, data = Field)
+model <- lm(formula = predicted_WL ~  HE * Sex, data = Field)
 summary(model)
 
 df <- Field %>%
@@ -567,12 +573,12 @@ Field_par <- Field_par %>%
         infected_crypto = as.factor(infected_crypto)
     )
 
-model1 <- lm(predicted_WL ~ MC.Eimeria + infected_Aspiculuris + HI + HE
+modelA <- lm(predicted_WL ~ MC.Eimeria + infected_Aspiculuris + HI + HE
             + infected_syphasia + infected_crypto, data = Field_par)
 
-summary(model1)
+summary(modelA)
 
-plot_summs(model1, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+plot_summs(modelA, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
            colors = "mediumblue") -> plot1
 plot1
 
@@ -580,18 +586,18 @@ ggsave(filename = "figures/coefficient_plot_model1.jpeg", plot = plot1,
        width = 5, height = 4, dpi = 300)
 
 #######################################
-model2 <- lm(predicted_WL ~ MC.Eimeria * HE, Field)
-summary(model2)
-plot_summs(model2, plot.distributions = TRUE) 
+modelB <- lm(predicted_WL ~ MC.Eimeria * HE, Field)
+summary(modelB)
+plot_summs(modelB, plot.distributions = TRUE) 
 
 
 ## hybrid index + infectopm
 Field$MC.Eimeria <- as.factor(Field$MC.Eimeria)
-model3 <- lm(predicted_WL ~ MC.Eimeria *infection_intensity_Eim * HE + 
+modelC <- lm(predicted_WL ~ MC.Eimeria *infection_intensity_Eim * HE + 
                 HI + HE, Field)
-summary(model3)
+summary(modelC)
 
-plot_summs(model3, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+plot_summs(modelC, plot.distributions = TRUE, robust = TRUE, scale = TRUE,
            colors = "mediumblue") -> plot2
 
 plot2 
@@ -599,21 +605,29 @@ plot2
 ggsave(filename = "figures/coefficient_plot_model2.jpeg", plot = plot2, 
        width = 5, height = 4, dpi = 300)
 
-ggpredict(model3, terms = c("MC.Eimeria", "delta_ct_cewe_MminusE")) %>%
+ggpredict(modelC, terms = c("MC.Eimeria", "infection_intensity_Eim")) %>%
     plot()
 
+
 ## hybrid index + infectopm
-model4 <- lm(predicted_WL ~  HI + HE, Field)
-summary(model4)
-plot_summs(model4,  plot.distributions = TRUE, robust = TRUE, scale = TRUE,
+modelD <- lm(predicted_WL ~  HI + HE, Field)
+summary(modelD)
+plot_summs(modelD,  plot.distributions = TRUE, robust = TRUE, scale = TRUE,
            colors = "mediumblue")  -> plot_4
 
 ggsave(filename = "figures/coefficient_plot_HE.jpeg", plot = plot_4, 
        width = 5, height = 4, dpi = 300)
 
-plot_summs(model3, model4,  robust = TRUE, 
+plot_summs(modelC, modelD,  robust = TRUE, 
            scale = TRUE) -> model1_2
 model1_2
+
+##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
+stargazer(modelA, modelB, modelC, modelD,
+          type = "text",
+          out = "tables/", 
+          title = "Linear models - Contributions to predicted maximum weight loss",
+          align = TRUE)stargazer_field_modelaA_D.doc
 
 ggsave(filename = "figures/coefficient_plot_model1_2.jpeg", plot = model1_2, 
        width = 8, height = 6, dpi = 300)
@@ -621,11 +635,13 @@ ggsave(filename = "figures/coefficient_plot_model1_2.jpeg", plot = model1_2,
 model4 <- lm(predicted_WL ~  MC.Eimeria, Field)
 summary(model4)
 
+export_summs(modelA, modelB, modelC, modelD, scale = TRUE, to.file = "docx", 
+             file.name = "tables/field_modelaA_D.docx")
 
-
-
-
-
+summary(modelA)
+summary(modelB)
+summary(modelC)
+summary(modelD)
 
 
 

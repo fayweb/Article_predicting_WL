@@ -185,6 +185,9 @@ test_lab <- test_lab %>%
 cor(result$WL_max, result$predictions, 
     method = c("pearson", "kendall", "spearman"))
 
+cor(result$WL_max, result$predictions, 
+    method = "pearson")
+
 model <- lm(predictions ~ WL_max, data = test_lab)
 summary(model)
 
