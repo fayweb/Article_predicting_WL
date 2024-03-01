@@ -1,0 +1,42 @@
+
+Mixed effects of principle components and infection groups
+==============================================================
+                                       Dependent variable:    
+                                   ---------------------------
+                                             WL_max           
+--------------------------------------------------------------
+PC1                                          -0.026           
+                                             (0.403)          
+                                                              
+current_infectionE_falciformis              10.013***         
+                                             (1.322)          
+                                                              
+current_infectionE_ferrisi                  5.186***          
+                                             (1.347)          
+                                                              
+PC2                                           0.336           
+                                             (0.539)          
+                                                              
+PC1:current_infectionE_falciformis           1.074**          
+                                             (0.509)          
+                                                              
+PC1:current_infectionE_ferrisi                0.115           
+                                             (0.600)          
+                                                              
+current_infectionE_falciformis:PC2           -1.264*          
+                                             (0.758)          
+                                                              
+current_infectionE_ferrisi:PC2              -2.599***         
+                                             (0.767)          
+                                                              
+Constant                                    4.709***          
+                                             (0.920)          
+                                                              
+--------------------------------------------------------------
+Observations                                   136            
+R2                                            0.427           
+Adjusted R2                                   0.391           
+Residual Std. Error                     6.167 (df = 127)      
+F Statistic                          11.824*** (df = 8; 127)  
+==============================================================
+Note:                              *p<0.1; **p<0.05; ***p<0.01

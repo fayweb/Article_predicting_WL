@@ -73,7 +73,9 @@ mouse <- data.frame(Mouse_ID = lab[,1])
 mouse$PC1 <- res.pca$ind$coord[, 1]
 
 mouse$PC2 <- res.pca$ind$coord[, 2]  # indexing the second column
-
+mouse$PC3 <-  res.pca$ind$coord[, 3]
+mouse$PC4 <-  res.pca$ind$coord[, 4]
+mouse$PC5 <-  res.pca$ind$coord[, 5]
 # join the coordinates
 lab <- lab %>% 
     left_join(mouse, by = "Mouse_ID")
@@ -115,7 +117,7 @@ pca_individuals <-
     scale_color_manual(values = color_mapping)# +
     #guides(color = guide_legend(override.aes = list(size = 4))) 
 
-pca_individuals
+#pca_individuals
 
 ggsave(filename = "figures/pca_individuals.jpeg", plot = pca_individuals, 
        width = 6, height = 4, dpi = 300)
@@ -151,7 +153,7 @@ pca_variables <-
   scale_color_gradient(low = "blue", high = "orange")+
     labs(color = "Squared distance to origin")
 
-pca_variables
+#pca_variables
 
 ggsave(filename = "figures/pca_variables.jpeg", plot = pca_variables, 
        width = 5, height = 6, dpi = 300)
@@ -210,7 +212,7 @@ ggsave(filename = "figures/biplot.jpeg", plot = biplot,
 
 # Contributions of variables to PC1
 fviz_contrib(res.pca, choice = "var", axes = 1, top = 18, 
-             title = "Contribution of immune genes to the first dimension of the PCA", 
+             title = "PC1", 
              fill =  "seagreen2") -> contributions_pc1
 
 contributions_pc1
@@ -224,7 +226,7 @@ ggsave(filename = "figures/contributions_pc1.jpeg", plot = contributions_pc1,
 
 ## Contributions of variables to PC2
 fviz_contrib(res.pca, choice = "var", axes = 2, top = 18, 
-             title = "Contribution of immune genes to the second dimension of the PCA",
+             title = "PC2",
              fill =  "seagreen2") -> contributions_pc2
 
 contributions_pc2
@@ -240,7 +242,16 @@ ggsave(filename = "figures/contributions_pc2.jpeg", plot = contributions_pc2,
 
 # Load the required packages
 ###PC1 PC2 linear regression
-model_1 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
+lab$current_infection <- factor(lab$current_infection, 
+        levels = c("uninfected", "E_falciformis", "E_ferrisi"))
+
+lab$mouse_strain <- as.factor(lab$mouse_strain)
+lab$immunization <- factor(lab$immunization, levels = 
+                                    c("naive", "uninfected",
+                                      "heterologous", "homologous"))
+
+model_1 <- lm(WL_max ~ PC1 + PC2 +
+               current_infection + delta_ct_cewe_MminusE +
                 mouse_strain + immunization + 
                 weight_dpi0, data = lab )
 
@@ -311,14 +322,9 @@ model_3 <- lm(WL_max ~ PC1 + PC2 , data = lab)
 
 summary(model_3)
 
-plot_coefs(model_4, colors = "pink", plot.distributions = TRUE) -> coef_pc1_pc2
 
-ggsave(filename = "figures/Coef_pc1_pc2.jpeg", coef_pc1_pc2, width = 6, 
-       height = 4, dpi = 300)
 
-tab_model(model_4, file = "tables/pc1_pc2_lm.doc")
-
-plot_coefs(model_1, model_2, model_3, model_4)
+plot_coefs(model_1, model_2, model_3)
 
 
 model_5 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE + 
@@ -331,7 +337,7 @@ plot_coefs(model_1, model_2, model_3, model_4, model_5)
 ##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.
 stargazer(model_1, model_2, model_3,
           type = "text",
-          out = "tables/stargazer.doc", 
+          out = "tables/stargazer.docx", 
           title = "Linear models - Predicting maximum weight loss",
           align = TRUE)
 
@@ -353,34 +359,15 @@ modelsummary(models = as.list(model_1, model_2, model_3),
 
 
 
+model_4 <- lm(WL_max ~ PC1 * current_infection + PC2 *current_infection, 
+              data = lab)
 
+summary(model_4)
+plot_summs(model_4) -> coefs4
 
+coefs4
 
-
-
-
-
-
-
-
-
-
-
-
-#correcting for nas in delta ct
-model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>% 
-                  drop_na(delta_ct_cewe_MminusE))
-
-model_4 <- lm(WL_max ~ PC1 + PC2 , data = lab %>% 
-                  drop_na(delta_ct_cewe_MminusE))
-
-
-# Anova of different models
-anova_mod <- anova(model_1, model_2, model_3, model_4)
-
-stargazer(anova_mod, type = "html", out = "figures/anova_model.html", 
-          title = "Analysis of Variance Table")
-
+ggsave(filename = "figures/plot_sums_mix_PCA.jpeg", plot = coefs4, width = 6, height = 4)
 #see the ggefects
 effects <- ggpredict(model_4)
 
@@ -439,16 +426,11 @@ ggsave(filename = "figures/pc2_current_infection.jpeg",
 
 
 plot_summs(model_4)
-
-## divided by infections
-lab$current_infection <- as.factor(lab$current_infection)
-model_5 <- lm(WL_max ~ PC1*current_infection + PC2*current_infection, data = lab) #, data = lab %>% drop_na(delta_ct_cewe_MminusE))
-summary(model_5)
-
-plot_summs(model_5)
+modelsummary(model_4, stars = TRUE, gof_omit = "IC|Adj|F|RMSE|Log", 
+             output = "tables/mixed_effects_pca.docx")
 
 # Now create the scatter plot using this color mapping
-ggpredict(model_5, terms = c("PC1", "current_infection")) %>% 
+ggpredict(model_4, terms = c("PC1", "current_infection")) %>% 
     plot() +  
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
@@ -476,7 +458,7 @@ ggsave("figures/pc1_WL_current_infection.jpeg", pc1_WL_current_infection, width 
 
 # Now create the scatter plot using this color mapping
 # Now create the scatter plot using this color mapping
-ggpredict(model_5, terms = c("PC2", "current_infection")) %>% 
+ggpredict(model_4, terms = c("PC2", "current_infection")) %>% 
     plot() +  
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") + 
     geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
@@ -506,32 +488,67 @@ ggsave("figures/pc2_WL_current_infection.jpeg", pc2_WL_current_infection, width 
 # Combine the figures
 # Combine the plots
 panel_figure <- 
-    pca_variables /
-         biplot /
-    (pc1_current_infection | pc2_current_infection) /
-    (pc1_WL_current_infection | pc2_WL_current_infection) +
+    (pca_variables| biplot)  +
     plot_layout(guides = 'collect') + # Collect all legends into a single legend
     plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
 
 # Add a figure title
 panel_figure <- panel_figure + 
-    plot_annotation(title = 'Fig. 2', 
-                    theme = theme(plot.title = element_text(size = 20, hjust = 0)))
-
-# Control sizes of each plot within the panel
-# This is a generic example. You'll need to adjust the widths, heights, and layout design based on your specific needs.
-panel_figure <- panel_figure + 
-    plot_layout(heights = c(10, 1, 1,1), 
-                widths = c(1,1,1,1)) # Adjust according to your layout needs
+    plot_annotation(title = 'Fig. 3', 
+                    theme = theme(plot.title = element_text(size = 20, hjust = 0))) #+
+   # plot_layout(heights = c(10, 1, 1,1), 
+       #         widths = c(1,1,1,1)) # Adjust according to your layout needs
 
 # Display the panel figure
 #print(panel_figure)
 
 # Save the panel figure
-ggsave('figure_panels/pca_panel.jpeg', 
-       panel_figure, width = 12, height = 6, dpi = 300)
+ggsave("figure_panels/pca_biplot_variable.jpeg", 
+       panel_figure, width = 12, height = 5, dpi = 300)
+
+# Combine the plots
+panel_figure <- 
+    (pca_variables| biplot)  +
+    plot_layout(guides = 'collect') + # Collect all legends into a single legend
+    plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
+
+# Add a figure title
+panel_figure <- panel_figure + 
+    plot_annotation(title = 'Fig. 3', 
+                    theme = theme(plot.title = element_text(size = 20, hjust = 0))) #+
+   # plot_layout(heights = c(10, 1, 1,1), 
+       #         widths = c(1,1,1,1)) # Adjust according to your layout needs
+
+# Display the panel figure
+#print(panel_figure)
+
+# Save the panel figure
+ggsave("figure_panels/pca_biplot_variable.jpeg", 
+       panel_figure, width = 12, height = 5, dpi = 300)
 
 
+
+################################
+############################
+# Figure 4
+# Combine the plots
+panel_figure2 <- 
+    (contributions_pc1 | contributions_pc2 ) /
+    (pc1_WL_current_infection | pc2_WL_current_infection) /
+    free(coefs4) +
+    plot_layout(guides = 'collect') + # Collect all legends into a single legend
+    plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
+
+# Add a figure title
+panel_figure2 <- panel_figure2 + 
+    plot_annotation(title = 'Fig. 5', 
+                    theme = theme(plot.title = element_text(size = 20, hjust = 0))) +
+    plot_layout(heights = c(1, 1,1), 
+                        widths = c(1,1,1))
+
+# Save the panel figure
+ggsave("figure_panels/mixed_models_PCA.jpeg", 
+       panel_figure2, width = 13, height = 12, dpi = 300)
 
 figure_panel_1 <- ggarrange(pca_variables, biplot, 
                             pc1_current_infection, pc2_current_infection,

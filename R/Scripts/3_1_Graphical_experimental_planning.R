@@ -10,6 +10,7 @@ library(gt)
 library(stringr)
 library(maps)
 library(ggdist)
+library(hexbin)
 
 
 # read the data
@@ -83,8 +84,8 @@ ggsave(filename = "~/GitHub/Article_predicting_WL/figures/mice_strains_n.jpeg",
 
 
 # Creating a density plot for the Hybrid Index (HI)
-ggplot(Field, aes(x = HI)) + 
-    geom_density(fill = "steelblue", alpha = 0.7) +
+ggplot(Field, aes(HI)) + 
+    geom_density(fill = "steelblue",alpha = 0.7) +
     geom_vline(aes(xintercept = mean(HI, na.rm = TRUE)),
                color = "red", linetype = "dashed", size = 1) +
     labs(#title = "Distribution of Hybrid Index (HI) Among Wild Mice",
@@ -94,6 +95,7 @@ ggplot(Field, aes(x = HI)) +
     theme(plot.title = element_text(hjust = 0.5)) -> h_w
 
 h_w
+
 
 ggsave(filename = "~/GitHub/Article_predicting_WL/figures/densityplot_HI.jpeg",
        plot = m_s, width = 8, height = 6)
@@ -402,7 +404,7 @@ panel_hybr <-
 
 # Add a figure title
 panel_hybr <- panel_hybr + 
-    plot_annotation(title = 'Fig. 2', 
+    plot_annotation(title = 'Fig. 7', 
                     theme = theme(plot.title = element_text(size = 13, hjust = 0)))
 
 # Display the panel figure

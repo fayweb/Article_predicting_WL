@@ -708,6 +708,8 @@ ggsave(plot = raincloud_plots__eimeria, filename = "figures/raincloud_eimeria.jp
        width = 6, 
        height = 4, dpi = 1000)
 
+h <- (raincloud_plots__eimeria | coe)
+
 ###############################################
 ########################
 # raincloud plots parasites

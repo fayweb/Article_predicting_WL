@@ -1,81 +1,81 @@
 
 Linear models - Predicting maximum weight loss
-=======================================================
-                                Dependent variable:    
-                            ---------------------------
-                                      WL_max           
--------------------------------------------------------
-PC1                                    0.145           
-                                      (0.234)          
-                                                       
-PC2                                  -0.693**          
-                                      (0.301)          
-                                                       
-current_infectionE_ferrisi           -2.803**          
-                                      (1.382)          
-                                                       
-current_infectionuninfected           -1.324           
-                                      (1.594)          
-                                                       
-delta_ct_cewe_MminusE                0.629***          
-                                      (0.128)          
-                                                       
-mouse_strainBUSNA_PWD                  0.056           
-                                      (4.623)          
-                                                       
-mouse_strainBUSNA_STRA                 0.268           
-                                      (3.707)          
-                                                       
-mouse_strainNMRI                      -6.186           
-                                      (5.151)          
-                                                       
-mouse_strainPWD_BUSNA                  1.145           
-                                      (4.039)          
-                                                       
-mouse_strainPWD_PWD                   5.859*           
-                                      (3.047)          
-                                                       
-mouse_strainPWD_SCHUNT                -0.469           
-                                      (4.018)          
-                                                       
-mouse_strainSCHUNT_PWD                -2.845           
-                                      (3.760)          
-                                                       
-mouse_strainSCHUNT_SCHUNT              2.642           
-                                      (2.965)          
-                                                       
-mouse_strainSCHUNT_STRA                5.212           
-                                      (4.132)          
-                                                       
-mouse_strainSTRA_BUSNA                -1.414           
-                                      (3.857)          
-                                                       
-mouse_strainSTRA_SCHUNT                0.793           
-                                      (3.831)          
-                                                       
-mouse_strainSTRA_STRA                 -3.139           
-                                      (3.798)          
-                                                       
-immunizationhomologous                -0.947           
-                                      (1.417)          
-                                                       
-immunizationnaive                     -0.642           
-                                      (1.789)          
-                                                       
-immunizationuninfected                -3.369*          
-                                      (1.766)          
-                                                       
-weight_dpi0                           0.298**          
-                                      (0.131)          
-                                                       
-Constant                              6.561*           
-                                      (3.931)          
-                                                       
--------------------------------------------------------
-Observations                            128            
-R2                                     0.631           
-Adjusted R2                            0.557           
-Residual Std. Error              5.218 (df = 106)      
-F Statistic                   8.614*** (df = 21; 106)  
-=======================================================
-Note:                       *p<0.1; **p<0.05; ***p<0.01
+==========================================================
+                                   Dependent variable:    
+                               ---------------------------
+                                         WL_max           
+----------------------------------------------------------
+PC1                                       0.145           
+                                         (0.234)          
+                                                          
+PC2                                     -0.693**          
+                                         (0.301)          
+                                                          
+current_infectionE_falciformis            1.324           
+                                         (1.594)          
+                                                          
+current_infectionE_ferrisi               -1.480           
+                                         (1.724)          
+                                                          
+delta_ct_cewe_MminusE                   0.629***          
+                                         (0.128)          
+                                                          
+mouse_strainBUSNA_PWD                     0.056           
+                                         (4.623)          
+                                                          
+mouse_strainBUSNA_STRA                    0.268           
+                                         (3.707)          
+                                                          
+mouse_strainNMRI                         -6.186           
+                                         (5.151)          
+                                                          
+mouse_strainPWD_BUSNA                     1.145           
+                                         (4.039)          
+                                                          
+mouse_strainPWD_PWD                      5.859*           
+                                         (3.047)          
+                                                          
+mouse_strainPWD_SCHUNT                   -0.469           
+                                         (4.018)          
+                                                          
+mouse_strainSCHUNT_PWD                   -2.845           
+                                         (3.760)          
+                                                          
+mouse_strainSCHUNT_SCHUNT                 2.642           
+                                         (2.965)          
+                                                          
+mouse_strainSCHUNT_STRA                   5.212           
+                                         (4.132)          
+                                                          
+mouse_strainSTRA_BUSNA                   -1.414           
+                                         (3.857)          
+                                                          
+mouse_strainSTRA_SCHUNT                   0.793           
+                                         (3.831)          
+                                                          
+mouse_strainSTRA_STRA                    -3.139           
+                                         (3.798)          
+                                                          
+immunizationuninfected                   -2.727           
+                                         (2.014)          
+                                                          
+immunizationheterologous                  0.642           
+                                         (1.789)          
+                                                          
+immunizationhomologous                   -0.305           
+                                         (1.759)          
+                                                          
+weight_dpi0                              0.298**          
+                                         (0.131)          
+                                                          
+Constant                                  4.595           
+                                         (4.358)          
+                                                          
+----------------------------------------------------------
+Observations                               128            
+R2                                        0.631           
+Adjusted R2                               0.557           
+Residual Std. Error                 5.218 (df = 106)      
+F Statistic                      8.614*** (df = 21; 106)  
+==========================================================
+Note:                          *p<0.1; **p<0.05; ***p<0.01

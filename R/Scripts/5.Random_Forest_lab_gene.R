@@ -303,7 +303,7 @@ ggsave(plot = predictions_random_for_lab,
        dpi = 1000)
 
 
-combi_plot <- importance_plot | predictions_random_for_lab +
+combi_plot <- (importance_plot | predictions_random_for_lab) +
     plot_layout(guides = 'collect') + # Collect all legends into a single legend
     plot_annotation(tag_levels = 'A') # Add labels (A, B, C, etc.)
 
@@ -311,7 +311,7 @@ combi_plot
 
 # Add a figure title
 combi_plot <- combi_plot + 
-    plot_annotation(title = 'Fig. 3', 
+    plot_annotation(title = 'Fig. 6', 
                     theme = theme(plot.title = element_text(size = 13, hjust = 0)))
 
 # Display the panel figure

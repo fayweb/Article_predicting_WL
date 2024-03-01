@@ -206,7 +206,7 @@ HIgradientBar <- ggplot(data.frame(hi = seq(0,1,0.0001)),
                                      angle = 0, vjust = 0.5, hjust=0.5)) 
 # Adjust text vjust for positioning
 
-HIgradientBar
+#HIgradientBar
 
 plot_WL_Sex <- plot_WL_Sex +
     theme(legend.position="none",
@@ -215,8 +215,8 @@ plot_WL_Sex <- plot_WL_Sex +
           axis.ticks.x=element_blank(),
          plot.margin = unit(c(0, 0, 0, 0), "cm"))
 
-plot_WL_Sex
-
+#plot_WL_Sex
+#
 ggsave(plot = plot_WL_Sex, filename = "figures/hybrid_sex.jpeg", width = 6, 
        height = 6, dpi = 1000)
 
@@ -229,7 +229,7 @@ combined_plot <- plot_WL_Sex / HIgradientBar +
     plot_layout(heights = c(1, 0.1)) # Adjust the relative heights as needed
 
 # Print the combined plot
-combined_plot
+#combined_plot
 
 
 ggsave(plot = combined_plot, 
@@ -301,15 +301,15 @@ plot_WL_mc <-
     labs(y = "Predicted detrimental health impact, 
          Immune signature")
 
-plot_WL_mc
+#plot_WL_mc
 
 # Create the combined plot with the gradient bar as the "axis"
-plot_WL_mc_combined <-  plot_WL_mc / HIgradientBar + 
+plot_WL_mc_combined <-  (plot_WL_mc / HIgradientBar) + 
     plot_layout(heights = c(1, 0.1)) # Adjust the relative heights as needed
 
 
 # Display the combined plot
-plot_WL_mc_combined
+#plot_WL_mc_combined
 
 
 ggsave(plot = plot_WL_mc_combined, 
@@ -325,15 +325,16 @@ map_plot <- (combined_plot | plot_WL_mc_combined) +
 
 # Add a figure title
 map_plot <- map_plot + 
-    plot_annotation(title = 'Fig. 4', 
-                    theme = theme(plot.title = element_text(size = 13, hjust = 0)))
+    plot_annotation(title = 'Fig. 8', 
+                    theme = theme(plot.title = element_text(size = 13, hjust = 0),
+                                  legend.position = "none"))
 
 # Display the panel figure
-print(map_plot)
+#print(map_plot)
 
 
 ggsave(plot = map_plot, 
-       filename = "figure_panels/banana_map_immune_signature.jpeg", width = 14, 
+       filename = "figure_panels/banana_map_immune_signature.jpeg", width = 10, 
        height = 5, dpi = 1000)
 
 ############ Testing according to delta ct (not recommended, just validating)
