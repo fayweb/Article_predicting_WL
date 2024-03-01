@@ -63,9 +63,10 @@ ggplot(tidy_models_no_intercept, aes(x = model, y = estimate, color = term)) +
     scale_color_manual(values = custom_colors) +
     theme_classic() +
     theme(axis.text.y = element_text(angle = 45, hjust = 1)) +
-    labs(x = "Coefficient Estimate", y = "Gene Expression") +
+    labs(x = "Coefficient Estimate", y = "Gene expression level") +
 #, title = "Coefficient Estimates by Gene Expression") +
-    theme(legend.title = element_blank()) -> coef_mmr
+    theme(legend.title = element_blank(),
+          legend.position = "none") -> coef_mmr
 
 print(coef_mmr)
 
@@ -107,9 +108,9 @@ color_mapping <- c("E. falciformis" = "salmon",
         labs(x = "Expression Level", y = "Density") +
         theme_minimal() +
         scale_fill_manual(values = color_mapping)  +
-        theme_minimal() +
+        theme(legend.title = element_blank())+
         labs(y = "Density", 
-             x = "Immune gene expression level") -> density_imm
+             x = "Gene expression level") -> density_imm
     
     density_imm
     
@@ -139,3 +140,5 @@ color_mapping <- c("E. falciformis" = "salmon",
     # Save the panel figure
     ggsave('figure_panels/Fig_2_immune_gene_expression_lab.jpeg', 
            comb, width = 12, height = 6, dpi = 300)    
+    
+  

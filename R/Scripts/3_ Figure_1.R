@@ -15,6 +15,7 @@ library(webshot)
 library(RColorBrewer)
 library(ggeffects)
 library(pheatmap)
+library(modelsummary)
 library(pdp)
 library(gt)
 library(ggdist)
@@ -301,8 +302,7 @@ ggsave(filename = "figures/residuals_vs_fitted.jpeg",
 #summary(model_2)
 
 # without host data
-model_2 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE +
-                  immunization, data = lab)
+model_2 <- lm(WL_max ~ PC1 + PC2 + current_infection + delta_ct_cewe_MminusE, data = lab)
 
 summary(model_2)
 
@@ -335,7 +335,39 @@ stargazer(model_1, model_2, model_3,
           title = "Linear models - Predicting maximum weight loss",
           align = TRUE)
 
-?#correcting for nas in delta ct
+export_summs(model_1, model_2, model_3,
+             scale = TRUE, to.file = "docx", 
+             file.name = "tables/lab_model1_3.docx")
+
+
+models <- list(
+    "Model 1" = model_1,
+    "Model 2" = model_2,
+    "Model 3" = model_3)
+
+modelsummary(models, stars = TRUE, gof_omit = "IC|Adj|F|RMSE|Log", 
+             output = "tables/lab_model1_3.docx")
+
+modelsummary(models = as.list(model_1, model_2, model_3), 
+             output = "tables/lab_model1.docx")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#correcting for nas in delta ct
 model_2 <- lm(WL_max ~ PC1 + PC2 + mouse_strain + weight_dpi0, data = lab %>% 
                   drop_na(delta_ct_cewe_MminusE))
 

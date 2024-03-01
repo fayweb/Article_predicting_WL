@@ -44,7 +44,7 @@ genes <- lab[ ,colnames(lab) %in% Genes_v]
 res.pca <- PCA(genes)
 
 ## How much does each dimension contribute to variance?
-
+dev.off()
 fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 70), barfill = "seagreen2") -> 
     variance_contrib
 
@@ -57,14 +57,15 @@ ggsave(filename = "figures/contributions_all_dimentsions.jpeg", plot = variance_
 fviz_pca_var(res.pca, col.var = "cos2",
              gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"),
              repel = TRUE, title = "") -> pca_col
-
+pca_col
 
 ggsave(filename = "figures/pca_fviz_package.jpeg", plot = pca_col, 
        width = 10, height = 5, dpi = 300)
 
-fviz_pca_ind(res.pca, col.ind = "cos2", 
-             gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"), 
-             repel = TRUE, title = "")
+dev.off()
+#fviz_pca_ind(res.pca, col.ind = "cos2", 
+ #            gradient.cols = c("#DB6212", "#CC8733", "#5f25e6", "#073DA8"), 
+  #           repel = TRUE, title = "")
 
 
 ## Description of the dimensions
@@ -145,13 +146,13 @@ fviz_contrib(res.pca, choice = "ind", axes = 1:2)
 #select same rows in the first table
 lab <- lab[row.names(genes), ]
 
-
-fviz_pca_biplot(res.pca, 
-                col.ind = lab$current_infection, palette = "jco", 
-                addEllipses = TRUE, label = "var",
-                col.var = "black", repel = TRUE,
-                legend.title = "Infection groups",
-                title = "") 
+dev.off()
+#fviz_pca_biplot(res.pca, 
+ #               col.ind = lab$current_infection, palette = "jco", 
+  #              addEllipses = TRUE, label = "var",
+   #             col.var = "black", repel = TRUE,
+    #            legend.title = "Infection groups",
+     #           title = "") 
 
 
 #Determine the Number of Clusters Using the Elbow Method:
@@ -943,3 +944,7 @@ write.csv(pca_var, "Data/Data_output/variance_contr_gene_lab.csv", row.names = T
 # save the lab data frame for figures
 write.csv(lab, "Data/Data_output/lab_pca.csv", row.names = FALSE)
 
+
+##############################
+#######################
+# Multivariate linear regressions

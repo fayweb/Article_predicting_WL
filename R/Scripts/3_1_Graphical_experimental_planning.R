@@ -446,48 +446,7 @@ summary(model2)
 
 
 #########################################################################
-############################# genes
-lab %>%
-    pivot_longer(cols = all_of(Genes_v), 
-                 names_to = "Genes", values_to = "Expression") %>%
-    ggplot(aes(x = Parasite_primary, y = Expression)) +
-    geom_density() +
-    facet_wrap(~Genes)
 
-color_mapping <- c("E. falciformis" = "salmon", 
-                   "E. ferrisi" = "forestgreen", 
-                   "uninfected" = "skyblue")
-
-lab %>%
-    pivot_longer(cols = all_of(Genes_v), 
-                 names_to = "Genes", values_to = "Expression") %>%
-    ggplot(aes(x = Expression, fill = current_infection)) +
-    ggdist::stat_halfeye(
-        adjust = .5, 
-        width = .6, 
-        alpha = 0.5,
-        .width = 0, 
-        justification = -.2, 
-        point_colour = NA,
-        orientation = "y"  # Set orientation to y
-    ) +
-    geom_boxplot(position = "dodge2",
-        width = .5, 
-        outlier.shape = NA,
-        orientation = "y"  # Set orientation to y
-    ) +
-    facet_wrap(~Genes,  scales = 'free', ncol = 4) +
-    labs(x = "Expression Level", y = "Density") +
-    theme_minimal() +
-    scale_fill_manual(values = color_mapping)  +
-    theme_minimal() +
-    labs(y = "Density", 
-         x = "Immune gene expression level") -> density_imm
-
-density_imm
-
-ggsave(filename = "~/GitHub/Article_predicting_WL/figures/density_immune_genes.jpeg",
-        plot = density_imm, width = 10, height = 8, dpi = 300)
 
 
 # mean dpi at peak weight loss falciformis
